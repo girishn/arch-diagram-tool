@@ -1,0 +1,1562 @@
+{
+  "version": 1,
+  "title": "Bank: digital channels, payments hub and core banking",
+  "description": "Customers and corporate clients reach the bank through digital channels and open-banking APIs. A payments hub routes each payment to the right scheme after fraud and sanctions checks, and posts it to the core ledger. A lakehouse feeds regulatory reporting and risk. Two data centres and a cloud region keep it running, and everything is segmented, logged and held to least privilege.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "risks"
+    },
+    {
+      "id": "planes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "retail-app",
+      "label": "Retail app",
+      "sub": "Mobile and web",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "Everyday banking for personal customers.",
+        "why": "The main way customers see their money."
+      },
+      "layer": "chan",
+      "at": {
+        "col": 2,
+        "row": 0
+      }
+    },
+    {
+      "id": "corp-portal",
+      "label": "Corporate portal",
+      "sub": "Treasury and payments",
+      "icons": [
+        "browser"
+      ],
+      "detail": {
+        "role": "Where company clients initiate bulk payments and see cash positions.",
+        "why": "Large flows come through here, with dual approval."
+      },
+      "layer": "chan",
+      "at": {
+        "col": 4,
+        "row": 0
+      }
+    },
+    {
+      "id": "branch",
+      "label": "Branch and contact centre",
+      "sub": "Staff tools",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Tools for staff to serve customers.",
+        "why": "Staff see the same data as the customer, with their own permissions."
+      },
+      "layer": "chan",
+      "at": {
+        "col": 1,
+        "row": 0
+      },
+      "lenses": {
+        "security": {
+          "badge": "Role based",
+          "text": "Staff see only what their role allows, and every access is logged.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "tpp",
+      "label": "Third-party providers",
+      "sub": "Open banking",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Registered fintechs that access accounts with customer consent.",
+        "why": "Regulation requires the bank to offer it."
+      },
+      "layer": "chan",
+      "at": {
+        "col": 3,
+        "row": 0
+      },
+      "lenses": {
+        "security": {
+          "badge": "Consent checked",
+          "text": "Every call carries a consent token the customer can withdraw.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "atm",
+      "label": "ATM and card network",
+      "sub": "Cards",
+      "icons": [
+        "external"
+      ],
+      "detail": {
+        "role": "Card authorisations and cash withdrawals.",
+        "why": "Cards are still a large share of volume."
+      },
+      "layer": "chan",
+      "at": {
+        "col": 5,
+        "row": 0
+      }
+    },
+    {
+      "id": "swift-in",
+      "label": "Counterparty banks",
+      "sub": "Interbank messaging",
+      "icons": [
+        "external"
+      ],
+      "detail": {
+        "role": "Other banks sending and receiving payments.",
+        "why": "Payments leave and enter the bank this way."
+      },
+      "layer": "chan",
+      "at": {
+        "col": 7,
+        "row": 0
+      }
+    },
+    {
+      "id": "apigw",
+      "label": "API gateway",
+      "sub": "Internal and open banking",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "role": "Authenticates, throttles and routes every API call.",
+        "why": "One enforcement point for security and quotas."
+      },
+      "layer": "api",
+      "at": {
+        "col": 2,
+        "row": 1
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Strong customer auth",
+          "text": "Calls need multi-factor authentication and a valid consent for sensitive actions.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "iam",
+      "label": "Identity and access",
+      "sub": "Customers and staff",
+      "icons": [
+        "cognito"
+      ],
+      "detail": {
+        "role": "Sign-in, multi-factor and fine-grained roles.",
+        "why": "One identity for every channel."
+      },
+      "layer": "api",
+      "at": {
+        "col": 1,
+        "row": 1
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Least privilege",
+          "text": "Roles are granted by request and expire; admin access is time-boxed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "consent",
+      "label": "Consent service",
+      "sub": "Open-banking consents",
+      "icons": [
+        "settings"
+      ],
+      "detail": {
+        "role": "Stores and enforces customer consent for data sharing.",
+        "why": "Customers control who sees their data."
+      },
+      "layer": "api",
+      "at": {
+        "col": 3,
+        "row": 1
+      },
+      "plane": "control"
+    },
+    {
+      "id": "esb",
+      "label": "Integration layer",
+      "sub": "Events and adapters",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "Carries events between systems and adapts old interfaces.",
+        "why": "Core systems are not changed for every new channel."
+      },
+      "layer": "api",
+      "at": {
+        "col": 0,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "orch",
+      "label": "Process orchestration",
+      "sub": "Workflows",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Runs multi-step flows such as onboarding and loan approval.",
+        "why": "Long-running work survives restarts and has a full audit."
+      },
+      "layer": "api",
+      "at": {
+        "col": 4,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "doc",
+      "label": "Document service",
+      "sub": "Statements and KYC files",
+      "icons": [
+        "bucket"
+      ],
+      "detail": {
+        "role": "Stores statements and customer documents.",
+        "why": "Retention rules are applied in one place."
+      },
+      "layer": "api",
+      "at": {
+        "col": 5,
+        "row": 1
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Immutable retention",
+          "text": "Records are write-once and retained for the legal period.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "hub",
+      "label": "Payments hub",
+      "sub": "Routing and orchestration",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Receives every payment, validates it, picks the scheme and tracks it to completion.",
+        "why": "One flow for all payment types instead of one system per scheme.",
+        "tradeoff": "It is on the critical path of every payment, so it is the most heavily tested component."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 2,
+        "row": 2
+      },
+      "plane": "data",
+      "scale": {
+        "min": 4,
+        "max": 24,
+        "unit": "pods",
+        "trigger": "messages in flight"
+      }
+    },
+    {
+      "id": "iso",
+      "label": "Message translation",
+      "sub": "ISO 20022",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "role": "Converts between channel formats and the standard message format.",
+        "why": "New schemes cost one adapter, not a rewrite."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 2,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "fraud",
+      "label": "Fraud engine",
+      "sub": "Real time scoring",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Scores each payment against behaviour and known patterns.",
+        "why": "Fraud is stopped before the money leaves."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 3,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Model drift",
+          "text": "Fraud patterns change. Models are retrained and monitored for drift.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "sanctions",
+      "label": "Sanctions and AML screening",
+      "sub": "Name and transaction checks",
+      "icons": [
+        "guardrails"
+      ],
+      "detail": {
+        "role": "Checks parties against sanctions lists and flags unusual activity.",
+        "why": "The bank must not process prohibited payments."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 1,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Hit means hold",
+          "text": "A possible match holds the payment for a human decision.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "limits",
+      "label": "Limits and liquidity",
+      "sub": "Per client and per scheme",
+      "icons": [
+        "config"
+      ],
+      "detail": {
+        "role": "Applies daily limits and watches the bank's cash at each scheme.",
+        "why": "Stops a runaway process and avoids a failed settlement."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 1,
+        "row": 3
+      },
+      "plane": "control"
+    },
+    {
+      "id": "rtp",
+      "label": "Instant payments gateway",
+      "sub": "Real-time scheme",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Connects to the instant payment scheme with strict response times.",
+        "why": "The scheme gives seconds to respond."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 10,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Hard deadline",
+          "text": "Timeouts are reported to the scheme as failures. Capacity is sized for peak with headroom.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "batch-clr",
+      "label": "Batch clearing gateway",
+      "sub": "Bulk schemes",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Files for bulk and direct-debit schemes.",
+        "why": "Payroll and direct debits run in windows."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 5,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "swift-gw",
+      "label": "Cross-border gateway",
+      "sub": "Interbank messaging",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Sends and receives cross-border messages.",
+        "why": "International payments use a different network."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 7,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "card-sw",
+      "label": "Card switch",
+      "sub": "Authorisation",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Authorises card transactions in milliseconds.",
+        "why": "Card spend is checked against balance and limits in real time."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 4,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "hsm",
+      "label": "Key management",
+      "sub": "HSM",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Holds the keys that sign and encrypt payments and PINs.",
+        "why": "Keys never leave tamper-resistant hardware."
+      },
+      "layer": "pay",
+      "at": {
+        "col": 5,
+        "row": 3
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Hardware keys",
+          "text": "Keys are generated and used inside hardware modules, with dual control.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ledger",
+      "label": "Core ledger",
+      "sub": "Accounts and balances",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "The system of record for every account and posting.",
+        "why": "A single, consistent set of balances."
+      },
+      "layer": "core",
+      "at": {
+        "col": 1,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Legacy platform",
+          "text": "Changes are slow and risky. New features live in the layer around it.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "ledger-dr",
+      "label": "Core ledger standby",
+      "sub": "Replica",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "A synchronous copy for recovery.",
+        "why": "A lost data centre loses no posted transaction."
+      },
+      "layer": "core",
+      "at": {
+        "col": 3,
+        "row": 5
+      },
+      "plane": "data"
+    },
+    {
+      "id": "product",
+      "label": "Product catalogue",
+      "sub": "Rates and fees",
+      "icons": [
+        "config"
+      ],
+      "detail": {
+        "role": "Defines products, interest and fees.",
+        "why": "Pricing is configured, not coded."
+      },
+      "layer": "core",
+      "at": {
+        "col": 2,
+        "row": 4
+      },
+      "plane": "control"
+    },
+    {
+      "id": "custdata",
+      "label": "Customer master",
+      "sub": "Single customer view",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "One record per customer across products.",
+        "why": "Everyone works from the same customer."
+      },
+      "layer": "core",
+      "at": {
+        "col": 0,
+        "row": 4
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Masked by default",
+          "text": "Sensitive fields are masked unless the role needs them.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "lake",
+      "label": "Data lakehouse",
+      "sub": "Cloud analytics",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "All transactions and reference data for analysis.",
+        "why": "Reporting and models use one governed copy."
+      },
+      "layer": "core",
+      "at": {
+        "col": 5,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Elastic compute",
+          "text": "Compute is billed only while queries and jobs run.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "stream",
+      "label": "Streaming ingest",
+      "sub": "Change data capture",
+      "icons": [
+        "stream"
+      ],
+      "detail": {
+        "role": "Streams ledger changes to the lakehouse within seconds.",
+        "why": "Reports and fraud models see today's data."
+      },
+      "layer": "core",
+      "at": {
+        "col": 4,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "feat",
+      "label": "Feature store",
+      "sub": "Model inputs",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Customer and account features for models.",
+        "why": "Training and serving use the same inputs."
+      },
+      "layer": "core",
+      "at": {
+        "col": 5,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "risk-eng",
+      "label": "Credit and market risk",
+      "sub": "Calculation engine",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Calculates exposures, capital and stress scenarios.",
+        "why": "The bank knows its risk position daily."
+      },
+      "layer": "core",
+      "at": {
+        "col": 6,
+        "row": 5
+      },
+      "plane": "data"
+    },
+    {
+      "id": "catalog",
+      "label": "Data catalogue",
+      "sub": "Lineage and ownership",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Records what each dataset is, who owns it and where it came from.",
+        "why": "Regulators ask where a number came from; this answers it."
+      },
+      "layer": "core",
+      "at": {
+        "col": 6,
+        "row": 4
+      },
+      "plane": "control"
+    },
+    {
+      "id": "reg",
+      "label": "Regulatory reporting",
+      "sub": "Returns and filings",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Produces the reports regulators require.",
+        "why": "Reports come from governed data, with lineage."
+      },
+      "layer": "sec",
+      "at": {
+        "col": 5,
+        "row": 6
+      },
+      "plane": "data"
+    },
+    {
+      "id": "siem",
+      "label": "Security monitoring",
+      "sub": "SIEM and SOC",
+      "icons": [
+        "audit"
+      ],
+      "detail": {
+        "role": "Collects security events and raises alerts.",
+        "why": "Attacks are detected and investigated around the clock."
+      },
+      "layer": "sec",
+      "at": {
+        "col": 0,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "pam",
+      "label": "Privileged access",
+      "sub": "Vault",
+      "icons": [
+        "secret"
+      ],
+      "detail": {
+        "role": "Issues short-lived admin access with session recording.",
+        "why": "No standing admin rights."
+      },
+      "layer": "sec",
+      "at": {
+        "col": 0,
+        "row": 6
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Session recorded",
+          "text": "Every privileged session is recorded and reviewed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "dr",
+      "label": "Disaster recovery",
+      "sub": "Failover orchestration",
+      "icons": [
+        "backup"
+      ],
+      "detail": {
+        "role": "Runs the plan that moves service to the standby site.",
+        "why": "Recovery is rehearsed, not improvised."
+      },
+      "layer": "sec",
+      "at": {
+        "col": 3,
+        "row": 6
+      },
+      "plane": "control",
+      "lenses": {
+        "risks": {
+          "badge": "Rehearsal needed",
+          "text": "A plan that has not been exercised recently cannot be trusted. Tests run quarterly.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "obs",
+      "label": "Observability",
+      "sub": "Metrics, logs, traces",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Service levels and traces across all systems.",
+        "why": "A slow payment is traced to the system causing it."
+      },
+      "layer": "sec",
+      "at": {
+        "col": 4,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ci",
+      "label": "Delivery pipeline",
+      "sub": "CI/CD with controls",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Builds, tests and releases changes, with approvals for production.",
+        "why": "Every change is reviewed, tested and recorded."
+      },
+      "layer": "sec",
+      "at": {
+        "col": 5,
+        "row": 7
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Four eyes",
+          "text": "Production changes need an independent approval.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "fw",
+      "label": "Segmentation firewalls",
+      "sub": "Zones and policy",
+      "icons": [
+        "firewall"
+      ],
+      "detail": {
+        "role": "Separates channels, payments and core by network policy.",
+        "why": "A breach in one zone does not open the others."
+      },
+      "layer": "sec",
+      "at": {
+        "col": 4,
+        "row": 6
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Zero trust",
+          "text": "Traffic between segments is denied unless a rule allows it.",
+          "level": "good"
+        }
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "retail-app_to_apigw",
+      "from": "retail-app",
+      "to": "apigw",
+      "label": "Account and payment calls",
+      "pattern": "request-response",
+      "detail": "Account and payment calls.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "corp-portal_to_apigw",
+      "from": "corp-portal",
+      "to": "apigw",
+      "label": "Bulk payments",
+      "pattern": "request-response",
+      "detail": "Bulk payments.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "branch_to_apigw",
+      "from": "branch",
+      "to": "apigw",
+      "label": "Staff calls",
+      "pattern": "request-response",
+      "detail": "Staff calls.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "tpp_to_apigw",
+      "from": "tpp",
+      "to": "apigw",
+      "label": "Open-banking calls",
+      "pattern": "request-response",
+      "detail": "Open-banking calls.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "atm_to_card-sw",
+      "from": "atm",
+      "to": "card-sw",
+      "label": "Authorisations",
+      "pattern": "request-response",
+      "detail": "Authorisations.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "ISO 8583"
+    },
+    {
+      "id": "swift-in_to_swift-gw",
+      "from": "swift-in",
+      "to": "swift-gw",
+      "label": "Messages",
+      "pattern": "message",
+      "detail": "Messages.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "apigw_to_iam",
+      "from": "apigw",
+      "to": "iam",
+      "label": "Authenticate",
+      "pattern": "request-response",
+      "detail": "Authenticate.",
+      "plane": "control",
+      "protocol": "OIDC"
+    },
+    {
+      "id": "apigw_to_consent",
+      "from": "apigw",
+      "to": "consent",
+      "label": "Check consent",
+      "pattern": "request-response",
+      "detail": "Check consent.",
+      "plane": "control"
+    },
+    {
+      "id": "apigw_to_esb",
+      "from": "apigw",
+      "to": "esb",
+      "label": "Requests",
+      "pattern": "request-response",
+      "detail": "Requests.",
+      "plane": "data"
+    },
+    {
+      "id": "apigw_to_orch",
+      "from": "apigw",
+      "to": "orch",
+      "label": "Start process",
+      "pattern": "request-response",
+      "detail": "Start process.",
+      "plane": "data"
+    },
+    {
+      "id": "orch_to_doc",
+      "from": "orch",
+      "to": "doc",
+      "label": "Store documents",
+      "pattern": "request-response",
+      "detail": "Store documents.",
+      "plane": "data",
+      "offPath": true
+    },
+    {
+      "id": "esb_to_hub",
+      "from": "esb",
+      "to": "hub",
+      "label": "Payment requests",
+      "pattern": "message",
+      "detail": "Payment requests.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "esb_to_ledger",
+      "from": "esb",
+      "to": "ledger",
+      "label": "Balance and posting calls",
+      "pattern": "request-response",
+      "detail": "Balance and posting calls.",
+      "plane": "data",
+      "protocol": "SOAP and REST",
+      "traffic": "ingress"
+    },
+    {
+      "id": "esb_to_custdata",
+      "from": "esb",
+      "to": "custdata",
+      "label": "Customer lookups",
+      "pattern": "request-response",
+      "detail": "Customer lookups.",
+      "plane": "data",
+      "traffic": "ingress"
+    },
+    {
+      "id": "hub_to_iso",
+      "from": "hub",
+      "to": "iso",
+      "label": "Translate",
+      "pattern": "request-response",
+      "detail": "Translate.",
+      "plane": "data"
+    },
+    {
+      "id": "hub_to_fraud",
+      "from": "hub",
+      "to": "fraud",
+      "label": "Score",
+      "pattern": "request-response",
+      "detail": "Score.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "hub_to_sanctions",
+      "from": "hub",
+      "to": "sanctions",
+      "label": "Screen",
+      "pattern": "request-response",
+      "detail": "Screen.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "hub_to_limits",
+      "from": "hub",
+      "to": "limits",
+      "label": "Check limits",
+      "pattern": "request-response",
+      "detail": "Check limits.",
+      "plane": "control",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "hub_to_rtp",
+      "from": "hub",
+      "to": "rtp",
+      "label": "Instant payments",
+      "pattern": "message",
+      "detail": "Instant payments.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "hub_to_batch-clr",
+      "from": "hub",
+      "to": "batch-clr",
+      "label": "Bulk files",
+      "pattern": "batch",
+      "detail": "Bulk files.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "hub_to_swift-gw",
+      "from": "hub",
+      "to": "swift-gw",
+      "label": "Cross-border",
+      "pattern": "message",
+      "detail": "Cross-border.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "hub_to_ledger",
+      "from": "hub",
+      "to": "ledger",
+      "label": "Post",
+      "pattern": "request-response",
+      "detail": "Debit and credit entries are posted to the ledger.",
+      "plane": "data",
+      "traffic": "ingress"
+    },
+    {
+      "id": "card-sw_to_ledger",
+      "from": "card-sw",
+      "to": "ledger",
+      "label": "Balance and hold",
+      "pattern": "request-response",
+      "detail": "Balance and hold.",
+      "plane": "data",
+      "traffic": "ingress"
+    },
+    {
+      "id": "card-sw_to_fraud",
+      "from": "card-sw",
+      "to": "fraud",
+      "label": "Score",
+      "pattern": "request-response",
+      "detail": "Score.",
+      "plane": "data",
+      "offPath": true,
+      "traffic": "ingress"
+    },
+    {
+      "id": "rtp_to_swift-in",
+      "from": "rtp",
+      "to": "swift-in",
+      "label": "Scheme messages",
+      "pattern": "message",
+      "detail": "Scheme messages.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "batch-clr_to_swift-in",
+      "from": "batch-clr",
+      "to": "swift-in",
+      "label": "Files",
+      "pattern": "batch",
+      "detail": "Files.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "swift-gw_to_swift-in",
+      "from": "swift-gw",
+      "to": "swift-in",
+      "label": "Interbank",
+      "pattern": "message",
+      "detail": "Interbank.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "hsm_to_hub",
+      "from": "hsm",
+      "to": "hub",
+      "label": "Signing keys",
+      "pattern": "dependency",
+      "detail": "Signing keys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "hsm_to_card-sw",
+      "from": "hsm",
+      "to": "card-sw",
+      "label": "PIN keys",
+      "pattern": "dependency",
+      "detail": "PIN keys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ledger_to_ledger-dr",
+      "from": "ledger",
+      "to": "ledger-dr",
+      "label": "Synchronous copy",
+      "pattern": "request-response",
+      "detail": "Synchronous copy.",
+      "plane": "data",
+      "interaction": "sync",
+      "protocol": "Storage replication",
+      "traffic": "egress"
+    },
+    {
+      "id": "product_to_ledger",
+      "from": "product",
+      "to": "ledger",
+      "label": "Rates and fees",
+      "pattern": "dependency",
+      "detail": "Rates and fees.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ledger_to_stream",
+      "from": "ledger",
+      "to": "stream",
+      "label": "Change events",
+      "pattern": "stream",
+      "detail": "Change events.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "stream_to_lake",
+      "from": "stream",
+      "to": "lake",
+      "label": "Land",
+      "pattern": "stream",
+      "detail": "Land.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "lake_to_feat",
+      "from": "lake",
+      "to": "feat",
+      "label": "Features",
+      "pattern": "batch",
+      "detail": "Features.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "feat_to_fraud",
+      "from": "feat",
+      "to": "fraud",
+      "label": "Model inputs",
+      "pattern": "request-response",
+      "detail": "Model inputs.",
+      "plane": "data",
+      "traffic": "ingress"
+    },
+    {
+      "id": "lake_to_risk-eng",
+      "from": "lake",
+      "to": "risk-eng",
+      "label": "Positions",
+      "pattern": "batch",
+      "detail": "Positions.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "lake_to_reg",
+      "from": "lake",
+      "to": "reg",
+      "label": "Reporting data",
+      "pattern": "batch",
+      "detail": "Reporting data.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "risk-eng_to_reg",
+      "from": "risk-eng",
+      "to": "reg",
+      "label": "Risk returns",
+      "pattern": "batch",
+      "detail": "Risk returns.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "catalog_to_lake",
+      "from": "catalog",
+      "to": "lake",
+      "label": "Governs",
+      "pattern": "dependency",
+      "detail": "Governs.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "iam_to_pam",
+      "from": "iam",
+      "to": "pam",
+      "label": "Privileged roles",
+      "pattern": "dependency",
+      "detail": "Privileged roles.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "fw_to_hub",
+      "from": "fw",
+      "to": "hub",
+      "label": "Segment policy",
+      "pattern": "dependency",
+      "detail": "Segment policy.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ledger_to_siem",
+      "from": "ledger",
+      "to": "siem",
+      "label": "Audit events",
+      "pattern": "stream",
+      "detail": "Audit events.",
+      "interaction": "async",
+      "offPath": true,
+      "traffic": "egress"
+    },
+    {
+      "id": "apigw_to_siem",
+      "from": "apigw",
+      "to": "siem",
+      "label": "Access logs",
+      "pattern": "stream",
+      "detail": "Access logs.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "hub_to_obs",
+      "from": "hub",
+      "to": "obs",
+      "label": "Telemetry",
+      "pattern": "stream",
+      "detail": "Telemetry.",
+      "interaction": "async",
+      "offPath": true,
+      "traffic": "egress"
+    },
+    {
+      "id": "dr_to_ledger-dr",
+      "from": "dr",
+      "to": "ledger-dr",
+      "label": "Failover",
+      "pattern": "dependency",
+      "detail": "Failover.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ci_to_hub",
+      "from": "ci",
+      "to": "hub",
+      "label": "Releases",
+      "pattern": "dependency",
+      "detail": "Releases.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "pam_to_ledger",
+      "from": "pam",
+      "to": "ledger",
+      "label": "Admin sessions",
+      "pattern": "dependency",
+      "detail": "Admin sessions.",
+      "plane": "control",
+      "offPath": true
+    }
+  ],
+  "layers": [
+    {
+      "id": "chan",
+      "label": "Channels",
+      "summary": "Who the bank serves and how they arrive."
+    },
+    {
+      "id": "api",
+      "label": "API and integration",
+      "summary": "The controlled front door and the integration layer between channels and core systems."
+    },
+    {
+      "id": "pay",
+      "label": "Payments and risk",
+      "summary": "Moving money safely: routing, scheme connections and the checks that stand in front of them."
+    },
+    {
+      "id": "core",
+      "label": "Core and data",
+      "summary": "Systems of record and the data platform."
+    },
+    {
+      "id": "sec",
+      "label": "Security, resilience and reporting",
+      "summary": "Protection, recovery and regulatory output."
+    }
+  ],
+  "lintIgnore": [
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.corp-portal",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.branch",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.tpp",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.atm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.swift-in",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.iam",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.consent",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.orch",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.doc",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.iso",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.batch-clr",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.swift-gw",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.card-sw",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.hsm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ledger-dr",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.product",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.custdata",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.lake",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.stream",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.feat",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.risk-eng",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.catalog",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.reg",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.siem",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.pam",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dr",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.obs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ci",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.fw",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    }
+  ],
+  "zones": [
+    {
+      "id": "dc1",
+      "label": "Data centre 1 (primary)",
+      "kind": "boundary",
+      "members": [
+        "ledger",
+        "product",
+        "custdata"
+      ]
+    },
+    {
+      "id": "dc2",
+      "label": "Data centre 2 (standby)",
+      "kind": "boundary",
+      "members": [
+        "ledger-dr"
+      ]
+    },
+    {
+      "id": "cloud",
+      "label": "Cloud landing zone",
+      "kind": "cloud",
+      "members": [
+        "lake",
+        "stream",
+        "feat",
+        "risk-eng",
+        "catalog"
+      ]
+    },
+    {
+      "id": "vpc-pay",
+      "label": "Payments VPC",
+      "kind": "vpc",
+      "members": [
+        "hub",
+        "iso",
+        "fraud",
+        "sanctions",
+        "limits"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "retail-app",
+      "label": "A customer sends a payment"
+    },
+    {
+      "node": "apigw",
+      "label": "The gateway authenticates and checks consent"
+    },
+    {
+      "node": "esb",
+      "label": "The request is passed to the payments hub"
+    },
+    {
+      "node": "hub",
+      "label": "The hub validates the payment"
+    },
+    {
+      "node": "fraud",
+      "label": "Fraud scoring clears it"
+    },
+    {
+      "node": "sanctions",
+      "label": "Screening finds no hit"
+    },
+    {
+      "node": "limits",
+      "label": "Limits and liquidity allow it"
+    },
+    {
+      "node": "ledger",
+      "label": "The ledger posts the entries"
+    },
+    {
+      "node": "rtp",
+      "label": "The instant scheme carries it to the other bank"
+    }
+  ]
+}

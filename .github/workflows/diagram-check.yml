@@ -1,0 +1,57 @@
+name: Diagram check
+
+# On a pull request: lint every diagram, say what changed against the base branch, and fail if a diagram generated from Terraform has drifted.
+# Uses `pull_request`, never `pull_request_target`, so nothing from a fork runs with write access or secrets. The report is Markdown built from
+# files the pull request controls; scripts/ci.ts escapes it and keeps every path inside the repository.
+on:
+  pull_request:
+    paths:
+      - "examples/**"
+      - "tests/fixtures/terraform/**"
+      - "arch-diagram.config.json"
+      - "src/**"
+      - "scripts/ci.ts"
+      - ".github/workflows/diagram-check.yml"
+
+permissions:
+  contents: read
+  pull-requests: write # to post the report; forks get a read-only token, so the comment step is skipped for them
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the base branch must be present to compare against
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24 # the scripts import .ts files directly; Node 24 strips the types without a flag
+      - name: Check the diagrams
+        id: check
+        env:
+          BASE_REF: ${{ github.base_ref }} # through the environment, not inline: a branch name can contain shell syntax
+        run: |
+          set +e
+          node scripts/ci.ts --base "origin/$BASE_REF" --summary "$RUNNER_TEMP/report.md"
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+          cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Comment on the pull request
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          [ -s "$RUNNER_TEMP/report.md" ] || exit 0
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate --jq '.[] | select(.body | contains("<!-- arch-diagram-check -->")) | .id' | head -n1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -F body=@"$RUNNER_TEMP/report.md"
+          else
+            gh api -X POST "repos/$REPO/issues/$PR/comments" -F body=@"$RUNNER_TEMP/report.md"
+          fi
+      - name: Fail if the check failed
+        if: steps.check.outputs.status != '0'
+        run: exit 1

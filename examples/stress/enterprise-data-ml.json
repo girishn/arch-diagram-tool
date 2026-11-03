@@ -1,0 +1,1560 @@
+{
+  "version": 1,
+  "title": "Enterprise data and machine learning platform",
+  "description": "Operational systems, partners and devices feed a governed lakehouse through batch and streaming ingest. Data is cleaned in three stages, catalogued and secured by policy. Analysts and applications query it, and data scientists train models that are registered, deployed and monitored on a shared serving platform.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "risks"
+    },
+    {
+      "id": "planes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "erp",
+      "label": "ERP",
+      "sub": "Finance and supply",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Orders, invoices, stock.",
+        "why": "The financial record of the business."
+      },
+      "layer": "src",
+      "at": {
+        "col": 7,
+        "row": 0
+      }
+    },
+    {
+      "id": "crm",
+      "label": "CRM",
+      "sub": "Customers",
+      "icons": [
+        "saas"
+      ],
+      "detail": {
+        "role": "Customers, leads and cases.",
+        "why": "The commercial view of each customer."
+      },
+      "layer": "src",
+      "at": {
+        "col": 5,
+        "row": 1
+      }
+    },
+    {
+      "id": "app-dbs",
+      "label": "Application databases",
+      "sub": "Operational",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Databases behind the company's own applications.",
+        "why": "Where most business events first land."
+      },
+      "layer": "src",
+      "at": {
+        "col": 3,
+        "row": 1
+      },
+      "lenses": {
+        "risks": {
+          "badge": "Load on source",
+          "text": "Heavy extracts slow the application. Change capture reads the log instead.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "saas-apps",
+      "label": "SaaS applications",
+      "sub": "Marketing, support",
+      "icons": [
+        "saas"
+      ],
+      "detail": {
+        "role": "Cloud tools that hold business data.",
+        "why": "Data outside the walls still has to be analysed."
+      },
+      "layer": "src",
+      "at": {
+        "col": 7,
+        "row": 1
+      }
+    },
+    {
+      "id": "iot",
+      "label": "Devices and sensors",
+      "sub": "Streams",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Machines and devices that send readings.",
+        "why": "High-volume time series."
+      },
+      "layer": "src",
+      "at": {
+        "col": 0,
+        "row": 0
+      }
+    },
+    {
+      "id": "partners",
+      "label": "Partner feeds",
+      "sub": "Files and APIs",
+      "icons": [
+        "external"
+      ],
+      "detail": {
+        "role": "Data from suppliers and customers.",
+        "why": "Often the only source for external facts."
+      },
+      "layer": "src",
+      "at": {
+        "col": 6,
+        "row": 0
+      },
+      "lenses": {
+        "risks": {
+          "badge": "Untrusted shape",
+          "text": "Files arrive late, malformed or changed. Every feed is validated on entry.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "logs",
+      "label": "Application logs",
+      "sub": "Events",
+      "icons": [
+        "logs"
+      ],
+      "detail": {
+        "role": "Clickstream and service logs.",
+        "why": "Behavioural data."
+      },
+      "layer": "src",
+      "at": {
+        "col": 1,
+        "row": 1
+      }
+    },
+    {
+      "id": "cdc",
+      "label": "Change capture",
+      "sub": "Database log reader",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Reads the logs of operational databases and emits changes.",
+        "why": "Fresh data with almost no load on the source."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 3,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "batch",
+      "label": "Batch ingestion",
+      "sub": "Scheduled extracts",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "role": "Pulls files and API data on a schedule.",
+        "why": "Simple and cheap for data that changes slowly."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 6,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "broker",
+      "label": "Streaming platform",
+      "sub": "Kafka",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "Carries streams of events with replay.",
+        "why": "Producers and consumers are decoupled, and history can be replayed."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 1,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "sparkstream",
+      "label": "Stream processing",
+      "sub": "Flink and Spark",
+      "icons": [
+        "stream"
+      ],
+      "detail": {
+        "role": "Cleans, joins and aggregates streams.",
+        "why": "Results in seconds, not at the next batch."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 2,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "orchestrator",
+      "label": "Workflow orchestration",
+      "sub": "Scheduler",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Runs and monitors every batch pipeline and its dependencies.",
+        "why": "A late file delays only what depends on it."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 7,
+        "row": 2
+      },
+      "plane": "control"
+    },
+    {
+      "id": "schema-reg",
+      "label": "Schema registry",
+      "sub": "Contracts",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Stores and enforces data schemas.",
+        "why": "A producer cannot break its consumers."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 0,
+        "row": 2
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Compatibility enforced",
+          "text": "A breaking change is refused when it is published.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "raw",
+      "label": "Bronze: raw",
+      "sub": "Object storage",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "Data exactly as received, kept immutable.",
+        "why": "Anything can be reprocessed from the original."
+      },
+      "layer": "lake",
+      "at": {
+        "col": 3,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Encrypted, immutable",
+          "text": "Encrypted with keys per domain; objects cannot be changed.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Cheap tier",
+          "text": "Cold data moves to low-cost storage automatically.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "clean",
+      "label": "Silver: cleaned",
+      "sub": "Table format",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Deduplicated, typed and validated data.",
+        "why": "A reliable base for everyone."
+      },
+      "layer": "lake",
+      "at": {
+        "col": 2,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "gold",
+      "label": "Gold: modelled",
+      "sub": "Business tables",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Aggregates and marts shaped for use.",
+        "why": "Everyone uses the same definition of revenue."
+      },
+      "layer": "lake",
+      "at": {
+        "col": 1,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "compute",
+      "label": "Processing engine",
+      "sub": "Spark clusters",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Runs the transformations between stages.",
+        "why": "Scales to the largest jobs and releases the machines after."
+      },
+      "layer": "lake",
+      "at": {
+        "col": 1,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Spot capacity",
+          "text": "Most nodes are spot instances; jobs retry if one is reclaimed.",
+          "level": "info"
+        }
+      },
+      "scale": {
+        "min": 0,
+        "max": 200,
+        "unit": "nodes",
+        "trigger": "queued jobs"
+      }
+    },
+    {
+      "id": "sql",
+      "label": "SQL warehouse",
+      "sub": "Interactive queries",
+      "icons": [
+        "search"
+      ],
+      "detail": {
+        "role": "Serves analysts and dashboards.",
+        "why": "Fast answers on the gold layer."
+      },
+      "layer": "lake",
+      "at": {
+        "col": 4,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Auto-suspends",
+          "text": "Idle warehouses suspend, so dashboards cost nothing overnight.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "quality",
+      "label": "Data quality checks",
+      "sub": "Rules and tests",
+      "icons": [
+        "audit"
+      ],
+      "detail": {
+        "role": "Tests every table for freshness, nulls and ranges.",
+        "why": "Bad data is caught before it reaches a report."
+      },
+      "layer": "lake",
+      "at": {
+        "col": 0,
+        "row": 3
+      },
+      "plane": "control"
+    },
+    {
+      "id": "vector",
+      "label": "Vector store",
+      "sub": "Embeddings",
+      "icons": [
+        "vector"
+      ],
+      "detail": {
+        "role": "Stores embeddings for search and retrieval.",
+        "why": "Powers semantic search and assistants over company data."
+      },
+      "layer": "lake",
+      "at": {
+        "col": 4,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "notebooks",
+      "label": "Notebooks and workbench",
+      "sub": "Data science",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Where data scientists explore and build.",
+        "why": "Fast iteration against real data."
+      },
+      "layer": "ml",
+      "at": {
+        "col": 0,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "No raw export",
+          "text": "Notebooks read governed tables and cannot copy data out.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "features",
+      "label": "Feature store",
+      "sub": "Online and offline",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Reusable model inputs, served the same way in training and production.",
+        "why": "No mismatch between training and serving."
+      },
+      "layer": "ml",
+      "at": {
+        "col": 2,
+        "row": 6
+      },
+      "plane": "data"
+    },
+    {
+      "id": "train",
+      "label": "Training jobs",
+      "sub": "GPU and CPU",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Trains and tunes models.",
+        "why": "Experiments are repeatable."
+      },
+      "layer": "ml",
+      "at": {
+        "col": 2,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "GPU time",
+          "text": "GPU hours dominate cost; jobs are queued and scheduled, with quotas per team.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "registry",
+      "label": "Model registry",
+      "sub": "Versions and approvals",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Stores each model version with its data, code and metrics.",
+        "why": "Every production model is traceable."
+      },
+      "layer": "ml",
+      "at": {
+        "col": 3,
+        "row": 5
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Approval gate",
+          "text": "Only approved versions can be deployed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "serve",
+      "label": "Model serving",
+      "sub": "Online endpoints",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Serves predictions with autoscaling.",
+        "why": "Applications call a model like any other service."
+      },
+      "layer": "ml",
+      "at": {
+        "col": 4,
+        "row": 5
+      },
+      "plane": "data",
+      "scale": {
+        "min": 2,
+        "max": 50,
+        "unit": "replicas",
+        "trigger": "requests per second"
+      }
+    },
+    {
+      "id": "llm",
+      "label": "LLM gateway",
+      "sub": "Managed models",
+      "icons": [
+        "llm"
+      ],
+      "detail": {
+        "role": "Routes requests to hosted language models with quotas and filtering.",
+        "why": "One governed way to use generative models."
+      },
+      "layer": "ml",
+      "at": {
+        "col": 6,
+        "row": 6
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Prompt and data filters",
+          "text": "Sensitive data is masked and outputs are filtered before they leave the gateway.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "monitor",
+      "label": "Model monitoring",
+      "sub": "Drift and quality",
+      "icons": [
+        "monitor"
+      ],
+      "detail": {
+        "role": "Watches inputs and outputs for drift and bias.",
+        "why": "A model that is wrong is noticed and retrained."
+      },
+      "layer": "ml",
+      "at": {
+        "col": 3,
+        "row": 6
+      },
+      "plane": "control"
+    },
+    {
+      "id": "bi",
+      "label": "BI and dashboards",
+      "sub": "Self-service",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Reports and dashboards for the business.",
+        "why": "Decisions use governed numbers."
+      },
+      "layer": "use",
+      "at": {
+        "col": 8,
+        "row": 7
+      }
+    },
+    {
+      "id": "apps",
+      "label": "Data products and apps",
+      "sub": "APIs",
+      "icons": [
+        "api"
+      ],
+      "detail": {
+        "role": "Applications that read data and predictions through APIs.",
+        "why": "Data becomes a feature of the product."
+      },
+      "layer": "use",
+      "at": {
+        "col": 6,
+        "row": 7
+      }
+    },
+    {
+      "id": "analysts",
+      "label": "Analysts",
+      "sub": "SQL and notebooks",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "People who explore data directly.",
+        "why": "Answers without a request to IT."
+      },
+      "layer": "use",
+      "at": {
+        "col": 9,
+        "row": 7
+      }
+    },
+    {
+      "id": "ext-share",
+      "label": "External sharing",
+      "sub": "Partners",
+      "icons": [
+        "external"
+      ],
+      "detail": {
+        "role": "Shares selected data with partners.",
+        "why": "Sharing without copying files around."
+      },
+      "layer": "use",
+      "at": {
+        "col": 0,
+        "row": 7
+      },
+      "lenses": {
+        "security": {
+          "badge": "Row and column limits",
+          "text": "Partners see only agreed rows and columns, and every query is logged.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "reverse",
+      "label": "Reverse sync",
+      "sub": "Back to systems",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Sends scores and segments back to operational tools.",
+        "why": "Insight reaches the people who act."
+      },
+      "layer": "use",
+      "at": {
+        "col": 2,
+        "row": 7
+      }
+    },
+    {
+      "id": "catalog",
+      "label": "Data catalogue",
+      "sub": "Search and lineage",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Describes every dataset, owner and flow.",
+        "why": "People find and trust data."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 2,
+        "row": 9
+      },
+      "plane": "control"
+    },
+    {
+      "id": "policy",
+      "label": "Access policy",
+      "sub": "Row and column rules",
+      "icons": [
+        "iam"
+      ],
+      "detail": {
+        "role": "Defines who can see which data.",
+        "why": "One policy, enforced in every engine."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 8,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Attribute based",
+          "text": "Access follows tags on data and attributes of people, not hand-made grants.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "kms",
+      "label": "Keys and secrets",
+      "sub": "KMS",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Holds encryption keys and secrets.",
+        "why": "Keys are separate from the data they protect."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 6,
+        "row": 9
+      },
+      "plane": "control"
+    },
+    {
+      "id": "lineage",
+      "label": "Lineage",
+      "sub": "Column level",
+      "icons": [
+        "tracing"
+      ],
+      "detail": {
+        "role": "Tracks where each column came from and where it goes.",
+        "why": "An error is traced to its source; a change shows who is affected."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 0,
+        "row": 9
+      },
+      "plane": "control"
+    },
+    {
+      "id": "finops",
+      "label": "Cost control",
+      "sub": "Budgets and tags",
+      "icons": [
+        "budgets"
+      ],
+      "detail": {
+        "role": "Allocates cost to teams and alerts on overruns.",
+        "why": "A job cannot silently spend a month's budget."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 1,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "obs",
+      "label": "Observability",
+      "sub": "Pipelines and platform",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Metrics and alerts for pipelines and jobs.",
+        "why": "Late or failed data is noticed first by the platform."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 10,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "cicd",
+      "label": "Delivery pipeline",
+      "sub": "Code, tests, deploy",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Tests and deploys pipelines, models and infrastructure.",
+        "why": "Changes are reviewed and repeatable."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 6,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "pii",
+      "label": "Sensitive data scanner",
+      "sub": "Classification",
+      "icons": [
+        "guardrails"
+      ],
+      "detail": {
+        "role": "Finds and tags personal data.",
+        "why": "Protection follows the tag."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 3,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Auto tagging",
+          "text": "New columns are scanned and tagged on arrival.",
+          "level": "good"
+        }
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "app-dbs_to_cdc",
+      "from": "app-dbs",
+      "to": "cdc",
+      "label": "Database logs",
+      "pattern": "stream",
+      "detail": "Database logs.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "Log reader"
+    },
+    {
+      "id": "erp_to_batch",
+      "from": "erp",
+      "to": "batch",
+      "label": "Extracts",
+      "pattern": "batch",
+      "detail": "Extracts.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "crm_to_batch",
+      "from": "crm",
+      "to": "batch",
+      "label": "API pulls",
+      "pattern": "batch",
+      "detail": "API pulls.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "saas-apps_to_batch",
+      "from": "saas-apps",
+      "to": "batch",
+      "label": "Exports",
+      "pattern": "batch",
+      "detail": "Exports.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "partners_to_batch",
+      "from": "partners",
+      "to": "batch",
+      "label": "Files",
+      "pattern": "batch",
+      "detail": "Files.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "SFTP"
+    },
+    {
+      "id": "iot_to_broker",
+      "from": "iot",
+      "to": "broker",
+      "label": "Readings",
+      "pattern": "stream",
+      "detail": "Readings.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "MQTT"
+    },
+    {
+      "id": "logs_to_broker",
+      "from": "logs",
+      "to": "broker",
+      "label": "Events",
+      "pattern": "stream",
+      "detail": "Events.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "cdc_to_broker",
+      "from": "cdc",
+      "to": "broker",
+      "label": "Change events",
+      "pattern": "stream",
+      "detail": "Change events.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "broker_to_sparkstream",
+      "from": "broker",
+      "to": "sparkstream",
+      "label": "Streams",
+      "pattern": "stream",
+      "detail": "Streams.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "schema-reg_to_broker",
+      "from": "schema-reg",
+      "to": "broker",
+      "label": "Schemas",
+      "pattern": "dependency",
+      "detail": "Schemas.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "orchestrator_to_batch",
+      "from": "orchestrator",
+      "to": "batch",
+      "label": "Schedules",
+      "pattern": "dependency",
+      "detail": "Schedules.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "batch_to_raw",
+      "from": "batch",
+      "to": "raw",
+      "label": "Land files",
+      "pattern": "batch",
+      "detail": "Land files.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "sparkstream_to_raw",
+      "from": "sparkstream",
+      "to": "raw",
+      "label": "Raw stream",
+      "pattern": "stream",
+      "detail": "Raw stream.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "sparkstream_to_clean",
+      "from": "sparkstream",
+      "to": "clean",
+      "label": "Cleaned stream",
+      "pattern": "stream",
+      "detail": "Cleaned stream.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "raw_to_compute",
+      "from": "raw",
+      "to": "compute",
+      "label": "Read",
+      "pattern": "batch",
+      "detail": "Read.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "compute_to_clean",
+      "from": "compute",
+      "to": "clean",
+      "label": "Write",
+      "pattern": "batch",
+      "detail": "Write.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "clean_to_gold",
+      "from": "clean",
+      "to": "gold",
+      "label": "Model",
+      "pattern": "batch",
+      "detail": "Model.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "quality_to_clean",
+      "from": "quality",
+      "to": "clean",
+      "label": "Test",
+      "pattern": "dependency",
+      "detail": "Test.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "quality_to_gold",
+      "from": "quality",
+      "to": "gold",
+      "label": "Test",
+      "pattern": "dependency",
+      "detail": "Test.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "gold_to_sql",
+      "from": "gold",
+      "to": "sql",
+      "label": "Query",
+      "pattern": "request-response",
+      "detail": "Query.",
+      "plane": "data"
+    },
+    {
+      "id": "gold_to_features",
+      "from": "gold",
+      "to": "features",
+      "label": "Features",
+      "pattern": "batch",
+      "detail": "Features.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "clean_to_vector",
+      "from": "clean",
+      "to": "vector",
+      "label": "Embeddings",
+      "pattern": "batch",
+      "detail": "Embeddings.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "notebooks_to_gold",
+      "from": "notebooks",
+      "to": "gold",
+      "label": "Explore",
+      "pattern": "request-response",
+      "detail": "Explore.",
+      "plane": "data"
+    },
+    {
+      "id": "features_to_train",
+      "from": "features",
+      "to": "train",
+      "label": "Training data",
+      "pattern": "batch",
+      "detail": "Training data.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "train_to_registry",
+      "from": "train",
+      "to": "registry",
+      "label": "Register",
+      "pattern": "request-response",
+      "detail": "Register.",
+      "plane": "data"
+    },
+    {
+      "id": "registry_to_serve",
+      "from": "registry",
+      "to": "serve",
+      "label": "Deploy approved",
+      "pattern": "request-response",
+      "detail": "Deploy approved.",
+      "plane": "control"
+    },
+    {
+      "id": "features_to_serve",
+      "from": "features",
+      "to": "serve",
+      "label": "Online features",
+      "pattern": "request-response",
+      "detail": "Online features.",
+      "plane": "data"
+    },
+    {
+      "id": "vector_to_llm",
+      "from": "vector",
+      "to": "llm",
+      "label": "Retrieval",
+      "pattern": "request-response",
+      "detail": "Retrieval.",
+      "plane": "data"
+    },
+    {
+      "id": "serve_to_monitor",
+      "from": "serve",
+      "to": "monitor",
+      "label": "Predictions",
+      "pattern": "stream",
+      "detail": "Predictions.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "monitor_to_train",
+      "from": "monitor",
+      "to": "train",
+      "label": "Retrain triggers",
+      "pattern": "event",
+      "detail": "Retrain triggers.",
+      "plane": "control",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "sql_to_bi",
+      "from": "sql",
+      "to": "bi",
+      "label": "Dashboards",
+      "pattern": "request-response",
+      "detail": "Dashboards.",
+      "plane": "data"
+    },
+    {
+      "id": "sql_to_analysts",
+      "from": "sql",
+      "to": "analysts",
+      "label": "Queries",
+      "pattern": "request-response",
+      "detail": "Queries.",
+      "plane": "data"
+    },
+    {
+      "id": "serve_to_apps",
+      "from": "serve",
+      "to": "apps",
+      "label": "Predictions",
+      "pattern": "request-response",
+      "detail": "Predictions.",
+      "plane": "data"
+    },
+    {
+      "id": "llm_to_apps",
+      "from": "llm",
+      "to": "apps",
+      "label": "Generated answers",
+      "pattern": "request-response",
+      "detail": "Generated answers.",
+      "plane": "data"
+    },
+    {
+      "id": "gold_to_ext-share",
+      "from": "gold",
+      "to": "ext-share",
+      "label": "Shared views",
+      "pattern": "request-response",
+      "detail": "Shared views.",
+      "plane": "data",
+      "traffic": "egress"
+    },
+    {
+      "id": "gold_to_reverse",
+      "from": "gold",
+      "to": "reverse",
+      "label": "Scores and segments",
+      "pattern": "batch",
+      "detail": "Scores and segments.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "reverse_to_crm",
+      "from": "reverse",
+      "to": "crm",
+      "label": "Updates",
+      "pattern": "request-response",
+      "detail": "Updates.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "policy_to_sql",
+      "from": "policy",
+      "to": "sql",
+      "label": "Enforces",
+      "pattern": "dependency",
+      "detail": "Enforces.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "policy_to_raw",
+      "from": "policy",
+      "to": "raw",
+      "label": "Enforces",
+      "pattern": "dependency",
+      "detail": "Enforces.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "pii_to_catalog",
+      "from": "pii",
+      "to": "catalog",
+      "label": "Tags",
+      "pattern": "dependency",
+      "detail": "Tags.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "catalog_to_gold",
+      "from": "catalog",
+      "to": "gold",
+      "label": "Describes",
+      "pattern": "dependency",
+      "detail": "Describes.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "lineage_to_catalog",
+      "from": "lineage",
+      "to": "catalog",
+      "label": "Flows",
+      "pattern": "dependency",
+      "detail": "Flows.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "kms_to_raw",
+      "from": "kms",
+      "to": "raw",
+      "label": "Keys",
+      "pattern": "dependency",
+      "detail": "Keys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "finops_to_compute",
+      "from": "finops",
+      "to": "compute",
+      "label": "Budgets",
+      "pattern": "dependency",
+      "detail": "Budgets.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "obs_to_orchestrator",
+      "from": "obs",
+      "to": "orchestrator",
+      "label": "Alerts",
+      "pattern": "event",
+      "detail": "Alerts.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "cicd_to_serve",
+      "from": "cicd",
+      "to": "serve",
+      "label": "Deploys",
+      "pattern": "dependency",
+      "detail": "Deploys.",
+      "plane": "control",
+      "offPath": true
+    }
+  ],
+  "layers": [
+    {
+      "id": "src",
+      "label": "Sources",
+      "summary": "Where data starts."
+    },
+    {
+      "id": "ingest",
+      "label": "Ingest",
+      "summary": "How data enters the platform, in batches or as streams."
+    },
+    {
+      "id": "lake",
+      "label": "Lakehouse",
+      "summary": "Storage and processing in bronze, silver and gold stages."
+    },
+    {
+      "id": "ml",
+      "label": "Machine learning",
+      "summary": "Building, registering and serving models."
+    },
+    {
+      "id": "use",
+      "label": "Consumption",
+      "summary": "Who uses the data and the models."
+    },
+    {
+      "id": "gov",
+      "label": "Governance and operations",
+      "summary": "Catalogue, access, quality, cost and delivery, applied across all layers."
+    }
+  ],
+  "lintIgnore": [
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.erp",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.crm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.saas-apps",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.iot",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.partners",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.logs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.batch",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.orchestrator",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.schema-reg",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.raw",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.compute",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.sql",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.quality",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.vector",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.notebooks",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.train",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.registry",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.llm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.monitor",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bi",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.analysts",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ext-share",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.reverse",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.catalog",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.policy",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.kms",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.lineage",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.finops",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.obs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.cicd",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.pii",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    }
+  ],
+  "zones": [
+    {
+      "id": "zone-lake",
+      "label": "Lakehouse account",
+      "kind": "account",
+      "members": [
+        "raw",
+        "clean",
+        "gold",
+        "compute",
+        "sql",
+        "quality",
+        "vector"
+      ]
+    },
+    {
+      "id": "zone-ml",
+      "label": "ML account",
+      "kind": "account",
+      "members": [
+        "notebooks",
+        "features",
+        "train",
+        "registry",
+        "serve",
+        "monitor"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "app-dbs",
+      "label": "A row changes in an application database"
+    },
+    {
+      "node": "cdc",
+      "label": "Change capture reads it from the log"
+    },
+    {
+      "node": "broker",
+      "label": "The change is published as an event"
+    },
+    {
+      "node": "sparkstream",
+      "label": "Stream processing cleans it"
+    },
+    {
+      "node": "clean",
+      "label": "It lands in the cleaned table"
+    },
+    {
+      "node": "gold",
+      "label": "It is modelled into business tables"
+    },
+    {
+      "node": "features",
+      "label": "Model inputs are refreshed"
+    },
+    {
+      "node": "serve",
+      "label": "The deployed model scores it"
+    },
+    {
+      "node": "apps",
+      "label": "The application uses the prediction"
+    }
+  ]
+}

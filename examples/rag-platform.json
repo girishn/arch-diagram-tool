@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "title": "RAG platform",
+  "description": "A question is checked, answered from the company's own documents, and checked again on the way out. Dashed components keep the knowledge base fresh and the platform observable.",
+  "lenses": [{ "id": "security" }, { "id": "cost" }, { "id": "risks" }],
+  "nodes": [
+    {
+      "id": "users",
+      "label": "Users",
+      "sub": "Staff and apps",
+      "at": { "col": 0, "row": 0 },
+      "icons": ["users"],
+      "detail": { "role": "Ask questions in natural language through a chat UI or an API.", "why": "The source of all request traffic." }
+    },
+    {
+      "id": "api",
+      "label": "API gateway",
+      "sub": "Auth and quotas",
+      "at": { "col": 1, "row": 0 },
+      "icons": ["apigw"],
+      "detail": { "role": "Authenticates the caller and enforces per-team rate limits.", "why": "One front door where identity and quotas are applied before any model spend." },
+      "lenses": {
+        "security": { "badge": "SSO + per-team keys", "text": "Every call carries an identity, so retrieval can be filtered by what that person may read.", "level": "good" },
+        "cost": { "badge": "Per-team quota", "text": "A runaway client hits its own limit instead of the shared budget.", "level": "good" }
+      }
+    },
+    {
+      "id": "rag",
+      "label": "RAG service",
+      "sub": "Orchestrator",
+      "at": { "col": 2, "row": 0 },
+      "icons": ["compute"],
+      "detail": { "role": "Rewrites the question, retrieves passages, builds the prompt and returns the answer with citations.", "why": "Keeps retrieval and prompting logic in one place so it can be tested and versioned." },
+      "scale": { "min": 2, "max": 12, "unit": "pods", "trigger": "requests in flight" },
+      "lenses": {
+        "cost": { "badge": "Context size drives spend", "text": "Every passage added to the prompt is billed as input tokens, so top-k and passage length are cost settings.", "level": "warn" },
+        "risks": { "badge": "Sensitivity point: top-k", "text": "Too few passages miss the answer, too many dilute it and raise cost. Tune it against the evaluation set.", "level": "warn" }
+      }
+    },
+    {
+      "id": "guard",
+      "label": "Guardrails",
+      "sub": "In and out",
+      "at": { "col": 3, "row": 0 },
+      "icons": ["guardrails"],
+      "detail": { "role": "Screens the prompt and the answer for personal data, prompt injection and off-topic content.", "why": "Checks sit outside the model, so they hold whichever model is behind them." },
+      "lenses": {
+        "security": { "badge": "Redacts PII both ways", "text": "Personal data is masked before it leaves for the model provider and again before it reaches the user.", "level": "good" },
+        "risks": { "badge": "Risk: indirect injection", "text": "A poisoned document can carry instructions. Screening reduces this but cannot remove it, so tool access stays off here.", "level": "risk" }
+      }
+    },
+    {
+      "id": "llm",
+      "label": "LLM provider",
+      "sub": "Hosted model",
+      "at": { "col": 4, "row": 0 },
+      "icons": ["llm"],
+      "detail": { "role": "Writes the answer from the question and the retrieved passages.", "why": "A hosted model avoids running GPUs for a workload that is spiky." },
+      "lenses": {
+        "security": { "badge": "No training on prompts", "text": "The contract excludes customer data from training. Traffic leaves over a private endpoint.", "level": "good" },
+        "cost": { "badge": "Largest line item", "text": "Billed per input and output token. Most of the monthly bill is here.", "level": "risk" },
+        "risks": { "badge": "Risk: single provider", "text": "An outage or a deprecated model stops every answer. See the LLM gateway example for failover.", "level": "risk" }
+      }
+    },
+    {
+      "id": "cache",
+      "label": "Semantic cache",
+      "sub": "Repeat questions",
+      "at": { "col": 1, "row": 1 },
+      "icons": ["cache"],
+      "detail": { "role": "Returns a stored answer when a new question means the same as an earlier one.", "why": "Many staff ask the same things, and a hit costs almost nothing." },
+      "lenses": {
+        "cost": { "badge": "Skips the model call", "text": "A hit avoids retrieval and generation entirely.", "level": "good" },
+        "security": { "badge": "Keyed by access group", "text": "An answer is only reused for callers who may read the same documents.", "level": "good" },
+        "risks": { "badge": "Trade-off: freshness", "text": "A cached answer can outlive the document it came from. Entries expire when their source is re-indexed.", "level": "warn" }
+      }
+    },
+    {
+      "id": "vector",
+      "label": "Vector store",
+      "sub": "Chunks and embeddings",
+      "at": { "col": 2, "row": 1 },
+      "icons": ["vector"],
+      "detail": { "role": "Finds the passages closest in meaning to the question, filtered by the caller's access.", "why": "Meaning-based search finds answers that share no keywords with the question." },
+      "lenses": {
+        "security": { "badge": "ACL on every chunk", "text": "Each chunk keeps the permissions of its source document, applied as a filter at query time.", "level": "good" },
+        "risks": { "badge": "Non-risk: tenant isolation", "text": "Filters are enforced inside the store, not in the service, so a bug upstream cannot widen access.", "level": "good" }
+      }
+    },
+    {
+      "id": "obs",
+      "label": "Tracing and evals",
+      "sub": "Quality and cost",
+      "at": { "col": 3, "row": 1 },
+      "icons": ["observability"],
+      "peripheral": true,
+      "detail": { "role": "Records each request's prompt, passages, answer, tokens and latency, and scores samples against a reference set.", "why": "Answer quality drifts silently, so it is measured the same way latency is." },
+      "lenses": {
+        "cost": { "badge": "Tokens per team", "text": "Spend is attributed to a team and a use case, which makes the bill explainable.", "level": "good" },
+        "security": { "badge": "Stores prompts", "text": "Traces hold user questions, so they are redacted and kept for 30 days only.", "level": "warn" }
+      }
+    },
+    {
+      "id": "docs",
+      "label": "Document sources",
+      "sub": "Wiki, drive, tickets",
+      "at": { "col": 0, "row": 2 },
+      "icons": ["bucket"],
+      "peripheral": true,
+      "detail": { "role": "Where the company's knowledge lives today.", "why": "The platform reads from these and never becomes a second copy to maintain by hand." }
+    },
+    {
+      "id": "ingest",
+      "label": "Ingestion pipeline",
+      "sub": "Parse, chunk, embed",
+      "at": { "col": 1, "row": 2 },
+      "icons": ["pipeline"],
+      "peripheral": true,
+      "detail": { "role": "Splits documents into chunks, computes embeddings and writes them with their permissions.", "why": "Answers are only as current as the last run, so it runs on change, not on a timetable." },
+      "lenses": {
+        "cost": { "badge": "Embeds changes only", "text": "A content hash skips unchanged documents, so a re-index does not pay for the whole corpus again.", "level": "good" },
+        "risks": { "badge": "Risk: stale permissions", "text": "If a document is locked down in the source, its chunks stay readable until the next sync. Sync runs every 15 minutes.", "level": "risk" }
+      }
+    }
+  ],
+  "links": [
+    { "from": "users", "to": "api", "label": "Question", "protocol": "HTTPS", "twoWay": true, "traffic": "ingress", "detail": "A question arrives over HTTPS and the answer streams back on the same connection." },
+    { "from": "api", "to": "rag", "label": "Authenticated call", "protocol": "HTTP", "twoWay": true, "detail": "The gateway forwards the request with the caller's identity and team." },
+    { "from": "rag", "to": "guard", "label": "Prompt check", "protocol": "HTTP", "twoWay": true, "detail": "The assembled prompt is screened before it goes out, and the answer is screened on its way back." },
+    { "from": "guard", "to": "llm", "label": "Generate", "protocol": "HTTPS", "twoWay": true, "traffic": "egress", "detail": "The cleaned prompt goes to the model provider over a private endpoint, and the answer returns." },
+    { "from": "rag", "to": "vector", "label": "Retrieve", "protocol": "gRPC", "twoWay": true, "detail": "The service sends the question's embedding and the caller's access groups, and gets back the closest passages." },
+    { "from": "rag", "to": "cache", "label": "Look up", "protocol": "RESP", "twoWay": true, "detail": "Before retrieving, the service asks whether an equivalent question was answered recently." },
+    { "from": "rag", "to": "obs", "label": "Trace", "pattern": "event", "offPath": true, "detail": "Each request emits a trace record. It is sent after the answer, so it adds no latency." },
+    { "from": "docs", "to": "ingest", "label": "Changes", "pattern": "event", "offPath": true, "detail": "A created or edited document notifies the pipeline, which fetches it." },
+    { "from": "ingest", "to": "vector", "label": "Writes chunks", "pattern": "batch", "offPath": true, "detail": "Chunks, embeddings and permissions are written in batches. Nothing on the request path waits for this." }
+  ],
+  "zones": [
+    { "id": "platform", "label": "AI platform", "kind": "cloud", "members": ["api", "rag", "guard", "cache", "vector", "obs", "ingest"] },
+    { "id": "sources", "label": "Company systems", "kind": "group", "members": ["docs"] },
+    { "id": "provider", "label": "Model provider", "kind": "group", "members": ["llm"] }
+  ],
+  "trace": [
+    { "node": "users", "label": "A staff member asks a question" },
+    { "node": "api", "label": "The gateway checks identity and the team's quota" },
+    { "node": "rag", "label": "The service first asks whether this was answered before" },
+    { "node": "cache", "label": "The cache has no equivalent answer yet" },
+    { "node": "rag", "label": "A miss, so the service searches the knowledge base" },
+    { "node": "vector", "label": "The closest passages the caller may read are returned" },
+    { "node": "rag", "label": "The prompt is assembled with those passages" },
+    { "node": "guard", "label": "Personal data and injection attempts are screened out" },
+    { "node": "llm", "label": "The model writes a cited answer" }
+  ]
+}

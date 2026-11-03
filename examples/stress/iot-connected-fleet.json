@@ -1,0 +1,1432 @@
+{
+  "version": 1,
+  "title": "Connected fleet and IoT platform",
+  "description": "Vehicles and equipment in the field send telemetry through regional edge brokers to a cloud ingestion tier. Streams are validated, enriched and stored as time series; digital twins, alerts and analytics run on top, and over-the-air updates flow back to the devices in staged rollouts. Devices are authenticated by certificates and every command is authorised and recorded.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "risks"
+    },
+    {
+      "id": "planes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vehicles",
+      "label": "Vehicles",
+      "sub": "Telematics units",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Connected vehicles that report position, health and usage.",
+        "why": "The fleet is the product."
+      },
+      "layer": "field",
+      "at": {
+        "col": 6,
+        "row": 1
+      },
+      "lenses": {
+        "risks": {
+          "badge": "Intermittent links",
+          "text": "Vehicles lose coverage. Units buffer readings and send them when the link returns.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "machines",
+      "label": "Industrial machines",
+      "sub": "PLCs and sensors",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Machines in customer sites.",
+        "why": "Condition data predicts failures."
+      },
+      "layer": "field",
+      "at": {
+        "col": 3,
+        "row": 1
+      }
+    },
+    {
+      "id": "chargers",
+      "label": "Chargers and depots",
+      "sub": "Site controllers",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Charging points and depot systems.",
+        "why": "Energy use is a large operating cost."
+      },
+      "layer": "field",
+      "at": {
+        "col": 3,
+        "row": 0
+      }
+    },
+    {
+      "id": "mobile",
+      "label": "Driver and technician apps",
+      "sub": "Mobile",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "Apps used by drivers and field staff.",
+        "why": "People act on what the platform shows."
+      },
+      "layer": "field",
+      "at": {
+        "col": 7,
+        "row": 1
+      }
+    },
+    {
+      "id": "gw-edge",
+      "label": "Edge gateway",
+      "sub": "Protocol translation",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Collects readings from local devices, filters and forwards them.",
+        "why": "Cuts traffic and keeps working offline."
+      },
+      "layer": "field",
+      "at": {
+        "col": 1,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "edge-ml",
+      "label": "Edge inference",
+      "sub": "Local models",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Runs small models near the device.",
+        "why": "Decisions that cannot wait for the cloud."
+      },
+      "layer": "field",
+      "at": {
+        "col": 0,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "edge-store",
+      "label": "Edge buffer",
+      "sub": "Local storage",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Stores readings while the link is down.",
+        "why": "No data is lost in an outage."
+      },
+      "layer": "field",
+      "at": {
+        "col": 0,
+        "row": 0
+      },
+      "plane": "data"
+    },
+    {
+      "id": "lb",
+      "label": "Global load balancer",
+      "sub": "Regional routing",
+      "icons": [
+        "loadbalancer"
+      ],
+      "detail": {
+        "role": "Sends each device to its nearest region.",
+        "why": "Low latency and regional failover."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 6,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "mqtt",
+      "label": "Device broker",
+      "sub": "MQTT",
+      "icons": [
+        "queue"
+      ],
+      "detail": {
+        "role": "Accepts device connections and messages.",
+        "why": "Millions of connections at low cost."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 4,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Mutual TLS",
+          "text": "Each device connects with its own certificate. A revoked device cannot reconnect.",
+          "level": "good"
+        }
+      },
+      "scale": {
+        "min": 3,
+        "max": 60,
+        "unit": "nodes",
+        "trigger": "connections"
+      }
+    },
+    {
+      "id": "auth",
+      "label": "Device identity",
+      "sub": "Registry and certificates",
+      "icons": [
+        "identity"
+      ],
+      "detail": {
+        "role": "Issues and revokes device certificates.",
+        "why": "Every device has its own identity."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 2,
+        "row": 2
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Per-device identity",
+          "text": "A stolen device is revoked individually, without affecting others.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rules",
+      "label": "Routing rules",
+      "sub": "Topic rules",
+      "icons": [
+        "settings"
+      ],
+      "detail": {
+        "role": "Routes messages by topic to streams and stores.",
+        "why": "New use needs a rule, not code."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 2,
+        "row": 3
+      },
+      "plane": "control"
+    },
+    {
+      "id": "validate",
+      "label": "Validation and decode",
+      "sub": "Schema check",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "role": "Rejects malformed messages and decodes binary payloads.",
+        "why": "Bad data stops here."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 4,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "dlq",
+      "label": "Dead-letter queue",
+      "sub": "Rejected messages",
+      "icons": [
+        "queue"
+      ],
+      "detail": {
+        "role": "Holds messages that could not be processed.",
+        "why": "Nothing is dropped silently."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 0,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "cmd",
+      "label": "Command service",
+      "sub": "Down to devices",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "role": "Sends commands to devices and tracks acknowledgement.",
+        "why": "Remote actions are queued, authorised and recorded."
+      },
+      "layer": "ingest",
+      "at": {
+        "col": 0,
+        "row": 3
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Authorised and audited",
+          "text": "Every command needs a role and is written to the audit log.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "kafka",
+      "label": "Event stream",
+      "sub": "Kafka",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "Carries telemetry for all consumers.",
+        "why": "Many consumers read the same data independently."
+      },
+      "layer": "stream",
+      "at": {
+        "col": 3,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Retention priced",
+          "text": "Seven days of retention; older data lives in the lake.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "flink",
+      "label": "Stream processing",
+      "sub": "Windows and joins",
+      "icons": [
+        "stream"
+      ],
+      "detail": {
+        "role": "Aggregates readings, joins with reference data and detects events.",
+        "why": "Alerts in seconds."
+      },
+      "layer": "stream",
+      "at": {
+        "col": 3,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "tsdb",
+      "label": "Time-series store",
+      "sub": "Hot data",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Recent readings indexed by device and time.",
+        "why": "Fast dashboards and diagnostics."
+      },
+      "layer": "stream",
+      "at": {
+        "col": 2,
+        "row": 5
+      },
+      "plane": "data"
+    },
+    {
+      "id": "lake",
+      "label": "Data lake",
+      "sub": "Cold history",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "All raw and curated telemetry.",
+        "why": "Model training and long-term analysis."
+      },
+      "layer": "stream",
+      "at": {
+        "col": 4,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Cold tiers",
+          "text": "Data older than 90 days moves to archive storage.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "twin",
+      "label": "Digital twin",
+      "sub": "State per asset",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "The latest known state of every vehicle and machine.",
+        "why": "Applications ask for the current state, not for a stream."
+      },
+      "layer": "stream",
+      "at": {
+        "col": 1,
+        "row": 5
+      },
+      "plane": "data"
+    },
+    {
+      "id": "geo",
+      "label": "Geospatial index",
+      "sub": "Positions",
+      "icons": [
+        "search"
+      ],
+      "detail": {
+        "role": "Answers questions like 'which vehicles are near this depot'.",
+        "why": "Dispatch and geofencing."
+      },
+      "layer": "stream",
+      "at": {
+        "col": 0,
+        "row": 5
+      },
+      "plane": "data"
+    },
+    {
+      "id": "feat",
+      "label": "Feature store",
+      "sub": "Model inputs",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Per-asset features for models.",
+        "why": "Training and serving use identical inputs."
+      },
+      "layer": "stream",
+      "at": {
+        "col": 5,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "train",
+      "label": "Model training",
+      "sub": "Predictive maintenance",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Trains failure-prediction and energy models.",
+        "why": "Fixing a part before it fails is cheaper than a breakdown."
+      },
+      "layer": "stream",
+      "at": {
+        "col": 4,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "serve",
+      "label": "Model serving",
+      "sub": "Online",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Scores assets as new data arrives.",
+        "why": "Risk scores update continuously."
+      },
+      "layer": "stream",
+      "at": {
+        "col": 1,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ops-ui",
+      "label": "Operations console",
+      "sub": "Fleet view",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Live fleet map, alerts and diagnostics.",
+        "why": "Operators see problems and act."
+      },
+      "layer": "app",
+      "at": {
+        "col": 1,
+        "row": 6
+      },
+      "plane": "data"
+    },
+    {
+      "id": "alerts",
+      "label": "Alerting",
+      "sub": "Rules and notifications",
+      "icons": [
+        "alerts"
+      ],
+      "detail": {
+        "role": "Turns detected events into notifications and tickets.",
+        "why": "The right team hears about it."
+      },
+      "layer": "app",
+      "at": {
+        "col": 7,
+        "row": 6
+      },
+      "plane": "data"
+    },
+    {
+      "id": "api",
+      "label": "Customer and partner API",
+      "sub": "Public",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "role": "Exposes fleet data to customers and partners.",
+        "why": "Data becomes a product."
+      },
+      "layer": "app",
+      "at": {
+        "col": 6,
+        "row": 6
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Tenant scoped",
+          "text": "A customer can only see its own assets.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bi",
+      "label": "Analytics",
+      "sub": "Dashboards",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Reports on utilisation, cost and reliability.",
+        "why": "Management decisions."
+      },
+      "layer": "app",
+      "at": {
+        "col": 4,
+        "row": 6
+      },
+      "plane": "data"
+    },
+    {
+      "id": "billing",
+      "label": "Usage billing",
+      "sub": "Metering",
+      "icons": [
+        "budgets"
+      ],
+      "detail": {
+        "role": "Turns usage into invoices.",
+        "why": "Customers pay for what they use."
+      },
+      "layer": "app",
+      "at": {
+        "col": 2,
+        "row": 6
+      },
+      "plane": "data"
+    },
+    {
+      "id": "erp",
+      "label": "Enterprise systems",
+      "sub": "ERP and CRM",
+      "icons": [
+        "saas"
+      ],
+      "detail": {
+        "role": "Work orders, parts and contracts.",
+        "why": "A predicted failure becomes a work order automatically."
+      },
+      "layer": "app",
+      "at": {
+        "col": 8,
+        "row": 6
+      }
+    },
+    {
+      "id": "ota",
+      "label": "Update service",
+      "sub": "Over the air",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Plans and delivers firmware and software updates.",
+        "why": "Fixing thousands of devices without visiting them."
+      },
+      "layer": "ctrl",
+      "at": {
+        "col": 2,
+        "row": 7
+      },
+      "plane": "control",
+      "lenses": {
+        "risks": {
+          "badge": "Bricking risk",
+          "text": "A bad update could disable devices. Rollouts are staged, and a device reverts if it fails its health check.",
+          "level": "risk"
+        }
+      }
+    },
+    {
+      "id": "sign",
+      "label": "Code signing",
+      "sub": "HSM",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Signs every update.",
+        "why": "Devices install only what the company signed."
+      },
+      "layer": "ctrl",
+      "at": {
+        "col": 3,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Signed updates",
+          "text": "Devices verify the signature and refuse anything else.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "config",
+      "label": "Fleet configuration",
+      "sub": "Desired state",
+      "icons": [
+        "config"
+      ],
+      "detail": {
+        "role": "Holds the desired settings per group of devices.",
+        "why": "Change a group, not a device."
+      },
+      "layer": "ctrl",
+      "at": {
+        "col": 0,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "iam",
+      "label": "Staff access",
+      "sub": "Roles",
+      "icons": [
+        "iam"
+      ],
+      "detail": {
+        "role": "Controls who can see and command which assets.",
+        "why": "Least privilege for operators."
+      },
+      "layer": "ctrl",
+      "at": {
+        "col": 2,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "audit",
+      "label": "Audit log",
+      "sub": "Immutable",
+      "icons": [
+        "audit"
+      ],
+      "detail": {
+        "role": "Records every command, update and access.",
+        "why": "Disputes and incidents can be reconstructed."
+      },
+      "layer": "ctrl",
+      "at": {
+        "col": 1,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "obs",
+      "label": "Observability",
+      "sub": "Metrics and traces",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Service levels for the platform itself.",
+        "why": "The platform's own health."
+      },
+      "layer": "ctrl",
+      "at": {
+        "col": 4,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ci",
+      "label": "Delivery pipeline",
+      "sub": "CI/CD",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Builds, tests and ships platform and firmware.",
+        "why": "Repeatable releases."
+      },
+      "layer": "ctrl",
+      "at": {
+        "col": 4,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "siem",
+      "label": "Threat detection",
+      "sub": "Anomaly detection",
+      "icons": [
+        "guardrails"
+      ],
+      "detail": {
+        "role": "Looks for compromised devices and abuse.",
+        "why": "A hijacked device is found from its behaviour."
+      },
+      "layer": "ctrl",
+      "at": {
+        "col": 10,
+        "row": 7
+      },
+      "plane": "control"
+    }
+  ],
+  "links": [
+    {
+      "id": "vehicles_to_lb",
+      "from": "vehicles",
+      "to": "lb",
+      "label": "Telemetry",
+      "pattern": "stream",
+      "detail": "Telemetry.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "MQTT over TLS"
+    },
+    {
+      "id": "machines_to_gw-edge",
+      "from": "machines",
+      "to": "gw-edge",
+      "label": "Readings",
+      "pattern": "stream",
+      "detail": "Readings.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "OPC UA"
+    },
+    {
+      "id": "chargers_to_gw-edge",
+      "from": "chargers",
+      "to": "gw-edge",
+      "label": "Readings",
+      "pattern": "stream",
+      "detail": "Readings.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "OCPP"
+    },
+    {
+      "id": "gw-edge_to_edge-ml",
+      "from": "gw-edge",
+      "to": "edge-ml",
+      "label": "Local scoring",
+      "pattern": "request-response",
+      "detail": "Local scoring.",
+      "plane": "data"
+    },
+    {
+      "id": "gw-edge_to_edge-store",
+      "from": "gw-edge",
+      "to": "edge-store",
+      "label": "Buffer",
+      "pattern": "request-response",
+      "detail": "Buffer.",
+      "plane": "data"
+    },
+    {
+      "id": "gw-edge_to_lb",
+      "from": "gw-edge",
+      "to": "lb",
+      "label": "Filtered readings",
+      "pattern": "stream",
+      "detail": "Filtered readings.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "MQTT over TLS"
+    },
+    {
+      "id": "lb_to_mqtt",
+      "from": "lb",
+      "to": "mqtt",
+      "label": "Connections",
+      "pattern": "stream",
+      "detail": "Connections.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "auth_to_mqtt",
+      "from": "auth",
+      "to": "mqtt",
+      "label": "Verifies certificates",
+      "pattern": "dependency",
+      "detail": "Verifies certificates.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "mqtt_to_rules",
+      "from": "mqtt",
+      "to": "rules",
+      "label": "Match topics",
+      "pattern": "request-response",
+      "detail": "Match topics.",
+      "plane": "control"
+    },
+    {
+      "id": "rules_to_validate",
+      "from": "rules",
+      "to": "validate",
+      "label": "Route",
+      "pattern": "stream",
+      "detail": "Route.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "validate_to_kafka",
+      "from": "validate",
+      "to": "kafka",
+      "label": "Valid messages",
+      "pattern": "stream",
+      "detail": "Valid messages.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "validate_to_dlq",
+      "from": "validate",
+      "to": "dlq",
+      "label": "Rejected",
+      "pattern": "message",
+      "detail": "Rejected.",
+      "plane": "data",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "kafka_to_flink",
+      "from": "kafka",
+      "to": "flink",
+      "label": "Streams",
+      "pattern": "stream",
+      "detail": "Streams.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "kafka_to_tsdb",
+      "from": "kafka",
+      "to": "tsdb",
+      "label": "Hot store",
+      "pattern": "stream",
+      "detail": "Hot store.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "kafka_to_lake",
+      "from": "kafka",
+      "to": "lake",
+      "label": "History",
+      "pattern": "stream",
+      "detail": "History.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "flink_to_twin",
+      "from": "flink",
+      "to": "twin",
+      "label": "State updates",
+      "pattern": "stream",
+      "detail": "State updates.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "flink_to_geo",
+      "from": "flink",
+      "to": "geo",
+      "label": "Positions",
+      "pattern": "stream",
+      "detail": "Positions.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "flink_to_alerts",
+      "from": "flink",
+      "to": "alerts",
+      "label": "Detected events",
+      "pattern": "event",
+      "detail": "Detected events.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "lake_to_feat",
+      "from": "lake",
+      "to": "feat",
+      "label": "Features",
+      "pattern": "batch",
+      "detail": "Features.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "feat_to_train",
+      "from": "feat",
+      "to": "train",
+      "label": "Training data",
+      "pattern": "batch",
+      "detail": "Training data.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "train_to_serve",
+      "from": "train",
+      "to": "serve",
+      "label": "Deploy model",
+      "pattern": "request-response",
+      "detail": "Deploy model.",
+      "plane": "data"
+    },
+    {
+      "id": "flink_to_serve",
+      "from": "flink",
+      "to": "serve",
+      "label": "Score",
+      "pattern": "request-response",
+      "detail": "Score.",
+      "plane": "data"
+    },
+    {
+      "id": "serve_to_twin",
+      "from": "serve",
+      "to": "twin",
+      "label": "Risk scores",
+      "pattern": "request-response",
+      "detail": "Risk scores.",
+      "plane": "data"
+    },
+    {
+      "id": "twin_to_ops-ui",
+      "from": "twin",
+      "to": "ops-ui",
+      "label": "Current state",
+      "pattern": "request-response",
+      "detail": "Current state.",
+      "plane": "data"
+    },
+    {
+      "id": "tsdb_to_ops-ui",
+      "from": "tsdb",
+      "to": "ops-ui",
+      "label": "Charts",
+      "pattern": "request-response",
+      "detail": "Charts.",
+      "plane": "data"
+    },
+    {
+      "id": "geo_to_ops-ui",
+      "from": "geo",
+      "to": "ops-ui",
+      "label": "Map",
+      "pattern": "request-response",
+      "detail": "Map.",
+      "plane": "data"
+    },
+    {
+      "id": "twin_to_api",
+      "from": "twin",
+      "to": "api",
+      "label": "Asset data",
+      "pattern": "request-response",
+      "detail": "Asset data.",
+      "plane": "data"
+    },
+    {
+      "id": "lake_to_bi",
+      "from": "lake",
+      "to": "bi",
+      "label": "Reports",
+      "pattern": "batch",
+      "detail": "Reports.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "kafka_to_billing",
+      "from": "kafka",
+      "to": "billing",
+      "label": "Usage",
+      "pattern": "stream",
+      "detail": "Usage.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "alerts_to_erp",
+      "from": "alerts",
+      "to": "erp",
+      "label": "Work orders",
+      "pattern": "request-response",
+      "detail": "Work orders.",
+      "plane": "data",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "alerts_to_mobile",
+      "from": "alerts",
+      "to": "mobile",
+      "label": "Notifications",
+      "pattern": "event",
+      "detail": "Notifications.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "ops-ui_to_cmd",
+      "from": "ops-ui",
+      "to": "cmd",
+      "label": "Send command",
+      "pattern": "request-response",
+      "detail": "Send command.",
+      "plane": "control"
+    },
+    {
+      "id": "cmd_to_mqtt",
+      "from": "cmd",
+      "to": "mqtt",
+      "label": "Command to device",
+      "pattern": "message",
+      "detail": "Command to device.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "ota_to_cmd",
+      "from": "ota",
+      "to": "cmd",
+      "label": "Update jobs",
+      "pattern": "request-response",
+      "detail": "Update jobs.",
+      "plane": "control"
+    },
+    {
+      "id": "sign_to_ota",
+      "from": "sign",
+      "to": "ota",
+      "label": "Signatures",
+      "pattern": "dependency",
+      "detail": "Signatures.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "config_to_cmd",
+      "from": "config",
+      "to": "cmd",
+      "label": "Desired state",
+      "pattern": "request-response",
+      "detail": "Desired state.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "iam_to_ops-ui",
+      "from": "iam",
+      "to": "ops-ui",
+      "label": "Permissions",
+      "pattern": "dependency",
+      "detail": "Permissions.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "cmd_to_audit",
+      "from": "cmd",
+      "to": "audit",
+      "label": "Record",
+      "pattern": "stream",
+      "detail": "Record.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "ota_to_audit",
+      "from": "ota",
+      "to": "audit",
+      "label": "Record",
+      "pattern": "stream",
+      "detail": "Record.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "mqtt_to_siem",
+      "from": "mqtt",
+      "to": "siem",
+      "label": "Connection events",
+      "pattern": "stream",
+      "detail": "Connection events.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "flink_to_obs",
+      "from": "flink",
+      "to": "obs",
+      "label": "Telemetry",
+      "pattern": "stream",
+      "detail": "Telemetry.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "ci_to_ota",
+      "from": "ci",
+      "to": "ota",
+      "label": "Builds",
+      "pattern": "dependency",
+      "detail": "Builds.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "mobile_to_api",
+      "from": "mobile",
+      "to": "api",
+      "label": "Field app calls",
+      "pattern": "request-response",
+      "detail": "Field app calls.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    }
+  ],
+  "layers": [
+    {
+      "id": "field",
+      "label": "Field and edge",
+      "summary": "Devices and the gateways they talk to."
+    },
+    {
+      "id": "ingest",
+      "label": "Ingestion",
+      "summary": "The cloud entry: authentication, brokers and validation."
+    },
+    {
+      "id": "stream",
+      "label": "Processing and storage",
+      "summary": "Real-time processing and the stores behind it."
+    },
+    {
+      "id": "app",
+      "label": "Applications",
+      "summary": "What operations, customers and partners use."
+    },
+    {
+      "id": "ctrl",
+      "label": "Fleet management and security",
+      "summary": "Identity, updates, configuration and operations."
+    }
+  ],
+  "lintIgnore": [
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.machines",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.chargers",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.mobile",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.gw-edge",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.edge-ml",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.edge-store",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.auth",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dlq",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.cmd",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.tsdb",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.lake",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.twin",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.geo",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.feat",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.train",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.serve",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ops-ui",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.api",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bi",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.billing",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ota",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.sign",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.config",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.iam",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.audit",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.obs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ci",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.siem",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    }
+  ],
+  "zones": [
+    {
+      "id": "edge-site",
+      "label": "Edge site",
+      "kind": "boundary",
+      "members": [
+        "gw-edge",
+        "edge-ml",
+        "edge-store"
+      ]
+    },
+    {
+      "id": "cloud-in",
+      "label": "Cloud region: ingestion",
+      "kind": "region",
+      "members": [
+        "mqtt",
+        "auth",
+        "rules",
+        "validate",
+        "dlq",
+        "cmd"
+      ]
+    },
+    {
+      "id": "cloud-stream",
+      "label": "Cloud region: processing and storage",
+      "kind": "region",
+      "members": [
+        "kafka",
+        "flink",
+        "tsdb",
+        "lake",
+        "twin",
+        "geo",
+        "feat",
+        "train",
+        "serve"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "vehicles",
+      "label": "A vehicle sends a reading"
+    },
+    {
+      "node": "lb",
+      "label": "It is routed to the nearest region"
+    },
+    {
+      "node": "mqtt",
+      "label": "The broker accepts it over mutual TLS"
+    },
+    {
+      "node": "rules",
+      "label": "A rule routes it by topic"
+    },
+    {
+      "node": "validate",
+      "label": "It is decoded and validated"
+    },
+    {
+      "node": "kafka",
+      "label": "It joins the event stream"
+    },
+    {
+      "node": "flink",
+      "label": "A window detects an overheating trend"
+    },
+    {
+      "node": "alerts",
+      "label": "An alert is raised"
+    },
+    {
+      "node": "erp",
+      "label": "A work order is created"
+    }
+  ]
+}

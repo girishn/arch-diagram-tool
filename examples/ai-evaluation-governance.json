@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "title": "AI evaluation and governance",
+  "description": "No change to a prompt or model reaches production until it passes a measured test and a recorded review. Production results flow back into the tests.",
+  "lenses": [{ "id": "security" }, { "id": "cost" }, { "id": "risks" }],
+  "nodes": [
+    {
+      "id": "repo",
+      "label": "Prompt and config repo",
+      "sub": "Versioned changes",
+      "at": { "col": 0, "row": 0 },
+      "icons": ["repo"],
+      "detail": { "role": "Holds prompts, model choices, retrieval settings and guardrail rules as reviewed code.", "why": "A prompt edit is a change to behaviour and gets the same discipline as code." },
+      "lenses": {
+        "security": { "badge": "Reviewed and signed", "text": "Every change needs a second reviewer, so no one can alter production behaviour alone.", "level": "good" }
+      }
+    },
+    {
+      "id": "eval",
+      "label": "Evaluation pipeline",
+      "sub": "Runs on every change",
+      "at": { "col": 1, "row": 0 },
+      "icons": ["pipeline"],
+      "detail": { "role": "Runs the changed system over the test set and scores quality, safety, latency and cost per answer.", "why": "A change is judged on measured results, not on a few spot checks." },
+      "lenses": {
+        "cost": { "badge": "Small set on every push", "text": "A 100-case smoke set runs on each change and the full 1,000-case set runs nightly, which keeps judge-model spend predictable.", "level": "info" },
+        "risks": { "badge": "Trade-off: coverage vs spend", "text": "A smaller set is cheaper but can miss a regression that only shows on rare questions.", "level": "warn" }
+      }
+    },
+    {
+      "id": "datasets",
+      "label": "Evaluation sets",
+      "sub": "Golden and red-team",
+      "at": { "col": 1, "row": 1 },
+      "icons": ["database"],
+      "detail": { "role": "Questions with reference answers, plus adversarial cases such as injection and data-leak attempts.", "why": "The tests define what good means, so they are owned and reviewed too." },
+      "lenses": {
+        "security": { "badge": "Red-team cases", "text": "Known attack prompts are replayed on every release so old holes do not reopen.", "level": "good" },
+        "risks": { "badge": "Risk: test set drift", "text": "Real users ask things the set never imagined. Sampled production questions are added each month.", "level": "risk" }
+      }
+    },
+    {
+      "id": "judge",
+      "label": "Judge model",
+      "sub": "Scores answers",
+      "at": { "col": 0, "row": 1 },
+      "icons": ["llm"],
+      "peripheral": true,
+      "detail": { "role": "Grades free-text answers against the reference and a rubric.", "why": "People cannot read thousands of answers per release." },
+      "lenses": {
+        "risks": { "badge": "Risk: judge bias", "text": "A model grader favours long, confident answers. Its scores are calibrated against a sample that people also grade.", "level": "risk" },
+        "cost": { "badge": "Cheaper than people", "text": "Grading by model costs a small fraction of manual review, so it can run every time.", "level": "good" }
+      }
+    },
+    {
+      "id": "gate",
+      "label": "Release gate",
+      "sub": "Pass or block",
+      "at": { "col": 2, "row": 0 },
+      "icons": ["cd"],
+      "detail": { "role": "Allows a release only when scores meet the thresholds and the required reviews are recorded.", "why": "The rule is automatic and the same for everyone." },
+      "lenses": {
+        "security": { "badge": "Blocks on safety", "text": "Any failed red-team case blocks the release, whatever the quality score.", "level": "good" },
+        "risks": { "badge": "Sensitivity point: thresholds", "text": "Too tight and nothing ships, too loose and regressions pass. Thresholds are owned by the platform team and change only by review.", "level": "warn" }
+      }
+    },
+    {
+      "id": "review",
+      "label": "Risk review",
+      "sub": "Human sign-off",
+      "at": { "col": 1, "row": -1 },
+      "icons": ["users"],
+      "detail": { "role": "A named reviewer checks the use case's risk tier, data use and intended users before first release or a major change.", "why": "Some questions need judgement: is this use of personal data acceptable?" },
+      "lenses": {
+        "security": { "badge": "Risk tier decides depth", "text": "Low-risk internal tools get a light check. Anything customer-facing or touching personal data gets the full review.", "level": "good" },
+        "risks": { "badge": "Trade-off: speed", "text": "Reviews add days to the first release. Later changes inside the approved tier skip this step.", "level": "warn" }
+      }
+    },
+    {
+      "id": "registry",
+      "label": "Model and use-case register",
+      "sub": "Approved list",
+      "at": { "col": 3, "row": -1 },
+      "icons": ["registry"],
+      "detail": { "role": "Records every model and use case in production: owner, version, risk tier, review date and intended use.", "why": "You cannot govern what you cannot list." },
+      "lenses": {
+        "security": { "badge": "Only listed models run", "text": "The gateway refuses models that are not on the register.", "level": "good" },
+        "risks": { "badge": "Non-risk: shadow AI inside the platform", "text": "Teams cannot call an unapproved model through the platform, since the register is enforced at the gateway.", "level": "good" }
+      }
+    },
+    {
+      "id": "app",
+      "label": "Production AI app",
+      "sub": "Released version",
+      "at": { "col": 3, "row": 0 },
+      "icons": ["compute"],
+      "detail": { "role": "Serves users with the approved prompt, model and guardrails.", "why": "What runs is exactly what was tested and signed off." },
+      "lenses": {
+        "cost": { "badge": "Cost per answer tracked", "text": "A release that doubles tokens per answer shows up as a cost regression at the gate.", "level": "good" }
+      }
+    },
+    {
+      "id": "monitor",
+      "label": "Production monitoring",
+      "sub": "Quality, safety, cost",
+      "at": { "col": 3, "row": 1 },
+      "icons": ["monitor"],
+      "detail": { "role": "Scores a sample of live answers, tracks refusals, guardrail hits, thumbs-down rates and spend, and alerts on drift.", "why": "A model update or new kind of question can lower quality with no deployment at all." },
+      "lenses": {
+        "security": { "badge": "Guardrail hits alert", "text": "A spike in blocked prompts often means someone is probing the system.", "level": "good" },
+        "risks": { "badge": "Risk: silent drift", "text": "A provider can change a hosted model without notice. Sampled scoring is how that is noticed.", "level": "risk" }
+      }
+    }
+  ],
+  "links": [
+    { "from": "repo", "to": "eval", "label": "Change opened", "pattern": "event", "detail": "A pull request starts an evaluation run on the changed prompt or configuration." },
+    { "from": "datasets", "to": "eval", "label": "Test cases", "protocol": "SQL", "detail": "The pipeline reads the current cases for the use case's risk tier." },
+    { "from": "eval", "to": "judge", "label": "Grade answers", "protocol": "HTTPS", "twoWay": true, "offPath": true, "detail": "Answers that need grading go to the judge model with the rubric, and scores come back." },
+    { "from": "eval", "to": "gate", "label": "Scores", "pattern": "event", "detail": "Quality, safety, latency and cost results are passed to the gate." },
+    { "from": "gate", "to": "review", "label": "Needs sign-off", "pattern": "event", "detail": "If the change is new or moves the use case into a higher risk tier, the gate waits for the named reviewer." },
+    { "from": "gate", "to": "registry", "label": "Record release", "pattern": "event", "detail": "A passed release writes its version, scores and reviewer into the register." },
+    { "from": "gate", "to": "app", "label": "Deploy", "pattern": "dependency", "detail": "Only a passed release is rolled out. The gate moves no user data." },
+    { "from": "app", "to": "monitor", "label": "Samples", "pattern": "stream", "detail": "A sample of live requests and answers is streamed for scoring. Sensitive fields are redacted first." },
+    { "from": "monitor", "to": "datasets", "label": "New hard cases", "pattern": "batch", "offPath": true, "detail": "Poorly rated or flagged answers are reviewed by a person and added to the evaluation sets." }
+  ],
+  "zones": [
+    { "id": "prerelease", "label": "Before release", "kind": "group", "members": ["repo", "eval", "datasets", "judge"] },
+    { "id": "governance", "label": "Governance", "kind": "group", "members": ["review", "registry"] },
+    { "id": "production", "label": "Production", "kind": "group", "members": ["app", "monitor"] }
+  ],
+  "trace": [
+    { "node": "repo", "label": "An engineer proposes a new prompt" },
+    { "node": "eval", "label": "The pipeline starts an evaluation run" },
+    { "node": "datasets", "label": "It loads the golden and red-team cases" },
+    { "node": "eval", "label": "The changed system answers every case" },
+    { "node": "judge", "label": "The judge model grades the answers" },
+    { "node": "eval", "label": "Scores are totalled" },
+    { "node": "gate", "label": "The gate checks them against the thresholds" },
+    { "node": "review", "label": "A reviewer signs off on the risk tier" },
+    { "node": "gate", "label": "The release is approved" },
+    { "node": "registry", "label": "The version and approval are recorded" },
+    { "node": "gate", "label": "The gate starts the rollout" },
+    { "node": "app", "label": "The new version serves users" },
+    { "node": "monitor", "label": "Live answers are sampled and scored" }
+  ]
+}

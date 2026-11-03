@@ -1,0 +1,103 @@
+{
+  "format_version": "1.2",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_ecr_repository.services[\"order-api\"]",
+          "mode": "managed",
+          "type": "aws_ecr_repository",
+          "name": "services",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "name": "ecom-platform/order-api",
+            "repository_url": "123456789012.dkr.ecr.example.invalid/x"
+          },
+          "sensitive_values": {},
+          "index": "order-api"
+        },
+        {
+          "address": "aws_ecr_repository.services[\"order-saga\"]",
+          "mode": "managed",
+          "type": "aws_ecr_repository",
+          "name": "services",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "name": "ecom-platform/order-saga",
+            "repository_url": "123456789012.dkr.ecr.example.invalid/x"
+          },
+          "sensitive_values": {},
+          "index": "order-saga"
+        },
+        {
+          "address": "aws_ecr_repository.services[\"inventory-service\"]",
+          "mode": "managed",
+          "type": "aws_ecr_repository",
+          "name": "services",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "name": "ecom-platform/inventory-service",
+            "repository_url": "123456789012.dkr.ecr.example.invalid/x"
+          },
+          "sensitive_values": {},
+          "index": "inventory-service"
+        },
+        {
+          "address": "aws_ecr_repository.services[\"payment-service\"]",
+          "mode": "managed",
+          "type": "aws_ecr_repository",
+          "name": "services",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "name": "ecom-platform/payment-service",
+            "repository_url": "123456789012.dkr.ecr.example.invalid/x"
+          },
+          "sensitive_values": {},
+          "index": "payment-service"
+        },
+        {
+          "address": "aws_ecr_repository.services[\"notification-service\"]",
+          "mode": "managed",
+          "type": "aws_ecr_repository",
+          "name": "services",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "name": "ecom-platform/notification-service",
+            "repository_url": "123456789012.dkr.ecr.example.invalid/x"
+          },
+          "sensitive_values": {},
+          "index": "notification-service"
+        }
+      ]
+    }
+  },
+  "configuration": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_ecr_repository.services",
+          "mode": "managed",
+          "type": "aws_ecr_repository",
+          "name": "services",
+          "provider_config_key": "p",
+          "expressions": {
+            "name": {
+              "constant_value": "ecom-platform/x"
+            }
+          },
+          "schema_version": 0,
+          "for_each_expression": {
+            "references": [
+              "var.services"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

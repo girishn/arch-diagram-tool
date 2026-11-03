@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "title": "Docs assistant",
+  "description": "Questions arrive through an API, a function retrieves passages from the indexed documents and asks a model to answer. Documents are loaded through a queue.",
+  "nodes": {
+    "api-chat": { "label": "Chat API", "detail": { "role": "Accepts chat requests over HTTPS and hands each to the chat function.", "why": "One public entry point keeps authentication and throttling in a single place." } },
+    "fn-chat": { "label": "Chat function", "detail": { "role": "Looks up the session, retrieves passages for the question and asks the model for an answer.", "why": "Stateless, so it scales with requests and holds no data between calls." } },
+    "kb-docs": { "label": "Document retrieval", "detail": { "role": "Finds the passages most related to a question.", "why": "Answers are grounded in the company's own documents, not the model's memory." } },
+    "fn-ingest": { "label": "Ingest function" },
+    "table-sessions": { "label": "Session store" },
+    "search-vectors": { "label": "Vector index" },
+    "bucket-docs": { "label": "Document bucket" },
+    "queue-ingest": { "label": "Ingest queue" },
+    "queue-ingest-dlq": { "label": "Dead-letter queue", "peripheral": true }
+  },
+  "links": {
+    "api-chat>fn-chat": { "detail": "Each request is passed to the chat function with the caller's session id." }
+  },
+  "addNodes": [
+    {
+      "id": "client",
+      "label": "Browser",
+      "sub": "Chat widget",
+      "icons": ["client"],
+      "detail": { "role": "Where people type their questions.", "why": "Not managed by Terraform, so it is drawn from the overlay." }
+    },
+    {
+      "id": "model",
+      "label": "Foundation model",
+      "sub": "Bedrock",
+      "icons": ["llm"],
+      "detail": { "role": "Writes the answer from the question and the retrieved passages.", "why": "Called by model id, not created by this Terraform." }
+    }
+  ],
+  "addLinks": [
+    { "id": "client_to_api-chat", "from": "client", "to": "api-chat", "label": "Question", "protocol": "HTTPS", "traffic": "ingress", "detail": "The widget sends the question and session id." },
+    { "id": "fn-chat_to_model", "from": "fn-chat", "to": "model", "label": "Generate", "protocol": "HTTPS", "traffic": "egress", "detail": "The function sends the question with the retrieved passages and gets the answer back." }
+  ],
+  "trace": [
+    { "node": "client", "label": "A person asks a question" },
+    { "node": "api-chat", "label": "The API receives it" },
+    { "node": "fn-chat", "label": "The chat function takes over" },
+    { "node": "kb-docs", "label": "Related passages are retrieved" },
+    { "node": "search-vectors", "label": "The vector index returns the best matches" }
+  ]
+}

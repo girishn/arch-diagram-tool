@@ -1,0 +1,754 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_vpc.main",
+          "mode": "managed",
+          "type": "aws_vpc",
+          "name": "main",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "cidr_block": "10.0.0.0/16"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_subnet.private",
+          "mode": "managed",
+          "type": "aws_subnet",
+          "name": "private",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "cidr_block": "10.0.1.0/24"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_security_group.chat",
+          "mode": "managed",
+          "type": "aws_security_group",
+          "name": "chat",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "name": "chat"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_ssm_parameter.config",
+          "mode": "managed",
+          "type": "aws_ssm_parameter",
+          "name": "config",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "name": "/chat/config"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_s3_bucket.docs",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "docs",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "bucket": "docs-assistant-docs"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_dynamodb_table.sessions",
+          "mode": "managed",
+          "type": "aws_dynamodb_table",
+          "name": "sessions",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "name": "sessions",
+            "hash_key": "id"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_sqs_queue.ingest",
+          "mode": "managed",
+          "type": "aws_sqs_queue",
+          "name": "ingest",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "name": "ingest"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_opensearchserverless_collection.vectors",
+          "mode": "managed",
+          "type": "aws_opensearchserverless_collection",
+          "name": "vectors",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "name": "vectors",
+            "type": "VECTORSEARCH"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_bedrockagent_knowledge_base.docs",
+          "mode": "managed",
+          "type": "aws_bedrockagent_knowledge_base",
+          "name": "docs",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "name": "docs"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_iam_role.chat",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "chat",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {},
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_iam_role.ingest",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "ingest",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {},
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_iam_role.kb",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "kb",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {},
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_iam_role_policy.chat",
+          "mode": "managed",
+          "type": "aws_iam_role_policy",
+          "name": "chat",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {},
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_iam_role_policy.ingest",
+          "mode": "managed",
+          "type": "aws_iam_role_policy",
+          "name": "ingest",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {},
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_lambda_function.chat",
+          "mode": "managed",
+          "type": "aws_lambda_function",
+          "name": "chat",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "function_name": "chat",
+            "runtime": "python3.12"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_lambda_function.ingest[0]",
+          "mode": "managed",
+          "type": "aws_lambda_function",
+          "name": "ingest",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "function_name": "ingest",
+            "runtime": "python3.12"
+          },
+          "sensitive_values": {},
+          "index": 0
+        },
+        {
+          "address": "aws_lambda_function.ingest[1]",
+          "mode": "managed",
+          "type": "aws_lambda_function",
+          "name": "ingest",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "function_name": "ingest",
+            "runtime": "python3.12"
+          },
+          "sensitive_values": {},
+          "index": 1
+        },
+        {
+          "address": "aws_apigatewayv2_api.chat",
+          "mode": "managed",
+          "type": "aws_apigatewayv2_api",
+          "name": "chat",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "name": "chat",
+            "protocol_type": "HTTP"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_apigatewayv2_integration.chat",
+          "mode": "managed",
+          "type": "aws_apigatewayv2_integration",
+          "name": "chat",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "integration_type": "AWS_PROXY"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_lambda_permission.chat",
+          "mode": "managed",
+          "type": "aws_lambda_permission",
+          "name": "chat",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "action": "lambda:InvokeFunction"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_lambda_event_source_mapping.ingest",
+          "mode": "managed",
+          "type": "aws_lambda_event_source_mapping",
+          "name": "ingest",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "batch_size": 10
+          },
+          "sensitive_values": {}
+        }
+      ],
+      "child_modules": [
+        {
+          "address": "module.ingest_dlq",
+          "resources": [
+            {
+              "address": "module.ingest_dlq.aws_sqs_queue.this",
+              "mode": "managed",
+              "type": "aws_sqs_queue",
+              "name": "this",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "name": "ingest-dlq"
+              },
+              "sensitive_values": {},
+              "module_address": "module.ingest_dlq"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "resource_changes": [],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_vpc.main",
+          "mode": "managed",
+          "type": "aws_vpc",
+          "name": "main",
+          "provider_config_key": "aws",
+          "expressions": {
+            "cidr_block": {
+              "constant_value": "10.0.0.0/16"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_subnet.private",
+          "mode": "managed",
+          "type": "aws_subnet",
+          "name": "private",
+          "provider_config_key": "aws",
+          "expressions": {
+            "vpc_id": {
+              "references": [
+                "aws_vpc.main.id",
+                "aws_vpc.main"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_security_group.chat",
+          "mode": "managed",
+          "type": "aws_security_group",
+          "name": "chat",
+          "provider_config_key": "aws",
+          "expressions": {
+            "vpc_id": {
+              "references": [
+                "aws_vpc.main.id",
+                "aws_vpc.main"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_ssm_parameter.config",
+          "mode": "managed",
+          "type": "aws_ssm_parameter",
+          "name": "config",
+          "provider_config_key": "aws",
+          "expressions": {},
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket.docs",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "docs",
+          "provider_config_key": "aws",
+          "expressions": {},
+          "schema_version": 0
+        },
+        {
+          "address": "aws_dynamodb_table.sessions",
+          "mode": "managed",
+          "type": "aws_dynamodb_table",
+          "name": "sessions",
+          "provider_config_key": "aws",
+          "expressions": {},
+          "schema_version": 0
+        },
+        {
+          "address": "aws_sqs_queue.ingest",
+          "mode": "managed",
+          "type": "aws_sqs_queue",
+          "name": "ingest",
+          "provider_config_key": "aws",
+          "expressions": {
+            "redrive_policy": {
+              "references": [
+                "module.ingest_dlq.arn"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_opensearchserverless_collection.vectors",
+          "mode": "managed",
+          "type": "aws_opensearchserverless_collection",
+          "name": "vectors",
+          "provider_config_key": "aws",
+          "expressions": {},
+          "schema_version": 0
+        },
+        {
+          "address": "aws_bedrockagent_knowledge_base.docs",
+          "mode": "managed",
+          "type": "aws_bedrockagent_knowledge_base",
+          "name": "docs",
+          "provider_config_key": "aws",
+          "expressions": {
+            "role_arn": {
+              "references": [
+                "aws_iam_role.kb.arn",
+                "aws_iam_role.kb"
+              ]
+            },
+            "storage_configuration": [
+              {
+                "opensearch_serverless_configuration": [
+                  {
+                    "collection_arn": {
+                      "references": [
+                        "aws_opensearchserverless_collection.vectors.arn",
+                        "aws_opensearchserverless_collection.vectors"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_iam_role.chat",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "chat",
+          "provider_config_key": "aws",
+          "expressions": {},
+          "schema_version": 0
+        },
+        {
+          "address": "aws_iam_role.ingest",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "ingest",
+          "provider_config_key": "aws",
+          "expressions": {},
+          "schema_version": 0
+        },
+        {
+          "address": "aws_iam_role.kb",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "kb",
+          "provider_config_key": "aws",
+          "expressions": {},
+          "schema_version": 0
+        },
+        {
+          "address": "aws_iam_role_policy.chat",
+          "mode": "managed",
+          "type": "aws_iam_role_policy",
+          "name": "chat",
+          "provider_config_key": "aws",
+          "expressions": {
+            "role": {
+              "references": [
+                "aws_iam_role.chat.id",
+                "aws_iam_role.chat"
+              ]
+            },
+            "policy": {
+              "references": [
+                "data.aws_iam_policy_document.chat.json",
+                "data.aws_iam_policy_document.chat"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_iam_role_policy.ingest",
+          "mode": "managed",
+          "type": "aws_iam_role_policy",
+          "name": "ingest",
+          "provider_config_key": "aws",
+          "expressions": {
+            "role": {
+              "references": [
+                "aws_iam_role.ingest.id",
+                "aws_iam_role.ingest"
+              ]
+            },
+            "policy": {
+              "references": [
+                "data.aws_iam_policy_document.ingest.json",
+                "data.aws_iam_policy_document.ingest"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "data.aws_iam_policy_document.chat",
+          "mode": "data",
+          "type": "aws_iam_policy_document",
+          "name": "chat",
+          "provider_config_key": "aws",
+          "expressions": {
+            "statement": [
+              {
+                "actions": {
+                  "constant_value": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem"
+                  ]
+                },
+                "resources": {
+                  "references": [
+                    "aws_dynamodb_table.sessions.arn",
+                    "aws_dynamodb_table.sessions"
+                  ]
+                }
+              },
+              {
+                "actions": {
+                  "constant_value": [
+                    "bedrock:Retrieve"
+                  ]
+                },
+                "resources": {
+                  "references": [
+                    "aws_bedrockagent_knowledge_base.docs.arn",
+                    "aws_bedrockagent_knowledge_base.docs"
+                  ]
+                }
+              }
+            ]
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "data.aws_iam_policy_document.ingest",
+          "mode": "data",
+          "type": "aws_iam_policy_document",
+          "name": "ingest",
+          "provider_config_key": "aws",
+          "expressions": {
+            "statement": [
+              {
+                "actions": {
+                  "constant_value": [
+                    "s3:GetObject"
+                  ]
+                },
+                "resources": {
+                  "references": [
+                    "aws_s3_bucket.docs.arn",
+                    "aws_s3_bucket.docs"
+                  ]
+                }
+              },
+              {
+                "actions": {
+                  "constant_value": [
+                    "sqs:ReceiveMessage"
+                  ]
+                },
+                "resources": {
+                  "references": [
+                    "aws_sqs_queue.ingest.arn",
+                    "aws_sqs_queue.ingest"
+                  ]
+                }
+              }
+            ]
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_lambda_function.chat",
+          "mode": "managed",
+          "type": "aws_lambda_function",
+          "name": "chat",
+          "provider_config_key": "aws",
+          "expressions": {
+            "role": {
+              "references": [
+                "aws_iam_role.chat.arn",
+                "aws_iam_role.chat"
+              ]
+            },
+            "environment": [
+              {
+                "variables": {
+                  "references": [
+                    "aws_dynamodb_table.sessions.name",
+                    "aws_dynamodb_table.sessions"
+                  ]
+                }
+              }
+            ],
+            "vpc_config": [
+              {
+                "subnet_ids": {
+                  "references": [
+                    "aws_subnet.private.id",
+                    "aws_subnet.private"
+                  ]
+                },
+                "security_group_ids": {
+                  "references": [
+                    "aws_security_group.chat.id",
+                    "aws_security_group.chat"
+                  ]
+                }
+              }
+            ]
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_lambda_function.ingest",
+          "mode": "managed",
+          "type": "aws_lambda_function",
+          "name": "ingest",
+          "provider_config_key": "aws",
+          "expressions": {
+            "role": {
+              "references": [
+                "aws_iam_role.ingest.arn",
+                "aws_iam_role.ingest"
+              ]
+            },
+            "environment": [
+              {
+                "variables": {
+                  "references": [
+                    "aws_s3_bucket.docs.id",
+                    "aws_s3_bucket.docs"
+                  ]
+                }
+              }
+            ]
+          },
+          "schema_version": 0,
+          "count_expression": {
+            "constant_value": 2
+          }
+        },
+        {
+          "address": "aws_apigatewayv2_api.chat",
+          "mode": "managed",
+          "type": "aws_apigatewayv2_api",
+          "name": "chat",
+          "provider_config_key": "aws",
+          "expressions": {},
+          "schema_version": 0
+        },
+        {
+          "address": "aws_apigatewayv2_integration.chat",
+          "mode": "managed",
+          "type": "aws_apigatewayv2_integration",
+          "name": "chat",
+          "provider_config_key": "aws",
+          "expressions": {
+            "api_id": {
+              "references": [
+                "aws_apigatewayv2_api.chat.id",
+                "aws_apigatewayv2_api.chat"
+              ]
+            },
+            "integration_uri": {
+              "references": [
+                "aws_lambda_function.chat.invoke_arn",
+                "aws_lambda_function.chat"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_lambda_permission.chat",
+          "mode": "managed",
+          "type": "aws_lambda_permission",
+          "name": "chat",
+          "provider_config_key": "aws",
+          "expressions": {
+            "function_name": {
+              "references": [
+                "aws_lambda_function.chat.function_name",
+                "aws_lambda_function.chat"
+              ]
+            },
+            "source_arn": {
+              "references": [
+                "aws_apigatewayv2_api.chat.execution_arn",
+                "aws_apigatewayv2_api.chat"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_lambda_event_source_mapping.ingest",
+          "mode": "managed",
+          "type": "aws_lambda_event_source_mapping",
+          "name": "ingest",
+          "provider_config_key": "aws",
+          "expressions": {
+            "event_source_arn": {
+              "references": [
+                "aws_sqs_queue.ingest.arn",
+                "aws_sqs_queue.ingest"
+              ]
+            },
+            "function_name": {
+              "references": [
+                "aws_lambda_function.ingest",
+                "aws_lambda_function.ingest[0]"
+              ]
+            }
+          },
+          "schema_version": 0
+        }
+      ],
+      "module_calls": {
+        "ingest_dlq": {
+          "source": "./modules/queue",
+          "expressions": {
+            "name": {
+              "constant_value": "ingest-dlq"
+            }
+          },
+          "module": {
+            "resources": [
+              {
+                "address": "aws_sqs_queue.this",
+                "mode": "managed",
+                "type": "aws_sqs_queue",
+                "name": "this",
+                "provider_config_key": "aws",
+                "expressions": {
+                  "name": {
+                    "references": [
+                      "var.name"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              }
+            ],
+            "variables": {
+              "name": {}
+            },
+            "outputs": {
+              "arn": {
+                "expression": {
+                  "references": [
+                    "aws_sqs_queue.this.arn",
+                    "aws_sqs_queue.this"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

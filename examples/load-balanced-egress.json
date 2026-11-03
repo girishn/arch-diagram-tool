@@ -1,0 +1,360 @@
+{
+  "version": 1,
+  "title": "Load-balanced app with egress",
+  "description": "Traffic enters through a load balancer, fans out to a scaled fleet, and leaves through a NAT gateway.",
+  "lenses": [
+    {
+      "id": "security",
+      "label": "Security"
+    },
+    {
+      "id": "cost",
+      "label": "Cost"
+    },
+    {
+      "id": "network"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "users",
+      "label": "Users",
+      "sub": "Public internet",
+      "at": {
+        "col": 0,
+        "row": 0
+      },
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "Browsers and API clients calling the service.",
+        "why": "They are the source of all ingress traffic."
+      },
+      "lenses": {
+        "network": {
+          "badge": "Port 443",
+          "text": "Only HTTPS is accepted at the edge.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "lb",
+      "label": "Load balancer",
+      "sub": "Layer 7",
+      "at": {
+        "col": 1,
+        "row": 0
+      },
+      "icons": [
+        "loadbalancer"
+      ],
+      "detail": {
+        "tag": "Public subnet",
+        "role": "Terminates TLS and spreads requests across healthy app servers.",
+        "why": "One stable address in front of a fleet that changes size.",
+        "tradeoff": "Adds a hop and a per-hour plus per-request charge."
+      },
+      "lenses": {
+        "security": {
+          "badge": "TLS 1.2+",
+          "text": "TLS ends here; the fleet only accepts traffic from the balancer.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Per hour + LCU",
+          "text": "Billed per hour plus the capacity units actually used.",
+          "level": "info"
+        },
+        "network": {
+          "badge": "443 in, 8080 out",
+          "text": "Listens on 443 and forwards to port 8080 on the fleet.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "app",
+      "label": "App servers",
+      "sub": "Stateless",
+      "at": {
+        "col": 2,
+        "row": 0
+      },
+      "icons": [
+        "compute"
+      ],
+      "scale": {
+        "min": 2,
+        "max": 10,
+        "unit": "instances",
+        "trigger": "CPU > 60%"
+      },
+      "detail": {
+        "tag": "Auto scaling group",
+        "role": "Runs the application. Instances are interchangeable and spread across zones.",
+        "why": "A stateless fleet scales out under load and replaces failed instances.",
+        "tradeoff": "No local state, so sessions and uploads live elsewhere."
+      },
+      "lenses": {
+        "security": {
+          "badge": "Private subnet",
+          "text": "No public addresses; reachable only from the balancer.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Scales with load",
+          "text": "Pay per instance-hour; the floor is two instances.",
+          "level": "info"
+        },
+        "network": {
+          "badge": "No inbound from internet",
+          "text": "Security group allows 8080 from the balancer only.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "db",
+      "label": "Database",
+      "sub": "Relational",
+      "at": {
+        "col": 3,
+        "row": 0
+      },
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Stores application data.",
+        "why": "Managed failover and backups."
+      },
+      "lenses": {
+        "security": {
+          "badge": "Encrypted at rest",
+          "text": "Storage and snapshots are encrypted.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "nat",
+      "label": "NAT gateway",
+      "sub": "Outbound only",
+      "at": {
+        "col": 2,
+        "row": 1
+      },
+      "icons": [
+        "nat"
+      ],
+      "detail": {
+        "role": "Lets private instances start outbound connections without being reachable from outside.",
+        "why": "Instances need to call third-party APIs and fetch updates.",
+        "tradeoff": "Charged per hour and per GB processed."
+      },
+      "lenses": {
+        "security": {
+          "badge": "No inbound",
+          "text": "Cannot be used to reach the instances from the internet.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Per GB processed",
+          "text": "Data processing charges add up for chatty or large outbound traffic.",
+          "level": "warn"
+        },
+        "network": {
+          "badge": "Egress choke point",
+          "text": "All outbound traffic passes here, so it can be logged and filtered.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "ext",
+      "label": "Payment API",
+      "sub": "Third party",
+      "at": {
+        "col": 4,
+        "row": 1
+      },
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "External service the app calls to take payments.",
+        "why": "Payments are not worth building in house."
+      },
+      "lenses": {
+        "network": {
+          "badge": "Allow-listed host",
+          "text": "Egress is limited to this provider's published addresses.",
+          "level": "good"
+        }
+      }
+    }
+  ],
+  "links": [
+    {
+      "from": "users",
+      "to": "lb",
+      "label": "HTTPS",
+      "protocol": "HTTPS",
+      "twoWay": true,
+      "traffic": "ingress",
+      "detail": "Requests arrive over HTTPS and the response returns on the same connection.",
+      "lenses": {
+        "security": {
+          "badge": "TLS",
+          "text": "Encrypted in transit.",
+          "level": "good"
+        },
+        "network": {
+          "badge": "443",
+          "text": "The only public port.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "from": "lb",
+      "to": "app",
+      "label": "Round robin",
+      "protocol": "HTTP",
+      "detail": "The balancer picks a healthy instance for each request, using a health check on /healthz.",
+      "lenses": {
+        "network": {
+          "badge": "8080",
+          "text": "Forwarded to port 8080 on the fleet.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "from": "app",
+      "to": "db",
+      "label": "Read / write",
+      "protocol": "SQL",
+      "detail": "Application queries over a private connection.",
+      "lenses": {
+        "security": {
+          "badge": "Private link",
+          "text": "No public route to the database.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "from": "app",
+      "to": "nat",
+      "label": "Outbound calls",
+      "traffic": "egress",
+      "detail": "Calls to external services leave through the NAT gateway.",
+      "lenses": {
+        "network": {
+          "badge": "Default route",
+          "text": "The private route table sends 0.0.0.0/0 here.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "from": "nat",
+      "to": "ext",
+      "label": "HTTPS to provider",
+      "protocol": "HTTPS",
+      "traffic": "egress",
+      "detail": "The only way out to the provider; the request leaves the VPC from the NAT gateway's public address.",
+      "lenses": {
+        "security": {
+          "badge": "Allow-listed",
+          "text": "Only the provider's addresses are permitted.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "$/GB egress",
+          "text": "Outbound data transfer is billed per GB.",
+          "level": "warn"
+        },
+        "network": {
+          "badge": "443 out",
+          "text": "Outbound HTTPS only.",
+          "level": "info"
+        }
+      }
+    }
+  ],
+  "zones": [
+    {
+      "id": "cloud",
+      "label": "Cloud",
+      "kind": "cloud"
+    },
+    {
+      "id": "vpc",
+      "label": "VPC",
+      "kind": "vpc",
+      "parent": "cloud",
+      "members": [
+        "lb",
+        "nat",
+        "db"
+      ]
+    },
+    {
+      "id": "asg",
+      "label": "Auto scaling group",
+      "kind": "scaling-group",
+      "parent": "vpc",
+      "members": [
+        "app"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "users",
+      "label": "A user sends a request"
+    },
+    {
+      "node": "lb",
+      "label": "The balancer picks a healthy instance"
+    },
+    {
+      "node": "app",
+      "label": "An app server handles it"
+    },
+    {
+      "node": "db",
+      "label": "Data is read or written"
+    },
+    {
+      "node": "app",
+      "label": "The app needs the payment provider"
+    },
+    {
+      "node": "nat",
+      "label": "The call leaves through the NAT gateway"
+    },
+    {
+      "node": "ext",
+      "label": "The provider responds"
+    }
+  ],
+  "prose": [
+    {
+      "id": "overview",
+      "text": "Users reach a load balancer, which spreads requests over a scaled fleet in private subnets. The fleet reads a database and reaches a third-party API only through a NAT gateway.",
+      "mentions": [
+        "users",
+        "lb",
+        "app",
+        "db",
+        "nat",
+        "ext"
+      ]
+    }
+  ]
+}

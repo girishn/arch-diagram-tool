@@ -1,0 +1,1805 @@
+{
+  "format_version": "1.0",
+  "terraform_version": "1.9.5",
+  "values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "confluent_service_account.this[\"svc-terraform\"]",
+          "mode": "managed",
+          "type": "confluent_service_account",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "svc-terraform",
+            "id": "sa-0001",
+            "description": "x"
+          },
+          "sensitive_values": {},
+          "index": "svc-terraform"
+        },
+        {
+          "address": "confluent_service_account.this[\"svc-order-api\"]",
+          "mode": "managed",
+          "type": "confluent_service_account",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "svc-order-api",
+            "id": "sa-0002",
+            "description": "x"
+          },
+          "sensitive_values": {},
+          "index": "svc-order-api"
+        },
+        {
+          "address": "confluent_service_account.this[\"svc-order-saga\"]",
+          "mode": "managed",
+          "type": "confluent_service_account",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "svc-order-saga",
+            "id": "sa-0003",
+            "description": "x"
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga"
+        },
+        {
+          "address": "confluent_service_account.this[\"svc-inventory-service\"]",
+          "mode": "managed",
+          "type": "confluent_service_account",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "svc-inventory-service",
+            "id": "sa-0004",
+            "description": "x"
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service"
+        },
+        {
+          "address": "confluent_service_account.this[\"svc-payment-service\"]",
+          "mode": "managed",
+          "type": "confluent_service_account",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "svc-payment-service",
+            "id": "sa-0005",
+            "description": "x"
+          },
+          "sensitive_values": {},
+          "index": "svc-payment-service"
+        },
+        {
+          "address": "confluent_service_account.this[\"svc-notification-service\"]",
+          "mode": "managed",
+          "type": "confluent_service_account",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "svc-notification-service",
+            "id": "sa-0006",
+            "description": "x"
+          },
+          "sensitive_values": {},
+          "index": "svc-notification-service"
+        },
+        {
+          "address": "confluent_service_account.this[\"svc-debezium-order\"]",
+          "mode": "managed",
+          "type": "confluent_service_account",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "svc-debezium-order",
+            "id": "sa-0007",
+            "description": "x"
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order"
+        },
+        {
+          "address": "confluent_service_account.this[\"svc-debezium-inventory\"]",
+          "mode": "managed",
+          "type": "confluent_service_account",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "svc-debezium-inventory",
+            "id": "sa-0008",
+            "description": "x"
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-inventory"
+        },
+        {
+          "address": "confluent_service_account.this[\"svc-replay-tool\"]",
+          "mode": "managed",
+          "type": "confluent_service_account",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "svc-replay-tool",
+            "id": "sa-0009",
+            "description": "x"
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool"
+        },
+        {
+          "address": "confluent_api_key.this[\"svc-terraform\"]",
+          "mode": "managed",
+          "type": "confluent_api_key",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "id": "KEYsa-0001",
+            "secret": "API-SECRET-SHOULD-NOT-SURVIVE"
+          },
+          "sensitive_values": {},
+          "index": "svc-terraform"
+        },
+        {
+          "address": "confluent_api_key.this[\"svc-order-api\"]",
+          "mode": "managed",
+          "type": "confluent_api_key",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "id": "KEYsa-0002",
+            "secret": "API-SECRET-SHOULD-NOT-SURVIVE"
+          },
+          "sensitive_values": {},
+          "index": "svc-order-api"
+        },
+        {
+          "address": "confluent_api_key.this[\"svc-order-saga\"]",
+          "mode": "managed",
+          "type": "confluent_api_key",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "id": "KEYsa-0003",
+            "secret": "API-SECRET-SHOULD-NOT-SURVIVE"
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga"
+        },
+        {
+          "address": "confluent_api_key.this[\"svc-inventory-service\"]",
+          "mode": "managed",
+          "type": "confluent_api_key",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "id": "KEYsa-0004",
+            "secret": "API-SECRET-SHOULD-NOT-SURVIVE"
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service"
+        },
+        {
+          "address": "confluent_api_key.this[\"svc-payment-service\"]",
+          "mode": "managed",
+          "type": "confluent_api_key",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "id": "KEYsa-0005",
+            "secret": "API-SECRET-SHOULD-NOT-SURVIVE"
+          },
+          "sensitive_values": {},
+          "index": "svc-payment-service"
+        },
+        {
+          "address": "confluent_api_key.this[\"svc-notification-service\"]",
+          "mode": "managed",
+          "type": "confluent_api_key",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "id": "KEYsa-0006",
+            "secret": "API-SECRET-SHOULD-NOT-SURVIVE"
+          },
+          "sensitive_values": {},
+          "index": "svc-notification-service"
+        },
+        {
+          "address": "confluent_api_key.this[\"svc-debezium-order\"]",
+          "mode": "managed",
+          "type": "confluent_api_key",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "id": "KEYsa-0007",
+            "secret": "API-SECRET-SHOULD-NOT-SURVIVE"
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order"
+        },
+        {
+          "address": "confluent_api_key.this[\"svc-debezium-inventory\"]",
+          "mode": "managed",
+          "type": "confluent_api_key",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "id": "KEYsa-0008",
+            "secret": "API-SECRET-SHOULD-NOT-SURVIVE"
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-inventory"
+        },
+        {
+          "address": "confluent_api_key.this[\"svc-replay-tool\"]",
+          "mode": "managed",
+          "type": "confluent_api_key",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "id": "KEYsa-0009",
+            "secret": "API-SECRET-SHOULD-NOT-SURVIVE"
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--read--orders.order.placed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.placed",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--read--orders.order.placed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--read--inventory.stock.reserved\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reserved",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--read--inventory.stock.reserved"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--read--inventory.stock.reservation-failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reservation-failed",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--read--inventory.stock.reservation-failed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--read--inventory.stock.release-requested\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.release-requested",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--read--inventory.stock.release-requested"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--read--payments.payment.captured\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.captured",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--read--payments.payment.captured"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--read--payments.payment.failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.failed",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--read--payments.payment.failed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-inventory-service--read--orders.order.placed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0004",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.placed",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service--read--orders.order.placed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-inventory-service--read--inventory.stock.release-requested\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0004",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.release-requested",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service--read--inventory.stock.release-requested"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-inventory-service--read--orders.order.confirmed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0004",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.confirmed",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service--read--orders.order.confirmed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-payment-service--read--inventory.stock.reserved\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0005",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reserved",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-payment-service--read--inventory.stock.reserved"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-notification-service--read--orders.order.confirmed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0006",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.confirmed",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-notification-service--read--orders.order.confirmed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-notification-service--read--orders.order.cancelled\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0006",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.cancelled",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-notification-service--read--orders.order.cancelled"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--read--orders.order.placed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.placed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--read--orders.order.placed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--read--orders.order.confirmed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.confirmed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--read--orders.order.confirmed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--read--orders.order.cancelled.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.cancelled.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--read--orders.order.cancelled.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--read--inventory.stock.reserved.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reserved.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--read--inventory.stock.reserved.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--read--inventory.stock.reservation-failed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reservation-failed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--read--inventory.stock.reservation-failed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--read--inventory.stock.release-requested.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.release-requested.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--read--inventory.stock.release-requested.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--read--payments.payment.captured.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.captured.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--read--payments.payment.captured.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--read--payments.payment.failed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.failed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--read--payments.payment.failed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-api--write--orders.order.placed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0002",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.placed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-api--write--orders.order.placed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--write--orders.order.confirmed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.confirmed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--write--orders.order.confirmed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--write--orders.order.cancelled\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.cancelled",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--write--orders.order.cancelled"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--write--inventory.stock.release-requested\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.release-requested",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--write--inventory.stock.release-requested"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--write--orders.order.placed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.placed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--write--orders.order.placed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--write--inventory.stock.reserved.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reserved.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--write--inventory.stock.reserved.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--write--inventory.stock.reservation-failed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reservation-failed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--write--inventory.stock.reservation-failed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--write--payments.payment.captured.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.captured.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--write--payments.payment.captured.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--write--payments.payment.failed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.failed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--write--payments.payment.failed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-inventory-service--write--inventory.stock.reserved\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0004",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reserved",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service--write--inventory.stock.reserved"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-inventory-service--write--inventory.stock.reservation-failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0004",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reservation-failed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service--write--inventory.stock.reservation-failed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-inventory-service--write--orders.order.placed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0004",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.placed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service--write--orders.order.placed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-inventory-service--write--inventory.stock.release-requested.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0004",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.release-requested.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service--write--inventory.stock.release-requested.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-inventory-service--write--orders.order.confirmed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0004",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.confirmed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-inventory-service--write--orders.order.confirmed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-payment-service--write--payments.payment.captured\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0005",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.captured",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-payment-service--write--payments.payment.captured"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-payment-service--write--payments.payment.failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0005",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.failed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-payment-service--write--payments.payment.failed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-payment-service--write--inventory.stock.reserved.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0005",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reserved.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-payment-service--write--inventory.stock.reserved.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-notification-service--write--orders.order.confirmed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0006",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.confirmed.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-notification-service--write--orders.order.confirmed.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-notification-service--write--orders.order.cancelled.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0006",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.cancelled.dlt",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-notification-service--write--orders.order.cancelled.dlt"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--write--orders.order.placed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.placed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--write--orders.order.placed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--write--orders.order.confirmed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.confirmed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--write--orders.order.confirmed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--write--orders.order.cancelled\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.cancelled",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--write--orders.order.cancelled"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--write--inventory.stock.reserved\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reserved",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--write--inventory.stock.reserved"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--write--inventory.stock.reservation-failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reservation-failed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--write--inventory.stock.reservation-failed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--write--inventory.stock.release-requested\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.release-requested",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--write--inventory.stock.release-requested"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--write--payments.payment.captured\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.captured",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--write--payments.payment.captured"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-replay-tool--write--payments.payment.failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0009",
+            "resource_type": "TOPIC",
+            "resource_name": "payments.payment.failed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-replay-tool--write--payments.payment.failed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-order--write--orders.order.placed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0007",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.placed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order--write--orders.order.placed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-order--write--orders.order.confirmed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0007",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.confirmed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order--write--orders.order.confirmed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-order--write--orders.order.cancelled\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0007",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.cancelled",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order--write--orders.order.cancelled"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-order--write--inventory.stock.release-requested\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0007",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.release-requested",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order--write--inventory.stock.release-requested"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-order--write--inventory.stock.reserved\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0007",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reserved",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order--write--inventory.stock.reserved"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-order--write--inventory.stock.reservation-failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0007",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reservation-failed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order--write--inventory.stock.reservation-failed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-inventory--write--inventory.stock.reserved\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0008",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reserved",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-inventory--write--inventory.stock.reserved"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-inventory--write--inventory.stock.reservation-failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0008",
+            "resource_type": "TOPIC",
+            "resource_name": "inventory.stock.reservation-failed",
+            "pattern_type": "LITERAL",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-inventory--write--inventory.stock.reservation-failed"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-payment-service--cluster-idempotent-write\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0005",
+            "resource_type": "CLUSTER",
+            "resource_name": "kafka-cluster",
+            "pattern_type": "LITERAL",
+            "operation": "IDEMPOTENT_WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-payment-service--cluster-idempotent-write"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-order--group-read\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0007",
+            "resource_type": "GROUP",
+            "resource_name": "svc-debezium-order",
+            "pattern_type": "PREFIXED",
+            "operation": "READ",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order--group-read"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-debezium-order--internal-topic-write\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0007",
+            "resource_type": "TOPIC",
+            "resource_name": "svc-debezium-order",
+            "pattern_type": "PREFIXED",
+            "operation": "WRITE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-debezium-order--internal-topic-write"
+        },
+        {
+          "address": "confluent_kafka_acl.this[\"svc-order-saga--describe\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_acl",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "principal": "User:sa-0003",
+            "resource_type": "TOPIC",
+            "resource_name": "orders.order.placed",
+            "pattern_type": "LITERAL",
+            "operation": "DESCRIBE",
+            "permission": "ALLOW",
+            "host": "*",
+            "rest_endpoint": "https://pkc-xxxxx.example.invalid:443",
+            "credentials": [
+              {
+                "key": "KAFKA-KEY-SHOULD-NOT-SURVIVE",
+                "secret": "KAFKA-SECRET-SHOULD-NOT-SURVIVE"
+              }
+            ]
+          },
+          "sensitive_values": {},
+          "index": "svc-order-saga--describe"
+        }
+      ]
+    }
+  }
+}

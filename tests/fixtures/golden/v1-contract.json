@@ -1,0 +1,139 @@
+{
+  "$schema": "https://example.invalid/arch-diagram-spec-v1.json",
+  "version": 1,
+  "title": "Contract fixture",
+  "description": "Uses every optional contract field once. If this stops validating, v1 has been broken.",
+  "x-generator": {
+    "name": "some-tool",
+    "run": 42
+  },
+  "lenses": [
+    {
+      "id": "security"
+    }
+  ],
+  "zones": [
+    {
+      "id": "z",
+      "label": "Zone",
+      "kind": "vpc",
+      "members": [
+        "a",
+        "b"
+      ],
+      "tags": [
+        "prod"
+      ],
+      "references": [
+        {
+          "label": "Network ADR",
+          "url": "/docs/adr-7"
+        }
+      ],
+      "x-owner": "platform"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "a",
+      "label": "A",
+      "sub": "front",
+      "at": {
+        "col": 0,
+        "row": 0
+      },
+      "icons": [
+        "gateway"
+      ],
+      "tags": [
+        "edge",
+        "public"
+      ],
+      "properties": {
+        "region": "ap-southeast-2",
+        "replicas": 3,
+        "multiAz": true
+      },
+      "references": [
+        {
+          "label": "Runbook",
+          "url": "https://example.com/runbook"
+        },
+        {
+          "label": "Mail the owner",
+          "url": "mailto:team@example.com"
+        }
+      ],
+      "source": {
+        "address": "aws_api_gateway_rest_api.main",
+        "file": "infra/api.tf",
+        "line": 12
+      },
+      "x-cost-centre": "CC-100",
+      "detail": {
+        "tag": "Gateway",
+        "role": "Front door.",
+        "why": "One place to throttle."
+      },
+      "lenses": {
+        "security": {
+          "badge": "WAF",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "b",
+      "label": "B",
+      "at": {
+        "col": 1,
+        "row": 0
+      },
+      "icons": [
+        "function"
+      ],
+      "scale": {
+        "min": 1,
+        "max": 5,
+        "unit": "instances"
+      },
+      "detail": {
+        "role": "Handler.",
+        "why": "Stateless."
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "a-to-b",
+      "from": "a",
+      "to": "b",
+      "label": "invokes",
+      "detail": "Synchronous call.",
+      "pattern": "request-response",
+      "protocol": "HTTPS",
+      "traffic": "internal",
+      "tags": [
+        "hot-path"
+      ],
+      "properties": {
+        "timeoutMs": 3000
+      },
+      "source": {
+        "file": "infra/api.tf",
+        "line": 40
+      },
+      "x-slo": "p99 < 200ms"
+    }
+  ],
+  "trace": [
+    {
+      "node": "a",
+      "label": "Request arrives"
+    },
+    {
+      "node": "b",
+      "label": "Handled"
+    }
+  ]
+}

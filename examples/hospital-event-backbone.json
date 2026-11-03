@@ -1,0 +1,411 @@
+{
+  "version": 1,
+  "title": "Hospital event backbone",
+  "description": "Scheduling, billing and clinical records stay separate systems with separate owners. Scheduling publishes appointment events to a shared broker; billing and clinical records consume them and update their own stores, with no synchronous calls between teams.",
+  "lenses": [
+    {
+      "id": "latency",
+      "label": "Latency",
+      "summary": "Target: a scheduling change reaches billing within 5 seconds. Current estimate is 4.8s end to end, a mix of known-formula and AI-estimated contributions (some low confidence), so the margin is thin."
+    },
+    {
+      "id": "reliability",
+      "summary": "About 99.96% availability, grounded in replication factor 3, 3 AZs per system and 3 downstream consumers. A down consumer catches up from the log instead of losing data."
+    },
+    {
+      "id": "coordination",
+      "label": "Coordination",
+      "summary": "About 2.7 cross-team touchpoints. Independent deploys and automated DLQ replay keep it low; the shared broker and enforced schema governance add some."
+    },
+    {
+      "id": "operational-excellence"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "sched",
+      "label": "Scheduling service",
+      "sub": "Publishes appointment events",
+      "at": { "col": 0, "row": 1 },
+      "icons": ["compute"],
+      "detail": {
+        "tag": "Scheduling team",
+        "role": "Creates, updates and cancels appointments, then publishes AppointmentCreated, AppointmentUpdated and AppointmentCancelled to the broker.",
+        "why": "Owns the source of truth for appointments and announces every change without knowing who consumes it.",
+        "tradeoff": "Must keep its published event schema compatible, because two other teams now depend on it."
+      },
+      "lenses": {
+        "latency": {
+          "badge": "Starts the 5s clock",
+          "text": "The clock starts when the appointment change is committed and the event is published.",
+          "level": "info"
+        },
+        "coordination": {
+          "badge": "Independent deploys",
+          "text": "Can deploy without waiting on billing or clinical records, as long as the event contract holds.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "scheddb",
+      "label": "Scheduling database",
+      "sub": "Appointments",
+      "at": { "col": 0, "row": 2 },
+      "icons": ["database"],
+      "detail": {
+        "tag": "Scheduling team",
+        "role": "Stores appointments and slots.",
+        "why": "Each team keeps its own data store, so a schema change here never breaks another team."
+      }
+    },
+    {
+      "id": "registry",
+      "label": "Event contract registry",
+      "sub": "Versioned schemas",
+      "at": { "col": 2, "row": 0 },
+      "icons": ["config"],
+      "detail": {
+        "tag": "Enforced governance",
+        "role": "Holds the versioned schema for every event. Producers and consumers validate against it.",
+        "why": "Lets each team own its contract and evolve it safely, instead of coordinating point to point.",
+        "tradeoff": "All three teams must agree on and version the schemas, which is the main coordination cost of this design."
+      },
+      "lenses": {
+        "coordination": {
+          "badge": "Adds touchpoints",
+          "text": "Enforced governance adds process overhead, but breaking changes are caught before they ship.",
+          "level": "warn"
+        },
+        "reliability": {
+          "badge": "Blocks bad events",
+          "text": "Events that fail schema validation are rejected before consumers see them.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "broker",
+      "label": "Event broker",
+      "sub": "Durable, highly available",
+      "at": { "col": 2, "row": 1 },
+      "icons": ["kafka"],
+      "detail": {
+        "tag": "Replication factor 3, 3 AZs",
+        "role": "Receives appointment events and delivers them to every subscribed consumer group. Keeps a replayable log.",
+        "why": "Low-latency pub/sub delivers well under 5 seconds in the normal case, and the log lets a down consumer catch up. Clinical records reads the same stream as billing, so no re-entry is needed.",
+        "tradeoff": "A new piece of shared infrastructure the hospital must run and keep highly available. State is eventually consistent and spread across the log and three data stores, so cross-system debugging is harder."
+      },
+      "lenses": {
+        "latency": {
+          "badge": "Adds delay",
+          "text": "Replication factor 3 adds commit-acknowledgment overhead, and the 0.3s poll interval adds about half its value in average queuing delay.",
+          "level": "warn"
+        },
+        "reliability": {
+          "badge": "RF 3 across 3 AZs",
+          "text": "Survives the loss of a zone, and consumer groups let each team recover independently.",
+          "level": "good"
+        },
+        "coordination": {
+          "badge": "Shared platform",
+          "text": "One broker for three teams adds touchpoints, though less coupling than synchronous integration.",
+          "level": "warn"
+        },
+        "operational-excellence": {
+          "badge": "New operational burden",
+          "text": "The hospital must stand up and own this infrastructure.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "dlq",
+      "label": "Dead-letter queue",
+      "sub": "Automated replay",
+      "at": { "col": 2, "row": 2 },
+      "icons": ["queue"],
+      "detail": {
+        "role": "Holds events a consumer could not process after its retries, then replays them automatically.",
+        "why": "Failed events are neither lost nor left for someone to fix by hand.",
+        "tradeoff": "Replayed events arrive late, so a record can lag the 5 second target until the cause is fixed."
+      },
+      "lenses": {
+        "reliability": {
+          "badge": "Fully automated replay",
+          "text": "Failures are replayed without manual work.",
+          "level": "good"
+        },
+        "coordination": {
+          "badge": "No hand-offs",
+          "text": "Automated replay removes a manual hand-off between teams.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "monitor",
+      "label": "Lag and latency monitoring",
+      "sub": "Consumer lag, end-to-end time",
+      "at": { "col": 1, "row": 0 },
+      "icons": ["monitor"],
+      "peripheral": true,
+      "detail": {
+        "role": "Tracks consumer lag and the time from publish to stored, and alerts when the 5 second target is at risk.",
+        "why": "Eventual consistency is hard to debug without a view of where an event is in the pipeline."
+      },
+      "lenses": {
+        "operational-excellence": {
+          "badge": "Alerts on end-to-end time",
+          "text": "Alarms fire on publish-to-stored time, not on broker CPU.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "billc",
+      "label": "Billing consumer",
+      "sub": "Retried webhook tier",
+      "at": { "col": 3, "row": 0 },
+      "icons": ["function"],
+      "scale": { "min": 3, "max": 6, "unit": "consumers", "trigger": "Consumer lag" },
+      "detail": {
+        "tag": "Billing team",
+        "role": "Subscribes to appointment events and updates billing records. Retries up to 2 times on failure.",
+        "why": "Gets the change within the 5 second target without scheduling ever calling billing.",
+        "tradeoff": "The retried-webhook tier is cheaper than a more durable one but can add a few seconds on failure paths."
+      },
+      "lenses": {
+        "latency": {
+          "badge": "Retries add up to ~1.5s each",
+          "text": "Two retry attempts can each add a full timeout window on the failure path, which is what pushes the estimate to 4.8s.",
+          "level": "warn"
+        },
+        "reliability": {
+          "badge": "3 consumers",
+          "text": "Redundant consumers keep processing if one fails.",
+          "level": "good"
+        },
+        "coordination": {
+          "badge": "Independent deploys",
+          "text": "Billing deploys its consumer on its own schedule.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "billdb",
+      "label": "Billing store",
+      "sub": "Billing records",
+      "at": { "col": 4, "row": 0 },
+      "icons": ["database"],
+      "detail": {
+        "tag": "Billing team",
+        "role": "Holds billing data, updated asynchronously from appointment events.",
+        "why": "Owned by billing alone, so it can change shape without touching scheduling."
+      }
+    },
+    {
+      "id": "clinc",
+      "label": "Clinical consumer",
+      "sub": "CDC and batch sync",
+      "at": { "col": 3, "row": 2 },
+      "icons": ["function"],
+      "scale": { "min": 3, "max": 6, "unit": "consumers", "trigger": "Consumer lag" },
+      "detail": {
+        "tag": "Clinical records team",
+        "role": "Subscribes to the same appointment events and updates clinical records, so no one re-enters appointment data.",
+        "why": "Using the same stream as billing replaces bespoke point-to-point sync.",
+        "tradeoff": "The 15 minute CDC and batch sync frequency and the 30 second CDC lag target pull consistency down slightly."
+      },
+      "lenses": {
+        "latency": {
+          "badge": "Not on the 5s path",
+          "text": "The 5 second requirement applies to billing. Clinical records must match without manual re-entry, which the stream gives it.",
+          "level": "info"
+        },
+        "reliability": {
+          "badge": "Catches up from the log",
+          "text": "If the consumer is down it resumes from its offset instead of losing data.",
+          "level": "good"
+        },
+        "coordination": {
+          "badge": "Independent deploys",
+          "text": "Clinical records deploys its consumer on its own schedule.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "clindb",
+      "label": "Clinical records store",
+      "sub": "Patient records",
+      "at": { "col": 4, "row": 2 },
+      "icons": ["database"],
+      "detail": {
+        "tag": "Clinical records team",
+        "role": "Holds clinical records, with appointment data kept in step through the event stream.",
+        "why": "Consistency of about 103.5% of target means essentially no manual re-entry."
+      }
+    }
+  ],
+  "links": [
+    {
+      "from": "sched",
+      "to": "scheddb",
+      "label": "Reads and writes",
+      "detail": "The service stores each appointment change in its own database before publishing the event.",
+      "protocol": "SQL"
+    },
+    {
+      "from": "sched",
+      "to": "broker",
+      "label": "Appointment events",
+      "detail": "Publishes AppointmentCreated, AppointmentUpdated and AppointmentCancelled. Scheduling does not wait for any consumer, so the booking path stays fast.",
+      "pattern": "event",
+      "protocol": "Kafka"
+    },
+    {
+      "from": "sched",
+      "to": "registry",
+      "label": "Validates schema",
+      "detail": "Events are checked against the registered contract before they are published.",
+      "pattern": "dependency",
+      "offPath": true
+    },
+    {
+      "from": "broker",
+      "to": "billc",
+      "label": "Delivers events",
+      "detail": "The billing consumer group reads the stream and processes each appointment change. This hop is the part of the 5 second budget that retries can stretch.",
+      "pattern": "event",
+      "protocol": "Kafka consumer group"
+    },
+    {
+      "from": "broker",
+      "to": "clinc",
+      "label": "Delivers events",
+      "detail": "The clinical records consumer group reads the same stream independently of billing.",
+      "pattern": "event",
+      "protocol": "Kafka consumer group"
+    },
+    {
+      "from": "billc",
+      "to": "billdb",
+      "label": "Updates billing",
+      "detail": "Applies the appointment change to billing records. Retried up to 2 times if the write fails.",
+      "protocol": "SQL"
+    },
+    {
+      "from": "clinc",
+      "to": "clindb",
+      "label": "Updates records",
+      "detail": "Applies the appointment change to clinical records. Changes are picked up by CDC and batch sync, with a 15 minute sync frequency and a 30 second lag target.",
+      "pattern": "batch"
+    },
+    {
+      "from": "billc",
+      "to": "registry",
+      "label": "Reads contract",
+      "detail": "The consumer deserialises events using the registered schema version.",
+      "pattern": "dependency",
+      "offPath": true
+    },
+    {
+      "from": "clinc",
+      "to": "registry",
+      "label": "Reads contract",
+      "detail": "The consumer deserialises events using the registered schema version.",
+      "pattern": "dependency",
+      "offPath": true
+    },
+    {
+      "from": "billc",
+      "to": "dlq",
+      "label": "Failed events",
+      "detail": "An event that still fails after its retries is moved to the dead-letter queue.",
+      "pattern": "message",
+      "offPath": true
+    },
+    {
+      "from": "clinc",
+      "to": "dlq",
+      "label": "Failed events",
+      "detail": "An event that still fails after its retries is moved to the dead-letter queue.",
+      "pattern": "message",
+      "offPath": true
+    },
+    {
+      "from": "dlq",
+      "to": "broker",
+      "label": "Automated replay",
+      "detail": "Held events are replayed back onto the stream without manual work once the cause clears.",
+      "pattern": "message",
+      "offPath": true
+    },
+    {
+      "from": "broker",
+      "to": "monitor",
+      "label": "Lag and timing",
+      "detail": "Consumer lag and publish-to-stored time are exported for alerting.",
+      "pattern": "stream",
+      "offPath": true
+    }
+  ],
+  "zones": [
+    {
+      "id": "scheduling-team",
+      "label": "Scheduling team",
+      "kind": "group",
+      "members": ["sched", "scheddb"]
+    },
+    {
+      "id": "platform",
+      "label": "Shared event platform",
+      "kind": "group",
+      "members": ["registry", "broker", "dlq", "monitor"]
+    },
+    {
+      "id": "billing-team",
+      "label": "Billing team",
+      "kind": "group",
+      "members": ["billc", "billdb"]
+    },
+    {
+      "id": "clinical-team",
+      "label": "Clinical records team",
+      "kind": "group",
+      "members": ["clinc", "clindb"]
+    }
+  ],
+  "trace": [
+    { "node": "sched", "label": "An appointment is created or cancelled" },
+    { "node": "scheddb", "label": "The change is saved in the scheduling database" },
+    { "node": "sched", "label": "The service publishes the event" },
+    { "node": "broker", "label": "The event is published to the broker" },
+    { "node": "billc", "label": "The billing consumer receives it" },
+    { "node": "billdb", "label": "Billing is updated, within the 5 second target" },
+    { "node": "billc", "label": "The same event is also delivered to clinical records" },
+    { "node": "broker", "label": "Each consumer group reads independently" },
+    { "node": "clinc", "label": "The clinical consumer receives it" },
+    { "node": "clindb", "label": "Clinical records are updated with no re-entry" }
+  ],
+  "prose": [
+    {
+      "id": "overview",
+      "text": "The scheduling service stores an appointment change and publishes an event to a shared, highly available event broker, validated against the event contract registry. The billing and clinical consumers each read the stream and update their own stores. Events that cannot be processed go to a dead-letter queue and are replayed automatically, and monitoring watches consumer lag and end-to-end time.",
+      "mentions": [
+        "sched",
+        "scheddb",
+        "registry",
+        "broker",
+        "dlq",
+        "monitor",
+        "billc",
+        "billdb",
+        "clinc",
+        "clindb"
+      ]
+    }
+  ]
+}

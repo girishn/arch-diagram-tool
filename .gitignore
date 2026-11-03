@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+dist/
+.env*
+*.stackdump
+assets/aws-icons-local-only/
+# kept on the author's machine only
+seed/
+reports/
+research_notes/
+CLAUDE.md
+dist-demo/
+test-results/
+playwright-report/
+blob-report/

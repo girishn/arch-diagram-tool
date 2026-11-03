@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "title": "Order pipeline on Kafka",
+  "description": "Which service reads and writes which topic, as granted by Kafka ACLs. Dead-letter topics, the replay tool, the Debezium connectors and the admin account are left out.",
+  "hide": [
+    "topic-orders-order-placed-dlt",
+    "topic-orders-order-confirmed-dlt",
+    "topic-orders-order-cancelled-dlt",
+    "topic-inventory-stock-reserved-dlt",
+    "topic-inventory-stock-reservation-failed-dlt",
+    "topic-inventory-stock-release-requested-dlt",
+    "topic-payments-payment-captured-dlt",
+    "topic-payments-payment-failed-dlt",
+    "svc-replay-tool",
+    "svc-debezium-order",
+    "svc-debezium-inventory",
+    "svc-terraform"
+  ]
+}

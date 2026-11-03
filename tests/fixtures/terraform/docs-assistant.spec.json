@@ -1,0 +1,344 @@
+{
+  "version": 1,
+  "title": "Docs assistant",
+  "description": "Questions arrive through an API, a function retrieves passages from the indexed documents and asks a model to answer. Documents are loaded through a queue.",
+  "nodes": [
+    {
+      "id": "api-chat",
+      "label": "Chat API",
+      "sub": "API Gateway",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "tag": "aws_apigatewayv2_api",
+        "role": "Accepts chat requests over HTTPS and hands each to the chat function.",
+        "why": "One public entry point keeps authentication and throttling in a single place."
+      },
+      "x-tf": "aws_apigatewayv2_api.chat",
+      "at": {
+        "col": 1,
+        "row": 1
+      }
+    },
+    {
+      "id": "kb-docs",
+      "label": "Document retrieval",
+      "sub": "Bedrock knowledge base",
+      "icons": [
+        "bedrock"
+      ],
+      "detail": {
+        "tag": "aws_bedrockagent_knowledge_base",
+        "role": "Finds the passages most related to a question.",
+        "why": "Answers are grounded in the company's own documents, not the model's memory."
+      },
+      "x-tf": "aws_bedrockagent_knowledge_base.docs",
+      "at": {
+        "col": 3,
+        "row": 0
+      }
+    },
+    {
+      "id": "table-sessions",
+      "label": "Session store",
+      "sub": "DynamoDB table",
+      "icons": [
+        "dynamodb"
+      ],
+      "detail": {
+        "tag": "aws_dynamodb_table",
+        "role": "Key-value and document storage."
+      },
+      "x-tf": "aws_dynamodb_table.sessions",
+      "at": {
+        "col": 3,
+        "row": 2
+      }
+    },
+    {
+      "id": "fn-chat",
+      "label": "Chat function",
+      "sub": "Lambda function",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "tag": "aws_lambda_function",
+        "role": "Looks up the session, retrieves passages for the question and asks the model for an answer.",
+        "why": "Stateless, so it scales with requests and holds no data between calls."
+      },
+      "x-tf": "aws_lambda_function.chat",
+      "at": {
+        "col": 2,
+        "row": 1
+      }
+    },
+    {
+      "id": "fn-ingest",
+      "label": "Ingest function",
+      "sub": "Lambda function",
+      "scale": {
+        "min": 2,
+        "max": 2,
+        "unit": "instances"
+      },
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "tag": "aws_lambda_function",
+        "role": "Runs code on demand."
+      },
+      "x-tf": "aws_lambda_function.ingest",
+      "at": {
+        "col": 1,
+        "row": 4
+      }
+    },
+    {
+      "id": "search-vectors",
+      "label": "Vector index",
+      "sub": "OpenSearch Serverless",
+      "icons": [
+        "search"
+      ],
+      "detail": {
+        "tag": "aws_opensearchserverless_collection",
+        "role": "Vector and keyword index."
+      },
+      "x-tf": "aws_opensearchserverless_collection.vectors",
+      "at": {
+        "col": 4,
+        "row": 1
+      }
+    },
+    {
+      "id": "bucket-docs",
+      "label": "Document bucket",
+      "sub": "S3 bucket",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "tag": "aws_s3_bucket",
+        "role": "Stores objects."
+      },
+      "x-tf": "aws_s3_bucket.docs",
+      "at": {
+        "col": 2,
+        "row": 4
+      }
+    },
+    {
+      "id": "queue-ingest",
+      "label": "Ingest queue",
+      "sub": "SQS queue",
+      "icons": [
+        "sqs"
+      ],
+      "detail": {
+        "tag": "aws_sqs_queue",
+        "role": "Holds work items for one consumer."
+      },
+      "x-tf": "aws_sqs_queue.ingest",
+      "at": {
+        "col": 0,
+        "row": 4
+      }
+    },
+    {
+      "id": "queue-ingest-dlq",
+      "label": "Dead-letter queue",
+      "sub": "aws_sqs_queue",
+      "icons": [
+        "sqs"
+      ],
+      "detail": {
+        "tag": "aws_sqs_queue",
+        "role": "Holds work items for one consumer."
+      },
+      "x-tf": "module.ingest_dlq.aws_sqs_queue.this",
+      "peripheral": true,
+      "at": {
+        "col": 1,
+        "row": 5
+      }
+    },
+    {
+      "id": "client",
+      "label": "Browser",
+      "sub": "Chat widget",
+      "icons": [
+        "client"
+      ],
+      "detail": {
+        "role": "Where people type their questions.",
+        "why": "Not managed by Terraform, so it is drawn from the overlay."
+      },
+      "at": {
+        "col": 0,
+        "row": 1
+      }
+    },
+    {
+      "id": "model",
+      "label": "Foundation model",
+      "sub": "Bedrock",
+      "icons": [
+        "llm"
+      ],
+      "detail": {
+        "role": "Writes the answer from the question and the retrieved passages.",
+        "why": "Called by model id, not created by this Terraform."
+      },
+      "at": {
+        "col": 3,
+        "row": 1
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "api-chat_to_fn-chat",
+      "from": "api-chat",
+      "to": "fn-chat",
+      "label": "Invokes",
+      "pattern": "request-response",
+      "detail": "Each request is passed to the chat function with the caller's session id.",
+      "x-tf": [
+        "aws_apigatewayv2_integration.chat",
+        "aws_lambda_permission.chat"
+      ],
+      "traffic": "ingress"
+    },
+    {
+      "id": "kb-docs_to_search-vectors",
+      "from": "kb-docs",
+      "to": "search-vectors",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: aws_bedrockagent_knowledge_base.docs.",
+      "x-tf": [
+        "aws_bedrockagent_knowledge_base.docs"
+      ]
+    },
+    {
+      "id": "fn-chat_to_kb-docs",
+      "from": "fn-chat",
+      "to": "kb-docs",
+      "label": "Uses (IAM)",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: aws_iam_role_policy.chat.",
+      "x-tf": [
+        "aws_iam_role_policy.chat"
+      ],
+      "traffic": "egress"
+    },
+    {
+      "id": "fn-chat_to_table-sessions",
+      "from": "fn-chat",
+      "to": "table-sessions",
+      "label": "Uses (IAM)",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: aws_iam_role_policy.chat, aws_lambda_function.chat.",
+      "x-tf": [
+        "aws_iam_role_policy.chat",
+        "aws_lambda_function.chat"
+      ],
+      "traffic": "egress"
+    },
+    {
+      "id": "fn-ingest_to_bucket-docs",
+      "from": "fn-ingest",
+      "to": "bucket-docs",
+      "label": "Uses (IAM)",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: aws_iam_role_policy.ingest, aws_lambda_function.ingest.",
+      "x-tf": [
+        "aws_iam_role_policy.ingest",
+        "aws_lambda_function.ingest"
+      ]
+    },
+    {
+      "id": "queue-ingest_to_fn-ingest",
+      "from": "queue-ingest",
+      "to": "fn-ingest",
+      "label": "Triggers",
+      "pattern": "message",
+      "detail": "Derived from Terraform: aws_lambda_event_source_mapping.ingest.",
+      "x-tf": [
+        "aws_lambda_event_source_mapping.ingest"
+      ]
+    },
+    {
+      "id": "queue-ingest_to_queue-ingest-dlq",
+      "from": "queue-ingest",
+      "to": "queue-ingest-dlq",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: aws_sqs_queue.ingest.",
+      "x-tf": [
+        "aws_sqs_queue.ingest"
+      ]
+    },
+    {
+      "id": "client_to_api-chat",
+      "from": "client",
+      "to": "api-chat",
+      "label": "Question",
+      "protocol": "HTTPS",
+      "traffic": "ingress",
+      "detail": "The widget sends the question and session id."
+    },
+    {
+      "id": "fn-chat_to_model",
+      "from": "fn-chat",
+      "to": "model",
+      "label": "Generate",
+      "protocol": "HTTPS",
+      "traffic": "egress",
+      "detail": "The function sends the question with the retrieved passages and gets the answer back."
+    }
+  ],
+  "zones": [
+    {
+      "id": "subnet-private",
+      "label": "Private",
+      "kind": "subnet",
+      "members": [
+        "fn-chat"
+      ],
+      "parent": "vpc-main",
+      "x-tf": "aws_subnet.private"
+    },
+    {
+      "id": "vpc-main",
+      "label": "Main",
+      "kind": "vpc",
+      "x-tf": "aws_vpc.main"
+    }
+  ],
+  "trace": [
+    {
+      "node": "client",
+      "label": "A person asks a question"
+    },
+    {
+      "node": "api-chat",
+      "label": "The API receives it"
+    },
+    {
+      "node": "fn-chat",
+      "label": "The chat function takes over"
+    },
+    {
+      "node": "kb-docs",
+      "label": "Related passages are retrieved"
+    },
+    {
+      "node": "search-vectors",
+      "label": "The vector index returns the best matches"
+    }
+  ]
+}

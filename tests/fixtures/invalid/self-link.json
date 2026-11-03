@@ -1,0 +1,366 @@
+{
+  "version": 1,
+  "title": "Simple web app",
+  "lenses": [
+    {
+      "id": "security",
+      "label": "Security",
+      "summary": "Two layers keep a request flood and a bad caller from doing damage: a throttle at the front door and a least-privilege role on the function."
+    },
+    {
+      "id": "cost",
+      "label": "Cost",
+      "summary": "Everything bills per use, so cost tracks traffic and idle time costs almost nothing."
+    },
+    {
+      "id": "reliability"
+    },
+    {
+      "id": "risks"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "user",
+      "label": "Browser",
+      "sub": "React app",
+      "at": {
+        "col": 0,
+        "row": 0
+      },
+      "icons": [
+        "client"
+      ],
+      "detail": {
+        "role": "Sends requests to the API.",
+        "why": "A static front end needs no server of its own."
+      },
+      "lenses": {
+        "security": {
+          "badge": "No secrets in bundle",
+          "text": "No secrets ship in the bundle, so there is nothing to leak from the page.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Static hosting",
+          "text": "Static files on a CDN; hosting cost is negligible.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "api",
+      "label": "API",
+      "sub": "REST \u00b7 10 rps",
+      "at": {
+        "col": 1,
+        "row": 0
+      },
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "tag": "Throttled",
+        "role": "Front door for all requests. Throttles before any code runs.",
+        "why": "A hard limit caps the cost of a request flood.",
+        "tradeoff": "Buffers responses, so no streaming.",
+        "mentions": [
+          "fn"
+        ]
+      },
+      "lenses": {
+        "security": {
+          "badge": "Throttle 10 rps",
+          "text": "Throttling bounds the worst case of a flood, even if every other control failed.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "~$1 / M requests",
+          "text": "HTTP APIs bill per request with no idle charge; roughly $1 per million.",
+          "level": "info"
+        },
+        "reliability": {
+          "badge": "Managed \u00b7 multi-AZ",
+          "text": "Runs across zones with no servers to patch or fail over.",
+          "level": "good"
+        },
+        "risks": {
+          "badge": "Trade-off point",
+          "text": "Buffering responses keeps the API simple and cheap but rules out token-by-token streaming.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "fn",
+      "label": "Function",
+      "sub": "Handler",
+      "at": {
+        "col": 2,
+        "row": 0
+      },
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "role": "Validates input, reads and writes data.",
+        "why": "No idle compute.",
+        "mentions": [
+          "db",
+          "store"
+        ]
+      },
+      "lenses": {
+        "security": {
+          "badge": "Least-privilege role",
+          "text": "The role allows only the one table and the one bucket it needs, nothing else.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Effectively free",
+          "text": "Billed per invocation and run time; effectively free at low traffic.",
+          "level": "good"
+        },
+        "reliability": {
+          "badge": "Retries on failure",
+          "text": "Failed invocations are retried automatically before an error is returned.",
+          "level": "good"
+        },
+        "risks": {
+          "badge": "Non-risk",
+          "text": "Retries are safe because every write is conditional and idempotent.",
+          "level": "good"
+        }
+      },
+      "scale": {
+        "min": 1,
+        "max": 100,
+        "unit": "concurrent executions",
+        "trigger": "Request volume"
+      }
+    },
+    {
+      "id": "db",
+      "label": "Database",
+      "sub": "Key-value",
+      "at": {
+        "col": 3,
+        "row": 0
+      },
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Stores user records.",
+        "why": "Scales to zero and needs no servers."
+      },
+      "lenses": {
+        "security": {
+          "badge": "Encrypted at rest",
+          "text": "Data is encrypted at rest, and only the function's role can read or write it.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Pay per request",
+          "text": "On-demand billing: you pay per read and write, with nothing for idle capacity.",
+          "level": "info"
+        },
+        "reliability": {
+          "badge": "Single region",
+          "text": "A region outage takes the database down; point-in-time restore only covers data loss.",
+          "level": "warn"
+        },
+        "risks": {
+          "badge": "Risk",
+          "text": "Single-region deployment: a regional outage stops the whole app.",
+          "level": "risk"
+        }
+      }
+    },
+    {
+      "id": "store",
+      "label": "Files + Backups",
+      "sub": "Object storage",
+      "at": {
+        "col": 3,
+        "row": 1
+      },
+      "icons": [
+        {
+          "icon": "storage",
+          "label": "Files"
+        },
+        {
+          "icon": "backup",
+          "label": "Backups"
+        }
+      ],
+      "detail": {
+        "role": "Holds uploads and nightly backups.",
+        "why": "Cheap and durable."
+      },
+      "lenses": {
+        "security": {
+          "badge": "Private bucket",
+          "text": "The bucket is private with no public access; backups cannot be read by the web tier.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Cents / month",
+          "text": "Storage is billed per GB; a small app costs cents per month.",
+          "level": "good"
+        },
+        "reliability": {
+          "badge": "Same-region copy",
+          "text": "Backups live in the same region as the data they protect.",
+          "level": "warn"
+        }
+      }
+    }
+  ],
+  "links": [
+    {
+      "from": "user",
+      "to": "user",
+      "label": "POST /items",
+      "detail": "One HTTPS request per action, with a JSON body.",
+      "protocol": "HTTPS",
+      "pattern": "request-response",
+      "twoWay": true,
+      "lenses": {
+        "security": {
+          "badge": "TLS \u00b7 JWT",
+          "text": "Every call is HTTPS and carries a signed token the API verifies.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Per request",
+          "text": "The request is the unit of billing at the API."
+        }
+      },
+      "traffic": "ingress"
+    },
+    {
+      "from": "api",
+      "to": "fn",
+      "label": "Invoke",
+      "detail": "The API applies the throttle, then calls the function.",
+      "protocol": "Lambda invoke",
+      "interaction": "sync",
+      "lenses": {
+        "security": {
+          "badge": "Scoped role",
+          "text": "The API can invoke this one function and nothing else."
+        },
+        "cost": {
+          "badge": "Included",
+          "text": "No separate charge beyond the request and the invocation."
+        }
+      },
+      "traffic": "ingress"
+    },
+    {
+      "from": "fn",
+      "to": "db",
+      "label": "Read / write",
+      "detail": "A single conditional write per request.",
+      "protocol": "HTTPS",
+      "lenses": {
+        "security": {
+          "badge": "IAM auth",
+          "text": "Calls are signed with the function's role; no passwords are stored."
+        },
+        "cost": {
+          "badge": "Per read/write",
+          "text": "Each read or write unit is billed on demand."
+        }
+      }
+    },
+    {
+      "from": "fn",
+      "to": "store",
+      "label": "Backup",
+      "detail": "Nightly copy. Not on the request path.",
+      "offPath": true,
+      "pattern": "batch",
+      "interaction": "async",
+      "protocol": "Scheduled copy",
+      "lenses": {
+        "security": {
+          "badge": "Private bucket",
+          "text": "The copy never leaves the account and is encrypted in transit."
+        },
+        "cost": {
+          "badge": "Cents / night",
+          "text": "A small nightly copy costs cents per month."
+        }
+      },
+      "via": [
+        [
+          2,
+          1
+        ]
+      ]
+    }
+  ],
+  "zones": [
+    {
+      "id": "cloud",
+      "label": "Cloud",
+      "kind": "cloud",
+      "members": [
+        "api"
+      ]
+    },
+    {
+      "id": "vpc",
+      "label": "VPC",
+      "kind": "vpc",
+      "parent": "cloud",
+      "members": [
+        "fn"
+      ]
+    },
+    {
+      "id": "private",
+      "label": "Private subnet",
+      "kind": "subnet",
+      "parent": "vpc",
+      "members": [
+        "db",
+        "store"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "user",
+      "label": "You click save"
+    },
+    {
+      "node": "api",
+      "label": "Request hits the throttled front door"
+    },
+    {
+      "node": "fn",
+      "label": "Handler validates the input"
+    },
+    {
+      "node": "db",
+      "label": "Record written"
+    }
+  ],
+  "prose": [
+    {
+      "id": "overview",
+      "text": "A browser calls an API, which runs a function that stores records in a database. Uploads and backups go to object storage.",
+      "mentions": [
+        "user",
+        "api",
+        "fn",
+        "db",
+        "store"
+      ]
+    }
+  ]
+}

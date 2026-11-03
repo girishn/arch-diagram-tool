@@ -1,0 +1,1556 @@
+{
+  "version": 1,
+  "title": "Hybrid cloud landing zone with hub-and-spoke network",
+  "description": "An enterprise connects two data centres and its offices to a multi-account cloud estate through a central network hub. Inspection, DNS and shared services sit in the hub, workloads live in separate accounts per environment, and identity, logging and policy are applied from a management account.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "risks"
+    },
+    {
+      "id": "planes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "dc-core",
+      "label": "Core network A",
+      "sub": "Routers and firewalls",
+      "icons": [
+        "firewall"
+      ],
+      "detail": {
+        "role": "Data centre A's perimeter and routing.",
+        "why": "Cloud traffic enters and leaves the data centre here."
+      },
+      "layer": "onprem",
+      "at": {
+        "col": 1,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "dc-apps",
+      "label": "Legacy applications A",
+      "sub": "Servers",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Applications that have not moved.",
+        "why": "Many depend on systems that cannot move yet."
+      },
+      "layer": "onprem",
+      "at": {
+        "col": 0,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "dc2-core",
+      "label": "Core network B",
+      "sub": "Routers and firewalls",
+      "icons": [
+        "firewall"
+      ],
+      "detail": {
+        "role": "Data centre B's perimeter and routing.",
+        "why": "A second path for resilience."
+      },
+      "layer": "onprem",
+      "at": {
+        "col": 2,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "dc2-apps",
+      "label": "Legacy applications B",
+      "sub": "Servers",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "The second site's applications.",
+        "why": "Disaster recovery for site A."
+      },
+      "layer": "onprem",
+      "at": {
+        "col": 2,
+        "row": 0
+      },
+      "plane": "data"
+    },
+    {
+      "id": "offices",
+      "label": "Offices and branches",
+      "sub": "SD-WAN",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "Staff sites connected by a managed WAN.",
+        "why": "Staff reach cloud apps over the corporate network."
+      },
+      "layer": "onprem",
+      "at": {
+        "col": 4,
+        "row": 1
+      }
+    },
+    {
+      "id": "ad",
+      "label": "Corporate directory",
+      "sub": "Active Directory",
+      "icons": [
+        "identity"
+      ],
+      "detail": {
+        "role": "The source of staff identities.",
+        "why": "One account per person."
+      },
+      "layer": "onprem",
+      "at": {
+        "col": 8,
+        "row": 1
+      },
+      "plane": "control",
+      "lenses": {
+        "risks": {
+          "badge": "Single source",
+          "text": "If the directory is down, sign-in fails. A read-only replica runs in the cloud.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "pki",
+      "label": "Certificate authority",
+      "sub": "Internal PKI",
+      "icons": [
+        "key"
+      ],
+      "detail": {
+        "role": "Issues certificates for devices and services.",
+        "why": "Machines prove who they are."
+      },
+      "layer": "onprem",
+      "at": {
+        "col": 5,
+        "row": 1
+      },
+      "plane": "control"
+    },
+    {
+      "id": "remote",
+      "label": "Remote staff",
+      "sub": "VPN and zero-trust access",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "People working from anywhere.",
+        "why": "Access depends on identity and device health, not network location."
+      },
+      "layer": "onprem",
+      "at": {
+        "col": 6,
+        "row": 0
+      },
+      "lenses": {
+        "security": {
+          "badge": "Device posture",
+          "text": "Access needs a managed device that meets the security baseline.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "dx",
+      "label": "Dedicated links",
+      "sub": "Private circuits",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Two private circuits to different data centres.",
+        "why": "Predictable bandwidth and latency, off the internet."
+      },
+      "layer": "hub",
+      "at": {
+        "col": 0,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Circuit failure",
+          "text": "Each circuit alone can carry the load; a VPN backs both up.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "vpn",
+      "label": "VPN backup",
+      "sub": "Encrypted tunnels",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Encrypted internet tunnels that take over if a circuit fails.",
+        "why": "Resilience at low cost."
+      },
+      "layer": "hub",
+      "at": {
+        "col": 1,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "tgw",
+      "label": "Transit router",
+      "sub": "Central routing",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Connects every spoke network and every on-premises link.",
+        "why": "Adding a network is one attachment, not a mesh of peerings.",
+        "tradeoff": "Everything depends on it, so route changes are reviewed carefully."
+      },
+      "layer": "hub",
+      "at": {
+        "col": 2,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "fw-hub",
+      "label": "Inspection firewalls",
+      "sub": "Next-generation",
+      "icons": [
+        "firewall"
+      ],
+      "detail": {
+        "role": "Inspects traffic between networks and to the internet.",
+        "why": "One place to enforce and log network policy."
+      },
+      "layer": "hub",
+      "at": {
+        "col": 3,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "East-west inspection",
+          "text": "Traffic between spokes and to on-premises is inspected, not just internet traffic.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "egress",
+      "label": "Internet egress",
+      "sub": "NAT and proxy",
+      "icons": [
+        "nat"
+      ],
+      "detail": {
+        "role": "Controls outbound internet access.",
+        "why": "Workloads reach only approved destinations."
+      },
+      "layer": "hub",
+      "at": {
+        "col": 4,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Allow list",
+          "text": "Outbound traffic is limited to approved domains.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ingress",
+      "label": "Internet ingress",
+      "sub": "Load balancers and WAF",
+      "icons": [
+        "loadbalancer"
+      ],
+      "detail": {
+        "role": "The public entry for approved services.",
+        "why": "A small, protected surface."
+      },
+      "layer": "hub",
+      "at": {
+        "col": 5,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "dns",
+      "label": "DNS resolvers",
+      "sub": "Hybrid DNS",
+      "icons": [
+        "dns"
+      ],
+      "detail": {
+        "role": "Resolves names across cloud and on-premises.",
+        "why": "Names work everywhere, so applications move without change."
+      },
+      "layer": "hub",
+      "at": {
+        "col": 2,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ddos",
+      "label": "DDoS protection",
+      "sub": "Edge",
+      "icons": [
+        "firewall"
+      ],
+      "detail": {
+        "role": "Absorbs volumetric attacks.",
+        "why": "Public services stay up under attack."
+      },
+      "layer": "hub",
+      "at": {
+        "col": 6,
+        "row": 3
+      }
+    },
+    {
+      "id": "alb",
+      "label": "Load balancer",
+      "sub": "Production",
+      "icons": [
+        "loadbalancer"
+      ],
+      "detail": {
+        "role": "Spreads traffic over the app tier.",
+        "why": "No single server is a point of failure."
+      },
+      "layer": "work",
+      "at": {
+        "col": 0,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "web",
+      "label": "Web and API servers",
+      "sub": "Autoscaling",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "The application tier.",
+        "why": "Capacity follows load."
+      },
+      "layer": "work",
+      "at": {
+        "col": 1,
+        "row": 5
+      },
+      "plane": "data",
+      "scale": {
+        "min": 3,
+        "max": 30,
+        "unit": "instances",
+        "trigger": "CPU > 55%"
+      }
+    },
+    {
+      "id": "svc",
+      "label": "Services",
+      "sub": "Containers",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Business services.",
+        "why": "Teams deploy independently."
+      },
+      "layer": "work",
+      "at": {
+        "col": 1,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "db",
+      "label": "Primary database",
+      "sub": "Multi-zone",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "The system of record.",
+        "why": "Failover in under a minute."
+      },
+      "layer": "work",
+      "at": {
+        "col": 5,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "No internet path",
+          "text": "The data tier has no route to the internet.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "cache",
+      "label": "Cache",
+      "sub": "In memory",
+      "icons": [
+        "cache"
+      ],
+      "detail": {
+        "role": "Speeds up repeated reads.",
+        "why": "Protects the database at peak."
+      },
+      "layer": "work",
+      "at": {
+        "col": 3,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "objects",
+      "label": "Object storage",
+      "sub": "Files and backups",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "Documents and backups.",
+        "why": "Durable and cheap."
+      },
+      "layer": "work",
+      "at": {
+        "col": 3,
+        "row": 5
+      },
+      "plane": "data"
+    },
+    {
+      "id": "t-app",
+      "label": "Test environment",
+      "sub": "Smaller copy",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Where changes are tested.",
+        "why": "Production is not the first place a change runs."
+      },
+      "layer": "work",
+      "at": {
+        "col": 6,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Scheduled off",
+          "text": "Test environments shut down overnight and at weekends.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "t-db",
+      "label": "Test database",
+      "sub": "Masked data",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "A copy of production with personal data masked.",
+        "why": "Realistic tests without real customer data."
+      },
+      "layer": "work",
+      "at": {
+        "col": 6,
+        "row": 4
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Masked",
+          "text": "No real personal data is in test.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "registry",
+      "label": "Image registry",
+      "sub": "Signed images",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Stores approved container images.",
+        "why": "Only vetted images run."
+      },
+      "layer": "shared",
+      "at": {
+        "col": 3,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ci",
+      "label": "Build and release",
+      "sub": "CI/CD",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Builds, tests and deploys to every account.",
+        "why": "One path to production."
+      },
+      "layer": "shared",
+      "at": {
+        "col": 2,
+        "row": 7
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Role per account",
+          "text": "The pipeline assumes a narrow, short-lived role in each account.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "secrets",
+      "label": "Secrets manager",
+      "sub": "Rotation",
+      "icons": [
+        "secret"
+      ],
+      "detail": {
+        "role": "Stores and rotates credentials.",
+        "why": "No password lives in code."
+      },
+      "layer": "shared",
+      "at": {
+        "col": 0,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "kms",
+      "label": "Encryption keys",
+      "sub": "KMS",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Encrypts data at rest.",
+        "why": "Keys are separate from the data."
+      },
+      "layer": "shared",
+      "at": {
+        "col": 5,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "itsm",
+      "label": "Service management",
+      "sub": "Tickets and CMDB",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Changes, incidents and the inventory of what exists.",
+        "why": "A record of who changed what."
+      },
+      "layer": "shared",
+      "at": {
+        "col": 1,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "backup",
+      "label": "Central backup",
+      "sub": "Vault",
+      "icons": [
+        "backup"
+      ],
+      "detail": {
+        "role": "Backs up all accounts into a locked vault.",
+        "why": "A compromised account cannot delete its own backups."
+      },
+      "layer": "shared",
+      "at": {
+        "col": 6,
+        "row": 7
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Immutable vault",
+          "text": "Backups cannot be deleted before expiry, even by an administrator.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "org",
+      "label": "Organisation and policy",
+      "sub": "Guardrails",
+      "icons": [
+        "settings"
+      ],
+      "detail": {
+        "role": "Creates accounts and applies preventive policy.",
+        "why": "Dangerous actions are impossible, not just discouraged."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 2,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Preventive controls",
+          "text": "Policies deny actions such as disabling logs or leaving approved regions.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "sso",
+      "label": "Single sign-on",
+      "sub": "Federation",
+      "icons": [
+        "cognito"
+      ],
+      "detail": {
+        "role": "Signs staff in with their corporate identity.",
+        "why": "No separate cloud passwords."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 6,
+        "row": 9
+      },
+      "plane": "control"
+    },
+    {
+      "id": "iam-ctr",
+      "label": "Access review",
+      "sub": "Roles and approvals",
+      "icons": [
+        "iam"
+      ],
+      "detail": {
+        "role": "Grants time-limited access on approval.",
+        "why": "Access expires."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 3,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Just in time",
+          "text": "Admin roles last hours, not months.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "logs",
+      "label": "Central logging",
+      "sub": "Immutable archive",
+      "icons": [
+        "logs"
+      ],
+      "detail": {
+        "role": "Collects logs and audit trails from every account.",
+        "why": "Evidence survives an incident."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 5,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "siem",
+      "label": "Security operations",
+      "sub": "SIEM",
+      "icons": [
+        "audit"
+      ],
+      "detail": {
+        "role": "Correlates events and raises alerts.",
+        "why": "Threats are found and handled."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 4,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "cspm",
+      "label": "Posture management",
+      "sub": "Continuous checks",
+      "icons": [
+        "guardrails"
+      ],
+      "detail": {
+        "role": "Checks every account against the baseline.",
+        "why": "Drift is found within hours."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 2,
+        "row": 9
+      },
+      "plane": "control"
+    },
+    {
+      "id": "iac",
+      "label": "Infrastructure as code",
+      "sub": "Terraform",
+      "icons": [
+        "terraform"
+      ],
+      "detail": {
+        "role": "Defines accounts, networks and policy.",
+        "why": "The estate is reproducible and reviewed."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 1,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "fin",
+      "label": "Cost management",
+      "sub": "Budgets",
+      "icons": [
+        "budgets"
+      ],
+      "detail": {
+        "role": "Allocates cost to owners and alerts on overruns.",
+        "why": "Spend is visible per team."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 1,
+        "row": 9
+      },
+      "plane": "control"
+    },
+    {
+      "id": "mon",
+      "label": "Monitoring",
+      "sub": "Metrics and alerts",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Metrics and alerts across the estate.",
+        "why": "Problems are seen before users report them."
+      },
+      "layer": "gov",
+      "at": {
+        "col": 0,
+        "row": 8
+      },
+      "plane": "control"
+    }
+  ],
+  "links": [
+    {
+      "id": "dc-apps_to_dc-core",
+      "from": "dc-apps",
+      "to": "dc-core",
+      "label": "Traffic",
+      "pattern": "request-response",
+      "detail": "Traffic.",
+      "plane": "data"
+    },
+    {
+      "id": "dc2-apps_to_dc2-core",
+      "from": "dc2-apps",
+      "to": "dc2-core",
+      "label": "Traffic",
+      "pattern": "request-response",
+      "detail": "Traffic.",
+      "plane": "data"
+    },
+    {
+      "id": "dc-core_to_dx",
+      "from": "dc-core",
+      "to": "dx",
+      "label": "Private circuit",
+      "pattern": "stream",
+      "detail": "Private circuit.",
+      "plane": "data",
+      "interaction": "async",
+      "protocol": "BGP",
+      "traffic": "egress"
+    },
+    {
+      "id": "dc2-core_to_dx",
+      "from": "dc2-core",
+      "to": "dx",
+      "label": "Private circuit",
+      "pattern": "stream",
+      "detail": "Private circuit.",
+      "plane": "data",
+      "interaction": "async",
+      "protocol": "BGP",
+      "traffic": "egress"
+    },
+    {
+      "id": "offices_to_vpn",
+      "from": "offices",
+      "to": "vpn",
+      "label": "Branch tunnels",
+      "pattern": "stream",
+      "detail": "Branch tunnels.",
+      "plane": "data",
+      "interaction": "async",
+      "protocol": "IPsec"
+    },
+    {
+      "id": "remote_to_ingress",
+      "from": "remote",
+      "to": "ingress",
+      "label": "Zero-trust access",
+      "pattern": "request-response",
+      "detail": "Zero-trust access.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "dc-core_to_vpn",
+      "from": "dc-core",
+      "to": "vpn",
+      "label": "Backup tunnel",
+      "pattern": "stream",
+      "detail": "Backup tunnel.",
+      "plane": "data",
+      "interaction": "async",
+      "protocol": "IPsec",
+      "offPath": true,
+      "traffic": "egress"
+    },
+    {
+      "id": "dx_to_tgw",
+      "from": "dx",
+      "to": "tgw",
+      "label": "Attach",
+      "pattern": "stream",
+      "detail": "Attach.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "vpn_to_tgw",
+      "from": "vpn",
+      "to": "tgw",
+      "label": "Attach",
+      "pattern": "stream",
+      "detail": "Attach.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "tgw_to_fw-hub",
+      "from": "tgw",
+      "to": "fw-hub",
+      "label": "Inspect",
+      "pattern": "stream",
+      "detail": "Inspect.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "fw-hub_to_egress",
+      "from": "fw-hub",
+      "to": "egress",
+      "label": "Outbound",
+      "pattern": "stream",
+      "detail": "Outbound.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "ingress_to_fw-hub",
+      "from": "ingress",
+      "to": "fw-hub",
+      "label": "Inbound",
+      "pattern": "request-response",
+      "detail": "Inbound.",
+      "plane": "data"
+    },
+    {
+      "id": "ddos_to_ingress",
+      "from": "ddos",
+      "to": "ingress",
+      "label": "Clean traffic",
+      "pattern": "request-response",
+      "detail": "Clean traffic.",
+      "plane": "data",
+      "traffic": "ingress"
+    },
+    {
+      "id": "dns_to_tgw",
+      "from": "dns",
+      "to": "tgw",
+      "label": "Resolve",
+      "pattern": "request-response",
+      "detail": "Resolve.",
+      "plane": "data",
+      "offPath": true
+    },
+    {
+      "id": "tgw_to_alb",
+      "from": "tgw",
+      "to": "alb",
+      "label": "Production spoke",
+      "pattern": "request-response",
+      "detail": "Production spoke.",
+      "plane": "data",
+      "traffic": "egress"
+    },
+    {
+      "id": "tgw_to_t-app",
+      "from": "tgw",
+      "to": "t-app",
+      "label": "Test spoke",
+      "pattern": "request-response",
+      "detail": "Test spoke.",
+      "plane": "data",
+      "traffic": "egress"
+    },
+    {
+      "id": "alb_to_web",
+      "from": "alb",
+      "to": "web",
+      "label": "Requests",
+      "pattern": "request-response",
+      "detail": "Requests.",
+      "plane": "data"
+    },
+    {
+      "id": "web_to_svc",
+      "from": "web",
+      "to": "svc",
+      "label": "Calls",
+      "pattern": "request-response",
+      "detail": "Calls.",
+      "plane": "data"
+    },
+    {
+      "id": "svc_to_db",
+      "from": "svc",
+      "to": "db",
+      "label": "Reads and writes",
+      "pattern": "request-response",
+      "detail": "Reads and writes.",
+      "plane": "data",
+      "protocol": "SQL"
+    },
+    {
+      "id": "svc_to_cache",
+      "from": "svc",
+      "to": "cache",
+      "label": "Cache",
+      "pattern": "request-response",
+      "detail": "Cache.",
+      "plane": "data"
+    },
+    {
+      "id": "svc_to_objects",
+      "from": "svc",
+      "to": "objects",
+      "label": "Files",
+      "pattern": "request-response",
+      "detail": "Files.",
+      "plane": "data"
+    },
+    {
+      "id": "t-app_to_t-db",
+      "from": "t-app",
+      "to": "t-db",
+      "label": "Test data",
+      "pattern": "request-response",
+      "detail": "Test data.",
+      "plane": "data"
+    },
+    {
+      "id": "ad_to_sso",
+      "from": "ad",
+      "to": "sso",
+      "label": "Federate",
+      "pattern": "request-response",
+      "detail": "Federate.",
+      "plane": "control",
+      "protocol": "SAML"
+    },
+    {
+      "id": "sso_to_iam-ctr",
+      "from": "sso",
+      "to": "iam-ctr",
+      "label": "Roles",
+      "pattern": "request-response",
+      "detail": "Roles.",
+      "plane": "control"
+    },
+    {
+      "id": "pki_to_svc",
+      "from": "pki",
+      "to": "svc",
+      "label": "Certificates",
+      "pattern": "dependency",
+      "detail": "Certificates.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ci_to_web",
+      "from": "ci",
+      "to": "web",
+      "label": "Deploys",
+      "pattern": "dependency",
+      "detail": "Deploys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ci_to_t-app",
+      "from": "ci",
+      "to": "t-app",
+      "label": "Deploys",
+      "pattern": "dependency",
+      "detail": "Deploys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "registry_to_ci",
+      "from": "registry",
+      "to": "ci",
+      "label": "Images",
+      "pattern": "request-response",
+      "detail": "Images.",
+      "plane": "control"
+    },
+    {
+      "id": "secrets_to_svc",
+      "from": "secrets",
+      "to": "svc",
+      "label": "Credentials",
+      "pattern": "dependency",
+      "detail": "Credentials.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "kms_to_db",
+      "from": "kms",
+      "to": "db",
+      "label": "Keys",
+      "pattern": "dependency",
+      "detail": "Keys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "backup_to_db",
+      "from": "backup",
+      "to": "db",
+      "label": "Snapshots",
+      "pattern": "batch",
+      "detail": "Snapshots.",
+      "plane": "data",
+      "interaction": "async",
+      "offPath": true,
+      "traffic": "ingress"
+    },
+    {
+      "id": "itsm_to_ci",
+      "from": "itsm",
+      "to": "ci",
+      "label": "Change approvals",
+      "pattern": "request-response",
+      "detail": "Change approvals.",
+      "plane": "control"
+    },
+    {
+      "id": "org_to_tgw",
+      "from": "org",
+      "to": "tgw",
+      "label": "Network policy",
+      "pattern": "dependency",
+      "detail": "Network policy.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "iac_to_org",
+      "from": "iac",
+      "to": "org",
+      "label": "Defines",
+      "pattern": "dependency",
+      "detail": "Defines.",
+      "plane": "control"
+    },
+    {
+      "id": "cspm_to_org",
+      "from": "cspm",
+      "to": "org",
+      "label": "Findings",
+      "pattern": "event",
+      "detail": "Findings.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "logs_to_siem",
+      "from": "logs",
+      "to": "siem",
+      "label": "Events",
+      "pattern": "stream",
+      "detail": "Events.",
+      "interaction": "async"
+    },
+    {
+      "id": "fw-hub_to_logs",
+      "from": "fw-hub",
+      "to": "logs",
+      "label": "Flow logs",
+      "pattern": "stream",
+      "detail": "Flow logs.",
+      "interaction": "async",
+      "offPath": true,
+      "traffic": "egress"
+    },
+    {
+      "id": "web_to_mon",
+      "from": "web",
+      "to": "mon",
+      "label": "Metrics",
+      "pattern": "stream",
+      "detail": "Metrics.",
+      "interaction": "async",
+      "offPath": true,
+      "traffic": "egress"
+    },
+    {
+      "id": "fin_to_mon",
+      "from": "fin",
+      "to": "mon",
+      "label": "Spend alerts",
+      "pattern": "event",
+      "detail": "Spend alerts.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "iam-ctr_to_web",
+      "from": "iam-ctr",
+      "to": "web",
+      "label": "Time-limited access",
+      "pattern": "dependency",
+      "detail": "Time-limited access.",
+      "plane": "control",
+      "offPath": true
+    }
+  ],
+  "layers": [
+    {
+      "id": "onprem",
+      "label": "On premises",
+      "summary": "The existing estate: data centres, offices, and the identity systems they run."
+    },
+    {
+      "id": "hub",
+      "label": "Connectivity hub",
+      "summary": "The one place where networks meet and traffic is inspected."
+    },
+    {
+      "id": "work",
+      "label": "Workload accounts",
+      "summary": "Applications, one account per environment, in spoke networks."
+    },
+    {
+      "id": "shared",
+      "label": "Shared services",
+      "summary": "Capabilities used by every workload."
+    },
+    {
+      "id": "gov",
+      "label": "Governance",
+      "summary": "Management, policy, logging and security across all accounts."
+    }
+  ],
+  "lintIgnore": [
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dc-core",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dc-apps",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dc2-core",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dc2-apps",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ad",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.pki",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.remote",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dx",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.egress",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ingress",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dns",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ddos",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.cache",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.objects",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.t-app",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.t-db",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.registry",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ci",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.secrets",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.kms",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.itsm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.backup",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.org",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.sso",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.iam-ctr",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.logs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.siem",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.cspm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.iac",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.fin",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.mon",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    }
+  ],
+  "zones": [
+    {
+      "id": "dc-a",
+      "label": "Data centre A",
+      "kind": "boundary",
+      "members": [
+        "dc-core",
+        "dc-apps"
+      ]
+    },
+    {
+      "id": "dc-b",
+      "label": "Data centre B",
+      "kind": "boundary",
+      "members": [
+        "dc2-core",
+        "dc2-apps"
+      ]
+    },
+    {
+      "id": "hub-acct",
+      "label": "Network hub account",
+      "kind": "account",
+      "members": [
+        "dx",
+        "vpn"
+      ]
+    },
+    {
+      "id": "vpc-hub",
+      "label": "Hub network",
+      "kind": "vpc",
+      "parent": "hub-acct",
+      "members": [
+        "tgw",
+        "fw-hub",
+        "egress",
+        "ingress",
+        "dns"
+      ]
+    },
+    {
+      "id": "prod-acct",
+      "label": "Production account",
+      "kind": "account",
+      "members": []
+    },
+    {
+      "id": "vpc-prod",
+      "label": "Production network",
+      "kind": "vpc",
+      "parent": "prod-acct",
+      "members": []
+    },
+    {
+      "id": "sub-app",
+      "label": "App tier",
+      "kind": "subnet",
+      "parent": "vpc-prod",
+      "members": [
+        "alb",
+        "web",
+        "svc"
+      ]
+    },
+    {
+      "id": "sub-data",
+      "label": "Data tier",
+      "kind": "subnet",
+      "parent": "vpc-prod",
+      "members": [
+        "db",
+        "cache",
+        "objects"
+      ]
+    },
+    {
+      "id": "test-acct",
+      "label": "Test account",
+      "kind": "account",
+      "members": []
+    },
+    {
+      "id": "vpc-test",
+      "label": "Test network",
+      "kind": "vpc",
+      "parent": "test-acct",
+      "members": [
+        "t-app",
+        "t-db"
+      ]
+    },
+    {
+      "id": "shared-acct",
+      "label": "Shared services account",
+      "kind": "account",
+      "members": [
+        "registry",
+        "ci",
+        "secrets",
+        "kms",
+        "itsm",
+        "backup"
+      ]
+    },
+    {
+      "id": "mgmt-acct",
+      "label": "Management account",
+      "kind": "account",
+      "members": [
+        "org",
+        "sso",
+        "iam-ctr",
+        "logs",
+        "siem",
+        "cspm",
+        "iac",
+        "fin",
+        "mon"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "offices",
+      "label": "A branch user opens a cloud application"
+    },
+    {
+      "node": "vpn",
+      "label": "Traffic enters through the branch tunnel"
+    },
+    {
+      "node": "tgw",
+      "label": "The transit router carries it to the right network"
+    },
+    {
+      "node": "fw-hub",
+      "label": "The firewall inspects it"
+    },
+    {
+      "node": "alb",
+      "label": "The production load balancer receives it"
+    },
+    {
+      "node": "web",
+      "label": "A web server handles it"
+    },
+    {
+      "node": "svc",
+      "label": "A service performs the work"
+    },
+    {
+      "node": "db",
+      "label": "The database answers"
+    }
+  ]
+}

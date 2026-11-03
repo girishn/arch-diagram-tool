@@ -1,0 +1,6427 @@
+{
+  "version": 1,
+  "title": "Enterprise estate (four platforms, one diagram)",
+  "description": "Four large platforms drawn together to see how the tool behaves at well over a hundred components: retail, a bank's payments core, the data and ML platform, and a connected fleet. Cross-platform links show shared identity, data and events.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "risks"
+    },
+    {
+      "id": "planes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "rt-shoppers-web",
+      "label": "Web shoppers",
+      "sub": "Browsers",
+      "icons": [
+        "browser"
+      ],
+      "detail": {
+        "role": "People browsing and buying on the website.",
+        "why": "The largest source of traffic and revenue."
+      },
+      "layer": "rt-edge",
+      "at": {
+        "col": 2,
+        "row": 0
+      }
+    },
+    {
+      "id": "rt-shoppers-app",
+      "label": "Mobile shoppers",
+      "sub": "iOS and Android",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "People using the native apps.",
+        "why": "Highest conversion; the app also carries loyalty and push."
+      },
+      "layer": "rt-edge",
+      "at": {
+        "col": 10,
+        "row": 0
+      }
+    },
+    {
+      "id": "rt-stores",
+      "label": "Store systems",
+      "sub": "POS and kiosks",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Tills, kiosks and handhelds in physical stores.",
+        "why": "Stores sell and fulfil from the same stock as online."
+      },
+      "layer": "rt-edge",
+      "at": {
+        "col": 6,
+        "row": 0
+      },
+      "lenses": {
+        "risks": {
+          "badge": "Flaky links",
+          "text": "Store networks drop. Tills queue sales locally and sync when the link returns.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "rt-dns",
+      "label": "DNS",
+      "sub": "Latency and health routing",
+      "icons": [
+        "route53"
+      ],
+      "detail": {
+        "role": "Sends each shopper to the nearest healthy region.",
+        "why": "A regional failure becomes a routing change, not an outage.",
+        "tag": "Route 53"
+      },
+      "layer": "rt-edge",
+      "at": {
+        "col": 1,
+        "row": 0
+      }
+    },
+    {
+      "id": "rt-cdn",
+      "label": "CDN",
+      "sub": "Images, pages, static assets",
+      "icons": [
+        "cloudfront"
+      ],
+      "detail": {
+        "role": "Serves images, scripts and cached pages from a point near the shopper.",
+        "why": "Most page weight never reaches the platform, which keeps peak sales affordable."
+      },
+      "layer": "rt-edge",
+      "at": {
+        "col": 3,
+        "row": 0
+      },
+      "lenses": {
+        "cost": {
+          "badge": "Offloads traffic",
+          "text": "A cache hit costs a fraction of an origin request. A peak sale is mostly CDN traffic.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "rt-waf",
+      "label": "Web firewall",
+      "sub": "WAF and bot control",
+      "icons": [
+        "firewall"
+      ],
+      "detail": {
+        "role": "Blocks injection attempts, scrapers and credential-stuffing bots before they reach any service.",
+        "why": "Abuse is stopped at the edge, so it never competes with real shoppers for capacity."
+      },
+      "layer": "rt-edge",
+      "at": {
+        "col": 7,
+        "row": 0
+      },
+      "lenses": {
+        "security": {
+          "badge": "Bots filtered",
+          "text": "Rate limits, bot scoring and managed rules apply to every request.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rt-gw",
+      "label": "API gateway",
+      "sub": "Public APIs",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "role": "The single front door: routes, throttles and authenticates calls.",
+        "why": "Teams change internals freely while the public contract stays stable."
+      },
+      "layer": "rt-exp",
+      "at": {
+        "col": 7,
+        "row": 1
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "One front door",
+          "text": "Every public call is authenticated and throttled here before reaching a service.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rt-bff-web",
+      "label": "Web backend",
+      "sub": "BFF",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Combines several services into the exact shapes the website needs.",
+        "why": "The site makes one call, not twelve."
+      },
+      "layer": "rt-exp",
+      "at": {
+        "col": 1,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-bff-app",
+      "label": "Mobile backend",
+      "sub": "BFF",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Does the same for the apps, with smaller payloads and offline-friendly responses.",
+        "why": "Phones get what they need on poor networks."
+      },
+      "layer": "rt-exp",
+      "at": {
+        "col": 9,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-bff-store",
+      "label": "Store backend",
+      "sub": "BFF",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Serves tills and kiosks, with local fallbacks.",
+        "why": "A store can keep selling when the head office is slow."
+      },
+      "layer": "rt-exp",
+      "at": {
+        "col": 4,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-idp",
+      "label": "Customer identity",
+      "sub": "Sign-in and profiles",
+      "icons": [
+        "cognito"
+      ],
+      "detail": {
+        "role": "Accounts, social sign-in, multi-factor and consent records.",
+        "why": "One login across web, app and store; consent is stored once."
+      },
+      "layer": "rt-exp",
+      "at": {
+        "col": 2,
+        "row": 1
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Consent recorded",
+          "text": "Marketing and data consent are captured per account and checked before any use.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rt-flags",
+      "label": "Feature flags",
+      "sub": "Gradual rollout",
+      "icons": [
+        "settings"
+      ],
+      "detail": {
+        "role": "Turns features on for a share of shoppers and off instantly.",
+        "why": "A bad release is switched off in seconds, with no redeploy."
+      },
+      "layer": "rt-exp",
+      "at": {
+        "col": 10,
+        "row": 1
+      },
+      "plane": "control"
+    },
+    {
+      "id": "rt-catalog",
+      "label": "Catalogue",
+      "sub": "Products and prices",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Owns product data, pricing and promotions.",
+        "why": "One truth for what is sold and for how much."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 0,
+        "row": 2
+      },
+      "plane": "data",
+      "scale": {
+        "min": 6,
+        "max": 40,
+        "unit": "pods",
+        "trigger": "CPU > 60%"
+      }
+    },
+    {
+      "id": "rt-inventory",
+      "label": "Inventory",
+      "sub": "Stock by location",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Tracks stock in warehouses and stores and reserves it for orders.",
+        "why": "Shoppers are never sold what is not there.",
+        "tradeoff": "Reservations must expire, or abandoned baskets lock stock."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 3,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-basket",
+      "label": "Basket",
+      "sub": "Carts and checkout",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Holds the cart, applies offers and prices the order.",
+        "why": "Checkout stays fast because it holds only what it needs."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 2,
+        "row": 2
+      },
+      "plane": "data",
+      "scale": {
+        "min": 8,
+        "max": 60,
+        "unit": "pods",
+        "trigger": "requests per second"
+      }
+    },
+    {
+      "id": "rt-orders",
+      "label": "Orders",
+      "sub": "Order lifecycle",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Creates and tracks orders from payment to delivery.",
+        "why": "A single record of what happened to every order."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 4,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-payments",
+      "label": "Payments",
+      "sub": "Authorise and capture",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Talks to the payment provider, handles retries and refunds.",
+        "why": "Card data never touches the rest of the platform."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 1,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Out of PCI scope",
+          "text": "Only tokens are stored. The card number goes straight to the provider.",
+          "level": "good"
+        },
+        "risks": {
+          "badge": "Provider dependency",
+          "text": "If the provider is down, checkout fails. A second provider is configured for failover.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "rt-fulfil",
+      "label": "Fulfilment",
+      "sub": "Pick, pack, ship",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Plans picking and shipping and books carriers.",
+        "why": "Orders leave the cheapest, closest location."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 5,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-loyalty",
+      "label": "Loyalty",
+      "sub": "Points and offers",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Earns and spends points and issues personal offers.",
+        "why": "Repeat purchases are rewarded the same way on every channel."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 2,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-search",
+      "label": "Search service",
+      "sub": "Query and ranking",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Answers search and browse queries.",
+        "why": "Finding the product is the first step of every sale."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 5,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-recs",
+      "label": "Recommendations",
+      "sub": "Personalised picks",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Suggests products per shopper from behaviour and similar baskets.",
+        "why": "Raises basket size with no manual merchandising."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 9,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Inference cost",
+          "text": "Models run on a small GPU pool. Cost follows traffic.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "rt-pricing-ml",
+      "label": "Dynamic pricing",
+      "sub": "Model",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Suggests price changes from demand, stock and competitor prices.",
+        "why": "Margin improves on slow lines and stock sells through."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 7,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Needs a guard",
+          "text": "Price changes are capped and reviewed. Unbounded pricing models damage trust.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "rt-fraud",
+      "label": "Fraud scoring",
+      "sub": "Real time",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Scores every order for fraud risk before payment is captured.",
+        "why": "Loss is stopped before money moves."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 6,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Decision logged",
+          "text": "Every score and decision is stored with its inputs for dispute handling.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rt-notify",
+      "label": "Notifications",
+      "sub": "Email, SMS, push",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "role": "Sends order, delivery and offer messages.",
+        "why": "Shoppers hear about their order without asking."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 7,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-ctrl-plane",
+      "label": "Platform controller",
+      "sub": "Config and quotas",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Applies per-team quotas, limits and routing rules.",
+        "why": "Teams cannot starve each other."
+      },
+      "layer": "rt-svc",
+      "at": {
+        "col": 8,
+        "row": 2
+      },
+      "plane": "control"
+    },
+    {
+      "id": "rt-bus",
+      "label": "Event backbone",
+      "sub": "Kafka, multi-region",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "Carries every business event: order placed, stock changed, payment captured.",
+        "why": "Services stay independent and new consumers need no change to producers."
+      },
+      "layer": "rt-data",
+      "at": {
+        "col": 4,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Authorised per topic",
+          "text": "Each service can publish and read only its own topics.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Throughput priced",
+          "text": "Cost follows throughput and retention.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "rt-catalog-db",
+      "label": "Catalogue store",
+      "sub": "Document database",
+      "icons": [
+        "dynamodb"
+      ],
+      "detail": {
+        "role": "Product and price documents.",
+        "why": "Reads scale with the CDN-fronted catalogue."
+      },
+      "layer": "rt-data",
+      "at": {
+        "col": 0,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-inv-db",
+      "label": "Inventory store",
+      "sub": "Relational, replicated",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Stock levels with strong consistency.",
+        "why": "Reservations must never oversell."
+      },
+      "layer": "rt-data",
+      "at": {
+        "col": 3,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-order-db",
+      "label": "Order store",
+      "sub": "Relational, replicated",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Orders, lines and state changes.",
+        "why": "Money and legal records need transactions."
+      },
+      "layer": "rt-data",
+      "at": {
+        "col": 3,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Encrypted, backed up",
+          "text": "Encrypted at rest with point-in-time recovery.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rt-cache",
+      "label": "Session and basket cache",
+      "sub": "In memory",
+      "icons": [
+        "redis"
+      ],
+      "detail": {
+        "role": "Holds sessions and baskets for fast reads.",
+        "why": "Checkout latency stays low at peak."
+      },
+      "layer": "rt-data",
+      "at": {
+        "col": 1,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-search-idx",
+      "label": "Search index",
+      "sub": "Search cluster",
+      "icons": [
+        "search"
+      ],
+      "detail": {
+        "role": "The searchable copy of the catalogue.",
+        "why": "Keyword and facet queries return in milliseconds."
+      },
+      "layer": "rt-data",
+      "at": {
+        "col": 5,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-lake",
+      "label": "Data lake",
+      "sub": "Object storage",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "Raw and curated data from every system.",
+        "why": "One place for analytics and model training."
+      },
+      "layer": "rt-data",
+      "at": {
+        "col": 8,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Tiered storage",
+          "text": "Old data moves to cheaper tiers automatically.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "rt-dwh",
+      "label": "Warehouse",
+      "sub": "Analytics SQL",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Modelled data for reporting.",
+        "why": "Finance and merchandising use one set of numbers."
+      },
+      "layer": "rt-data",
+      "at": {
+        "col": 7,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-feature-store",
+      "label": "Feature store",
+      "sub": "Model inputs",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Per-shopper and per-product features, online and offline.",
+        "why": "Training and serving use identical inputs."
+      },
+      "layer": "rt-data",
+      "at": {
+        "col": 8,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "rt-psp",
+      "label": "Payment provider",
+      "sub": "Cards and wallets",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Authorises and captures payments.",
+        "why": "Specialists carry the card-network certification."
+      },
+      "layer": "rt-ext",
+      "at": {
+        "col": 2,
+        "row": 6
+      }
+    },
+    {
+      "id": "rt-carriers",
+      "label": "Carriers",
+      "sub": "Courier APIs",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Book shipments and return tracking events.",
+        "why": "Delivery options come from several carriers."
+      },
+      "layer": "rt-ext",
+      "at": {
+        "col": 7,
+        "row": 6
+      }
+    },
+    {
+      "id": "rt-marketplace",
+      "label": "Marketplace sellers",
+      "sub": "Partner catalogues",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Third-party sellers list and fulfil through the platform.",
+        "why": "A bigger range without holding the stock."
+      },
+      "layer": "rt-ext",
+      "at": {
+        "col": 1,
+        "row": 6
+      }
+    },
+    {
+      "id": "rt-tax",
+      "label": "Tax service",
+      "sub": "Rates and filing",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Calculates tax per country and state.",
+        "why": "Rules change often and are someone else's job."
+      },
+      "layer": "rt-ext",
+      "at": {
+        "col": 3,
+        "row": 6
+      }
+    },
+    {
+      "id": "rt-repo",
+      "label": "Source repositories",
+      "sub": "Git",
+      "icons": [
+        "git"
+      ],
+      "detail": {
+        "role": "Code and configuration for every service.",
+        "why": "Every change is reviewed and traceable."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 0,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "rt-ci",
+      "label": "Build and test",
+      "sub": "CI pipelines",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Builds, tests and scans each change.",
+        "why": "Nothing reaches production unchecked."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 0,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Supply chain scanned",
+          "text": "Dependencies and images are scanned and signed in the pipeline.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rt-registry",
+      "label": "Image registry",
+      "sub": "Signed images",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Stores signed container images.",
+        "why": "Clusters run only what the pipeline built."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 1,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "rt-gitops",
+      "label": "GitOps controller",
+      "sub": "Deploys to clusters",
+      "icons": [
+        "argocd"
+      ],
+      "detail": {
+        "role": "Applies the desired state from Git to each cluster.",
+        "why": "Production matches the repository, and a rollback is a revert."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 2,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "rt-iac",
+      "label": "Infrastructure as code",
+      "sub": "Terraform",
+      "icons": [
+        "terraform"
+      ],
+      "detail": {
+        "role": "Creates networks, clusters and databases.",
+        "why": "Environments are repeatable."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 1,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "rt-secrets",
+      "label": "Secrets and keys",
+      "sub": "Vault and KMS",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Stores secrets and encryption keys.",
+        "why": "No secret lives in code or images."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 4,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Rotated",
+          "text": "Secrets rotate automatically and are issued per workload.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rt-mesh",
+      "label": "Service mesh",
+      "sub": "mTLS between services",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Encrypts and authenticates calls between services.",
+        "why": "A compromised service cannot freely call the rest."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 3,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Zero trust inside",
+          "text": "Every call is mutually authenticated and checked against policy.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rt-obs",
+      "label": "Observability",
+      "sub": "Metrics, logs, traces",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Collects metrics, logs and traces from every service.",
+        "why": "Slow checkouts are found before shoppers complain."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 5,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "rt-siem",
+      "label": "Security monitoring",
+      "sub": "SIEM",
+      "icons": [
+        "audit"
+      ],
+      "detail": {
+        "role": "Correlates security events and raises alerts.",
+        "why": "Attacks are noticed in minutes."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 10,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "rt-oncall",
+      "label": "Alerting and on-call",
+      "sub": "Paging",
+      "icons": [
+        "alerts"
+      ],
+      "detail": {
+        "role": "Pages the owning team when a service level slips.",
+        "why": "Someone who can fix it is told at once."
+      },
+      "layer": "rt-ops",
+      "at": {
+        "col": 7,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "bk-retail-app",
+      "label": "Retail app",
+      "sub": "Mobile and web",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "Everyday banking for personal customers.",
+        "why": "The main way customers see their money."
+      },
+      "layer": "bk-chan",
+      "at": {
+        "col": 2,
+        "row": 10
+      }
+    },
+    {
+      "id": "bk-corp-portal",
+      "label": "Corporate portal",
+      "sub": "Treasury and payments",
+      "icons": [
+        "browser"
+      ],
+      "detail": {
+        "role": "Where company clients initiate bulk payments and see cash positions.",
+        "why": "Large flows come through here, with dual approval."
+      },
+      "layer": "bk-chan",
+      "at": {
+        "col": 4,
+        "row": 10
+      }
+    },
+    {
+      "id": "bk-branch",
+      "label": "Branch and contact centre",
+      "sub": "Staff tools",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Tools for staff to serve customers.",
+        "why": "Staff see the same data as the customer, with their own permissions."
+      },
+      "layer": "bk-chan",
+      "at": {
+        "col": 1,
+        "row": 10
+      },
+      "lenses": {
+        "security": {
+          "badge": "Role based",
+          "text": "Staff see only what their role allows, and every access is logged.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-tpp",
+      "label": "Third-party providers",
+      "sub": "Open banking",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Registered fintechs that access accounts with customer consent.",
+        "why": "Regulation requires the bank to offer it."
+      },
+      "layer": "bk-chan",
+      "at": {
+        "col": 3,
+        "row": 10
+      },
+      "lenses": {
+        "security": {
+          "badge": "Consent checked",
+          "text": "Every call carries a consent token the customer can withdraw.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-atm",
+      "label": "ATM and card network",
+      "sub": "Cards",
+      "icons": [
+        "external"
+      ],
+      "detail": {
+        "role": "Card authorisations and cash withdrawals.",
+        "why": "Cards are still a large share of volume."
+      },
+      "layer": "bk-chan",
+      "at": {
+        "col": 5,
+        "row": 10
+      }
+    },
+    {
+      "id": "bk-swift-in",
+      "label": "Counterparty banks",
+      "sub": "Interbank messaging",
+      "icons": [
+        "external"
+      ],
+      "detail": {
+        "role": "Other banks sending and receiving payments.",
+        "why": "Payments leave and enter the bank this way."
+      },
+      "layer": "bk-chan",
+      "at": {
+        "col": 7,
+        "row": 10
+      }
+    },
+    {
+      "id": "bk-apigw",
+      "label": "API gateway",
+      "sub": "Internal and open banking",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "role": "Authenticates, throttles and routes every API call.",
+        "why": "One enforcement point for security and quotas."
+      },
+      "layer": "bk-api",
+      "at": {
+        "col": 2,
+        "row": 11
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Strong customer auth",
+          "text": "Calls need multi-factor authentication and a valid consent for sensitive actions.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-iam",
+      "label": "Identity and access",
+      "sub": "Customers and staff",
+      "icons": [
+        "cognito"
+      ],
+      "detail": {
+        "role": "Sign-in, multi-factor and fine-grained roles.",
+        "why": "One identity for every channel."
+      },
+      "layer": "bk-api",
+      "at": {
+        "col": 1,
+        "row": 11
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Least privilege",
+          "text": "Roles are granted by request and expire; admin access is time-boxed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-consent",
+      "label": "Consent service",
+      "sub": "Open-banking consents",
+      "icons": [
+        "settings"
+      ],
+      "detail": {
+        "role": "Stores and enforces customer consent for data sharing.",
+        "why": "Customers control who sees their data."
+      },
+      "layer": "bk-api",
+      "at": {
+        "col": 3,
+        "row": 11
+      },
+      "plane": "control"
+    },
+    {
+      "id": "bk-esb",
+      "label": "Integration layer",
+      "sub": "Events and adapters",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "Carries events between systems and adapts old interfaces.",
+        "why": "Core systems are not changed for every new channel."
+      },
+      "layer": "bk-api",
+      "at": {
+        "col": 0,
+        "row": 11
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-orch",
+      "label": "Process orchestration",
+      "sub": "Workflows",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Runs multi-step flows such as onboarding and loan approval.",
+        "why": "Long-running work survives restarts and has a full audit."
+      },
+      "layer": "bk-api",
+      "at": {
+        "col": 4,
+        "row": 11
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-doc",
+      "label": "Document service",
+      "sub": "Statements and KYC files",
+      "icons": [
+        "bucket"
+      ],
+      "detail": {
+        "role": "Stores statements and customer documents.",
+        "why": "Retention rules are applied in one place."
+      },
+      "layer": "bk-api",
+      "at": {
+        "col": 5,
+        "row": 11
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Immutable retention",
+          "text": "Records are write-once and retained for the legal period.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-hub",
+      "label": "Payments hub",
+      "sub": "Routing and orchestration",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Receives every payment, validates it, picks the scheme and tracks it to completion.",
+        "why": "One flow for all payment types instead of one system per scheme.",
+        "tradeoff": "It is on the critical path of every payment, so it is the most heavily tested component."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 2,
+        "row": 12
+      },
+      "plane": "data",
+      "scale": {
+        "min": 4,
+        "max": 24,
+        "unit": "pods",
+        "trigger": "messages in flight"
+      }
+    },
+    {
+      "id": "bk-iso",
+      "label": "Message translation",
+      "sub": "ISO 20022",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "role": "Converts between channel formats and the standard message format.",
+        "why": "New schemes cost one adapter, not a rewrite."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 2,
+        "row": 13
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-fraud",
+      "label": "Fraud engine",
+      "sub": "Real time scoring",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Scores each payment against behaviour and known patterns.",
+        "why": "Fraud is stopped before the money leaves."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 3,
+        "row": 13
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Model drift",
+          "text": "Fraud patterns change. Models are retrained and monitored for drift.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "bk-sanctions",
+      "label": "Sanctions and AML screening",
+      "sub": "Name and transaction checks",
+      "icons": [
+        "guardrails"
+      ],
+      "detail": {
+        "role": "Checks parties against sanctions lists and flags unusual activity.",
+        "why": "The bank must not process prohibited payments."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 1,
+        "row": 12
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Hit means hold",
+          "text": "A possible match holds the payment for a human decision.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-limits",
+      "label": "Limits and liquidity",
+      "sub": "Per client and per scheme",
+      "icons": [
+        "config"
+      ],
+      "detail": {
+        "role": "Applies daily limits and watches the bank's cash at each scheme.",
+        "why": "Stops a runaway process and avoids a failed settlement."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 1,
+        "row": 13
+      },
+      "plane": "control"
+    },
+    {
+      "id": "bk-rtp",
+      "label": "Instant payments gateway",
+      "sub": "Real-time scheme",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Connects to the instant payment scheme with strict response times.",
+        "why": "The scheme gives seconds to respond."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 10,
+        "row": 13
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Hard deadline",
+          "text": "Timeouts are reported to the scheme as failures. Capacity is sized for peak with headroom.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "bk-batch-clr",
+      "label": "Batch clearing gateway",
+      "sub": "Bulk schemes",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Files for bulk and direct-debit schemes.",
+        "why": "Payroll and direct debits run in windows."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 5,
+        "row": 12
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-swift-gw",
+      "label": "Cross-border gateway",
+      "sub": "Interbank messaging",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Sends and receives cross-border messages.",
+        "why": "International payments use a different network."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 7,
+        "row": 13
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-card-sw",
+      "label": "Card switch",
+      "sub": "Authorisation",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Authorises card transactions in milliseconds.",
+        "why": "Card spend is checked against balance and limits in real time."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 4,
+        "row": 13
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-hsm",
+      "label": "Key management",
+      "sub": "HSM",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Holds the keys that sign and encrypt payments and PINs.",
+        "why": "Keys never leave tamper-resistant hardware."
+      },
+      "layer": "bk-pay",
+      "at": {
+        "col": 5,
+        "row": 13
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Hardware keys",
+          "text": "Keys are generated and used inside hardware modules, with dual control.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-ledger",
+      "label": "Core ledger",
+      "sub": "Accounts and balances",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "The system of record for every account and posting.",
+        "why": "A single, consistent set of balances."
+      },
+      "layer": "bk-core",
+      "at": {
+        "col": 1,
+        "row": 15
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Legacy platform",
+          "text": "Changes are slow and risky. New features live in the layer around it.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "bk-ledger-dr",
+      "label": "Core ledger standby",
+      "sub": "Replica",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "A synchronous copy for recovery.",
+        "why": "A lost data centre loses no posted transaction."
+      },
+      "layer": "bk-core",
+      "at": {
+        "col": 3,
+        "row": 15
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-product",
+      "label": "Product catalogue",
+      "sub": "Rates and fees",
+      "icons": [
+        "config"
+      ],
+      "detail": {
+        "role": "Defines products, interest and fees.",
+        "why": "Pricing is configured, not coded."
+      },
+      "layer": "bk-core",
+      "at": {
+        "col": 2,
+        "row": 14
+      },
+      "plane": "control"
+    },
+    {
+      "id": "bk-custdata",
+      "label": "Customer master",
+      "sub": "Single customer view",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "One record per customer across products.",
+        "why": "Everyone works from the same customer."
+      },
+      "layer": "bk-core",
+      "at": {
+        "col": 0,
+        "row": 14
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Masked by default",
+          "text": "Sensitive fields are masked unless the role needs them.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-lake",
+      "label": "Data lakehouse",
+      "sub": "Cloud analytics",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "All transactions and reference data for analysis.",
+        "why": "Reporting and models use one governed copy."
+      },
+      "layer": "bk-core",
+      "at": {
+        "col": 5,
+        "row": 15
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Elastic compute",
+          "text": "Compute is billed only while queries and jobs run.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "bk-stream",
+      "label": "Streaming ingest",
+      "sub": "Change data capture",
+      "icons": [
+        "stream"
+      ],
+      "detail": {
+        "role": "Streams ledger changes to the lakehouse within seconds.",
+        "why": "Reports and fraud models see today's data."
+      },
+      "layer": "bk-core",
+      "at": {
+        "col": 4,
+        "row": 14
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-feat",
+      "label": "Feature store",
+      "sub": "Model inputs",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Customer and account features for models.",
+        "why": "Training and serving use the same inputs."
+      },
+      "layer": "bk-core",
+      "at": {
+        "col": 5,
+        "row": 14
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-risk-eng",
+      "label": "Credit and market risk",
+      "sub": "Calculation engine",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Calculates exposures, capital and stress scenarios.",
+        "why": "The bank knows its risk position daily."
+      },
+      "layer": "bk-core",
+      "at": {
+        "col": 6,
+        "row": 15
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-catalog",
+      "label": "Data catalogue",
+      "sub": "Lineage and ownership",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Records what each dataset is, who owns it and where it came from.",
+        "why": "Regulators ask where a number came from; this answers it."
+      },
+      "layer": "bk-core",
+      "at": {
+        "col": 6,
+        "row": 14
+      },
+      "plane": "control"
+    },
+    {
+      "id": "bk-reg",
+      "label": "Regulatory reporting",
+      "sub": "Returns and filings",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Produces the reports regulators require.",
+        "why": "Reports come from governed data, with lineage."
+      },
+      "layer": "bk-sec",
+      "at": {
+        "col": 5,
+        "row": 16
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bk-siem",
+      "label": "Security monitoring",
+      "sub": "SIEM and SOC",
+      "icons": [
+        "audit"
+      ],
+      "detail": {
+        "role": "Collects security events and raises alerts.",
+        "why": "Attacks are detected and investigated around the clock."
+      },
+      "layer": "bk-sec",
+      "at": {
+        "col": 0,
+        "row": 17
+      },
+      "plane": "control"
+    },
+    {
+      "id": "bk-pam",
+      "label": "Privileged access",
+      "sub": "Vault",
+      "icons": [
+        "secret"
+      ],
+      "detail": {
+        "role": "Issues short-lived admin access with session recording.",
+        "why": "No standing admin rights."
+      },
+      "layer": "bk-sec",
+      "at": {
+        "col": 0,
+        "row": 16
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Session recorded",
+          "text": "Every privileged session is recorded and reviewed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-dr",
+      "label": "Disaster recovery",
+      "sub": "Failover orchestration",
+      "icons": [
+        "backup"
+      ],
+      "detail": {
+        "role": "Runs the plan that moves service to the standby site.",
+        "why": "Recovery is rehearsed, not improvised."
+      },
+      "layer": "bk-sec",
+      "at": {
+        "col": 3,
+        "row": 16
+      },
+      "plane": "control",
+      "lenses": {
+        "risks": {
+          "badge": "Rehearsal needed",
+          "text": "A plan that has not been exercised recently cannot be trusted. Tests run quarterly.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "bk-obs",
+      "label": "Observability",
+      "sub": "Metrics, logs, traces",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Service levels and traces across all systems.",
+        "why": "A slow payment is traced to the system causing it."
+      },
+      "layer": "bk-sec",
+      "at": {
+        "col": 4,
+        "row": 17
+      },
+      "plane": "control"
+    },
+    {
+      "id": "bk-ci",
+      "label": "Delivery pipeline",
+      "sub": "CI/CD with controls",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Builds, tests and releases changes, with approvals for production.",
+        "why": "Every change is reviewed, tested and recorded."
+      },
+      "layer": "bk-sec",
+      "at": {
+        "col": 5,
+        "row": 17
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Four eyes",
+          "text": "Production changes need an independent approval.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bk-fw",
+      "label": "Segmentation firewalls",
+      "sub": "Zones and policy",
+      "icons": [
+        "firewall"
+      ],
+      "detail": {
+        "role": "Separates channels, payments and core by network policy.",
+        "why": "A breach in one zone does not open the others."
+      },
+      "layer": "bk-sec",
+      "at": {
+        "col": 4,
+        "row": 16
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Zero trust",
+          "text": "Traffic between segments is denied unless a rule allows it.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ml-erp",
+      "label": "ERP",
+      "sub": "Finance and supply",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Orders, invoices, stock.",
+        "why": "The financial record of the business."
+      },
+      "layer": "ml-src",
+      "at": {
+        "col": 7,
+        "row": 19
+      }
+    },
+    {
+      "id": "ml-crm",
+      "label": "CRM",
+      "sub": "Customers",
+      "icons": [
+        "saas"
+      ],
+      "detail": {
+        "role": "Customers, leads and cases.",
+        "why": "The commercial view of each customer."
+      },
+      "layer": "ml-src",
+      "at": {
+        "col": 5,
+        "row": 20
+      }
+    },
+    {
+      "id": "ml-app-dbs",
+      "label": "Application databases",
+      "sub": "Operational",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Databases behind the company's own applications.",
+        "why": "Where most business events first land."
+      },
+      "layer": "ml-src",
+      "at": {
+        "col": 3,
+        "row": 20
+      },
+      "lenses": {
+        "risks": {
+          "badge": "Load on source",
+          "text": "Heavy extracts slow the application. Change capture reads the log instead.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "ml-saas-apps",
+      "label": "SaaS applications",
+      "sub": "Marketing, support",
+      "icons": [
+        "saas"
+      ],
+      "detail": {
+        "role": "Cloud tools that hold business data.",
+        "why": "Data outside the walls still has to be analysed."
+      },
+      "layer": "ml-src",
+      "at": {
+        "col": 7,
+        "row": 20
+      }
+    },
+    {
+      "id": "ml-iot",
+      "label": "Devices and sensors",
+      "sub": "Streams",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Machines and devices that send readings.",
+        "why": "High-volume time series."
+      },
+      "layer": "ml-src",
+      "at": {
+        "col": 0,
+        "row": 19
+      }
+    },
+    {
+      "id": "ml-partners",
+      "label": "Partner feeds",
+      "sub": "Files and APIs",
+      "icons": [
+        "external"
+      ],
+      "detail": {
+        "role": "Data from suppliers and customers.",
+        "why": "Often the only source for external facts."
+      },
+      "layer": "ml-src",
+      "at": {
+        "col": 6,
+        "row": 19
+      },
+      "lenses": {
+        "risks": {
+          "badge": "Untrusted shape",
+          "text": "Files arrive late, malformed or changed. Every feed is validated on entry.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "ml-logs",
+      "label": "Application logs",
+      "sub": "Events",
+      "icons": [
+        "logs"
+      ],
+      "detail": {
+        "role": "Clickstream and service logs.",
+        "why": "Behavioural data."
+      },
+      "layer": "ml-src",
+      "at": {
+        "col": 1,
+        "row": 20
+      }
+    },
+    {
+      "id": "ml-cdc",
+      "label": "Change capture",
+      "sub": "Database log reader",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Reads the logs of operational databases and emits changes.",
+        "why": "Fresh data with almost no load on the source."
+      },
+      "layer": "ml-ingest",
+      "at": {
+        "col": 3,
+        "row": 21
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-batch",
+      "label": "Batch ingestion",
+      "sub": "Scheduled extracts",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "role": "Pulls files and API data on a schedule.",
+        "why": "Simple and cheap for data that changes slowly."
+      },
+      "layer": "ml-ingest",
+      "at": {
+        "col": 6,
+        "row": 21
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-broker",
+      "label": "Streaming platform",
+      "sub": "Kafka",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "Carries streams of events with replay.",
+        "why": "Producers and consumers are decoupled, and history can be replayed."
+      },
+      "layer": "ml-ingest",
+      "at": {
+        "col": 1,
+        "row": 21
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-sparkstream",
+      "label": "Stream processing",
+      "sub": "Flink and Spark",
+      "icons": [
+        "stream"
+      ],
+      "detail": {
+        "role": "Cleans, joins and aggregates streams.",
+        "why": "Results in seconds, not at the next batch."
+      },
+      "layer": "ml-ingest",
+      "at": {
+        "col": 2,
+        "row": 21
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-orchestrator",
+      "label": "Workflow orchestration",
+      "sub": "Scheduler",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Runs and monitors every batch pipeline and its dependencies.",
+        "why": "A late file delays only what depends on it."
+      },
+      "layer": "ml-ingest",
+      "at": {
+        "col": 7,
+        "row": 21
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ml-schema-reg",
+      "label": "Schema registry",
+      "sub": "Contracts",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Stores and enforces data schemas.",
+        "why": "A producer cannot break its consumers."
+      },
+      "layer": "ml-ingest",
+      "at": {
+        "col": 0,
+        "row": 21
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Compatibility enforced",
+          "text": "A breaking change is refused when it is published.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ml-raw",
+      "label": "Bronze: raw",
+      "sub": "Object storage",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "Data exactly as received, kept immutable.",
+        "why": "Anything can be reprocessed from the original."
+      },
+      "layer": "ml-lake",
+      "at": {
+        "col": 3,
+        "row": 22
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Encrypted, immutable",
+          "text": "Encrypted with keys per domain; objects cannot be changed.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Cheap tier",
+          "text": "Cold data moves to low-cost storage automatically.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "ml-clean",
+      "label": "Silver: cleaned",
+      "sub": "Table format",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Deduplicated, typed and validated data.",
+        "why": "A reliable base for everyone."
+      },
+      "layer": "ml-lake",
+      "at": {
+        "col": 2,
+        "row": 23
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-gold",
+      "label": "Gold: modelled",
+      "sub": "Business tables",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Aggregates and marts shaped for use.",
+        "why": "Everyone uses the same definition of revenue."
+      },
+      "layer": "ml-lake",
+      "at": {
+        "col": 1,
+        "row": 23
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-compute",
+      "label": "Processing engine",
+      "sub": "Spark clusters",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Runs the transformations between stages.",
+        "why": "Scales to the largest jobs and releases the machines after."
+      },
+      "layer": "ml-lake",
+      "at": {
+        "col": 1,
+        "row": 22
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Spot capacity",
+          "text": "Most nodes are spot instances; jobs retry if one is reclaimed.",
+          "level": "info"
+        }
+      },
+      "scale": {
+        "min": 0,
+        "max": 200,
+        "unit": "nodes",
+        "trigger": "queued jobs"
+      }
+    },
+    {
+      "id": "ml-sql",
+      "label": "SQL warehouse",
+      "sub": "Interactive queries",
+      "icons": [
+        "search"
+      ],
+      "detail": {
+        "role": "Serves analysts and dashboards.",
+        "why": "Fast answers on the gold layer."
+      },
+      "layer": "ml-lake",
+      "at": {
+        "col": 4,
+        "row": 22
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Auto-suspends",
+          "text": "Idle warehouses suspend, so dashboards cost nothing overnight.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "ml-quality",
+      "label": "Data quality checks",
+      "sub": "Rules and tests",
+      "icons": [
+        "audit"
+      ],
+      "detail": {
+        "role": "Tests every table for freshness, nulls and ranges.",
+        "why": "Bad data is caught before it reaches a report."
+      },
+      "layer": "ml-lake",
+      "at": {
+        "col": 0,
+        "row": 22
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ml-vector",
+      "label": "Vector store",
+      "sub": "Embeddings",
+      "icons": [
+        "vector"
+      ],
+      "detail": {
+        "role": "Stores embeddings for search and retrieval.",
+        "why": "Powers semantic search and assistants over company data."
+      },
+      "layer": "ml-lake",
+      "at": {
+        "col": 4,
+        "row": 23
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-notebooks",
+      "label": "Notebooks and workbench",
+      "sub": "Data science",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Where data scientists explore and build.",
+        "why": "Fast iteration against real data."
+      },
+      "layer": "ml-ml",
+      "at": {
+        "col": 0,
+        "row": 24
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "No raw export",
+          "text": "Notebooks read governed tables and cannot copy data out.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ml-features",
+      "label": "Feature store",
+      "sub": "Online and offline",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Reusable model inputs, served the same way in training and production.",
+        "why": "No mismatch between training and serving."
+      },
+      "layer": "ml-ml",
+      "at": {
+        "col": 2,
+        "row": 25
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-train",
+      "label": "Training jobs",
+      "sub": "GPU and CPU",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Trains and tunes models.",
+        "why": "Experiments are repeatable."
+      },
+      "layer": "ml-ml",
+      "at": {
+        "col": 2,
+        "row": 24
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "GPU time",
+          "text": "GPU hours dominate cost; jobs are queued and scheduled, with quotas per team.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "ml-registry",
+      "label": "Model registry",
+      "sub": "Versions and approvals",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Stores each model version with its data, code and metrics.",
+        "why": "Every production model is traceable."
+      },
+      "layer": "ml-ml",
+      "at": {
+        "col": 3,
+        "row": 24
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Approval gate",
+          "text": "Only approved versions can be deployed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ml-serve",
+      "label": "Model serving",
+      "sub": "Online endpoints",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Serves predictions with autoscaling.",
+        "why": "Applications call a model like any other service."
+      },
+      "layer": "ml-ml",
+      "at": {
+        "col": 4,
+        "row": 24
+      },
+      "plane": "data",
+      "scale": {
+        "min": 2,
+        "max": 50,
+        "unit": "replicas",
+        "trigger": "requests per second"
+      }
+    },
+    {
+      "id": "ml-llm",
+      "label": "LLM gateway",
+      "sub": "Managed models",
+      "icons": [
+        "llm"
+      ],
+      "detail": {
+        "role": "Routes requests to hosted language models with quotas and filtering.",
+        "why": "One governed way to use generative models."
+      },
+      "layer": "ml-ml",
+      "at": {
+        "col": 6,
+        "row": 25
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Prompt and data filters",
+          "text": "Sensitive data is masked and outputs are filtered before they leave the gateway.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ml-monitor",
+      "label": "Model monitoring",
+      "sub": "Drift and quality",
+      "icons": [
+        "monitor"
+      ],
+      "detail": {
+        "role": "Watches inputs and outputs for drift and bias.",
+        "why": "A model that is wrong is noticed and retrained."
+      },
+      "layer": "ml-ml",
+      "at": {
+        "col": 3,
+        "row": 25
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ml-bi",
+      "label": "BI and dashboards",
+      "sub": "Self-service",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Reports and dashboards for the business.",
+        "why": "Decisions use governed numbers."
+      },
+      "layer": "ml-use",
+      "at": {
+        "col": 8,
+        "row": 26
+      }
+    },
+    {
+      "id": "ml-apps",
+      "label": "Data products and apps",
+      "sub": "APIs",
+      "icons": [
+        "api"
+      ],
+      "detail": {
+        "role": "Applications that read data and predictions through APIs.",
+        "why": "Data becomes a feature of the product."
+      },
+      "layer": "ml-use",
+      "at": {
+        "col": 6,
+        "row": 26
+      }
+    },
+    {
+      "id": "ml-analysts",
+      "label": "Analysts",
+      "sub": "SQL and notebooks",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "People who explore data directly.",
+        "why": "Answers without a request to IT."
+      },
+      "layer": "ml-use",
+      "at": {
+        "col": 9,
+        "row": 26
+      }
+    },
+    {
+      "id": "ml-ext-share",
+      "label": "External sharing",
+      "sub": "Partners",
+      "icons": [
+        "external"
+      ],
+      "detail": {
+        "role": "Shares selected data with partners.",
+        "why": "Sharing without copying files around."
+      },
+      "layer": "ml-use",
+      "at": {
+        "col": 0,
+        "row": 26
+      },
+      "lenses": {
+        "security": {
+          "badge": "Row and column limits",
+          "text": "Partners see only agreed rows and columns, and every query is logged.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ml-reverse",
+      "label": "Reverse sync",
+      "sub": "Back to systems",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Sends scores and segments back to operational tools.",
+        "why": "Insight reaches the people who act."
+      },
+      "layer": "ml-use",
+      "at": {
+        "col": 2,
+        "row": 26
+      }
+    },
+    {
+      "id": "ml-catalog",
+      "label": "Data catalogue",
+      "sub": "Search and lineage",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Describes every dataset, owner and flow.",
+        "why": "People find and trust data."
+      },
+      "layer": "ml-gov",
+      "at": {
+        "col": 2,
+        "row": 28
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ml-policy",
+      "label": "Access policy",
+      "sub": "Row and column rules",
+      "icons": [
+        "iam"
+      ],
+      "detail": {
+        "role": "Defines who can see which data.",
+        "why": "One policy, enforced in every engine."
+      },
+      "layer": "ml-gov",
+      "at": {
+        "col": 8,
+        "row": 27
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Attribute based",
+          "text": "Access follows tags on data and attributes of people, not hand-made grants.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ml-kms",
+      "label": "Keys and secrets",
+      "sub": "KMS",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Holds encryption keys and secrets.",
+        "why": "Keys are separate from the data they protect."
+      },
+      "layer": "ml-gov",
+      "at": {
+        "col": 6,
+        "row": 28
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ml-lineage",
+      "label": "Lineage",
+      "sub": "Column level",
+      "icons": [
+        "tracing"
+      ],
+      "detail": {
+        "role": "Tracks where each column came from and where it goes.",
+        "why": "An error is traced to its source; a change shows who is affected."
+      },
+      "layer": "ml-gov",
+      "at": {
+        "col": 0,
+        "row": 28
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ml-finops",
+      "label": "Cost control",
+      "sub": "Budgets and tags",
+      "icons": [
+        "budgets"
+      ],
+      "detail": {
+        "role": "Allocates cost to teams and alerts on overruns.",
+        "why": "A job cannot silently spend a month's budget."
+      },
+      "layer": "ml-gov",
+      "at": {
+        "col": 1,
+        "row": 27
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ml-obs",
+      "label": "Observability",
+      "sub": "Pipelines and platform",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Metrics and alerts for pipelines and jobs.",
+        "why": "Late or failed data is noticed first by the platform."
+      },
+      "layer": "ml-gov",
+      "at": {
+        "col": 10,
+        "row": 27
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ml-cicd",
+      "label": "Delivery pipeline",
+      "sub": "Code, tests, deploy",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Tests and deploys pipelines, models and infrastructure.",
+        "why": "Changes are reviewed and repeatable."
+      },
+      "layer": "ml-gov",
+      "at": {
+        "col": 6,
+        "row": 27
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ml-pii",
+      "label": "Sensitive data scanner",
+      "sub": "Classification",
+      "icons": [
+        "guardrails"
+      ],
+      "detail": {
+        "role": "Finds and tags personal data.",
+        "why": "Protection follows the tag."
+      },
+      "layer": "ml-gov",
+      "at": {
+        "col": 3,
+        "row": 27
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Auto tagging",
+          "text": "New columns are scanned and tagged on arrival.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "io-vehicles",
+      "label": "Vehicles",
+      "sub": "Telematics units",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Connected vehicles that report position, health and usage.",
+        "why": "The fleet is the product."
+      },
+      "layer": "io-field",
+      "at": {
+        "col": 6,
+        "row": 31
+      },
+      "lenses": {
+        "risks": {
+          "badge": "Intermittent links",
+          "text": "Vehicles lose coverage. Units buffer readings and send them when the link returns.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "io-machines",
+      "label": "Industrial machines",
+      "sub": "PLCs and sensors",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Machines in customer sites.",
+        "why": "Condition data predicts failures."
+      },
+      "layer": "io-field",
+      "at": {
+        "col": 3,
+        "row": 31
+      }
+    },
+    {
+      "id": "io-chargers",
+      "label": "Chargers and depots",
+      "sub": "Site controllers",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Charging points and depot systems.",
+        "why": "Energy use is a large operating cost."
+      },
+      "layer": "io-field",
+      "at": {
+        "col": 3,
+        "row": 30
+      }
+    },
+    {
+      "id": "io-mobile",
+      "label": "Driver and technician apps",
+      "sub": "Mobile",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "Apps used by drivers and field staff.",
+        "why": "People act on what the platform shows."
+      },
+      "layer": "io-field",
+      "at": {
+        "col": 7,
+        "row": 31
+      }
+    },
+    {
+      "id": "io-gw-edge",
+      "label": "Edge gateway",
+      "sub": "Protocol translation",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Collects readings from local devices, filters and forwards them.",
+        "why": "Cuts traffic and keeps working offline."
+      },
+      "layer": "io-field",
+      "at": {
+        "col": 1,
+        "row": 31
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-edge-ml",
+      "label": "Edge inference",
+      "sub": "Local models",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Runs small models near the device.",
+        "why": "Decisions that cannot wait for the cloud."
+      },
+      "layer": "io-field",
+      "at": {
+        "col": 0,
+        "row": 31
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-edge-store",
+      "label": "Edge buffer",
+      "sub": "Local storage",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Stores readings while the link is down.",
+        "why": "No data is lost in an outage."
+      },
+      "layer": "io-field",
+      "at": {
+        "col": 0,
+        "row": 30
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-lb",
+      "label": "Global load balancer",
+      "sub": "Regional routing",
+      "icons": [
+        "loadbalancer"
+      ],
+      "detail": {
+        "role": "Sends each device to its nearest region.",
+        "why": "Low latency and regional failover."
+      },
+      "layer": "io-ingest",
+      "at": {
+        "col": 6,
+        "row": 32
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-mqtt",
+      "label": "Device broker",
+      "sub": "MQTT",
+      "icons": [
+        "queue"
+      ],
+      "detail": {
+        "role": "Accepts device connections and messages.",
+        "why": "Millions of connections at low cost."
+      },
+      "layer": "io-ingest",
+      "at": {
+        "col": 4,
+        "row": 32
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Mutual TLS",
+          "text": "Each device connects with its own certificate. A revoked device cannot reconnect.",
+          "level": "good"
+        }
+      },
+      "scale": {
+        "min": 3,
+        "max": 60,
+        "unit": "nodes",
+        "trigger": "connections"
+      }
+    },
+    {
+      "id": "io-auth",
+      "label": "Device identity",
+      "sub": "Registry and certificates",
+      "icons": [
+        "identity"
+      ],
+      "detail": {
+        "role": "Issues and revokes device certificates.",
+        "why": "Every device has its own identity."
+      },
+      "layer": "io-ingest",
+      "at": {
+        "col": 2,
+        "row": 32
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Per-device identity",
+          "text": "A stolen device is revoked individually, without affecting others.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "io-rules",
+      "label": "Routing rules",
+      "sub": "Topic rules",
+      "icons": [
+        "settings"
+      ],
+      "detail": {
+        "role": "Routes messages by topic to streams and stores.",
+        "why": "New use needs a rule, not code."
+      },
+      "layer": "io-ingest",
+      "at": {
+        "col": 2,
+        "row": 33
+      },
+      "plane": "control"
+    },
+    {
+      "id": "io-validate",
+      "label": "Validation and decode",
+      "sub": "Schema check",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "role": "Rejects malformed messages and decodes binary payloads.",
+        "why": "Bad data stops here."
+      },
+      "layer": "io-ingest",
+      "at": {
+        "col": 4,
+        "row": 33
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-dlq",
+      "label": "Dead-letter queue",
+      "sub": "Rejected messages",
+      "icons": [
+        "queue"
+      ],
+      "detail": {
+        "role": "Holds messages that could not be processed.",
+        "why": "Nothing is dropped silently."
+      },
+      "layer": "io-ingest",
+      "at": {
+        "col": 0,
+        "row": 32
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-cmd",
+      "label": "Command service",
+      "sub": "Down to devices",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "role": "Sends commands to devices and tracks acknowledgement.",
+        "why": "Remote actions are queued, authorised and recorded."
+      },
+      "layer": "io-ingest",
+      "at": {
+        "col": 0,
+        "row": 33
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Authorised and audited",
+          "text": "Every command needs a role and is written to the audit log.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "io-kafka",
+      "label": "Event stream",
+      "sub": "Kafka",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "Carries telemetry for all consumers.",
+        "why": "Many consumers read the same data independently."
+      },
+      "layer": "io-stream",
+      "at": {
+        "col": 3,
+        "row": 35
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Retention priced",
+          "text": "Seven days of retention; older data lives in the lake.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "io-flink",
+      "label": "Stream processing",
+      "sub": "Windows and joins",
+      "icons": [
+        "stream"
+      ],
+      "detail": {
+        "role": "Aggregates readings, joins with reference data and detects events.",
+        "why": "Alerts in seconds."
+      },
+      "layer": "io-stream",
+      "at": {
+        "col": 3,
+        "row": 34
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-tsdb",
+      "label": "Time-series store",
+      "sub": "Hot data",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Recent readings indexed by device and time.",
+        "why": "Fast dashboards and diagnostics."
+      },
+      "layer": "io-stream",
+      "at": {
+        "col": 2,
+        "row": 35
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-lake",
+      "label": "Data lake",
+      "sub": "Cold history",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "All raw and curated telemetry.",
+        "why": "Model training and long-term analysis."
+      },
+      "layer": "io-stream",
+      "at": {
+        "col": 4,
+        "row": 35
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Cold tiers",
+          "text": "Data older than 90 days moves to archive storage.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "io-twin",
+      "label": "Digital twin",
+      "sub": "State per asset",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "The latest known state of every vehicle and machine.",
+        "why": "Applications ask for the current state, not for a stream."
+      },
+      "layer": "io-stream",
+      "at": {
+        "col": 1,
+        "row": 35
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-geo",
+      "label": "Geospatial index",
+      "sub": "Positions",
+      "icons": [
+        "search"
+      ],
+      "detail": {
+        "role": "Answers questions like 'which vehicles are near this depot'.",
+        "why": "Dispatch and geofencing."
+      },
+      "layer": "io-stream",
+      "at": {
+        "col": 0,
+        "row": 35
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-feat",
+      "label": "Feature store",
+      "sub": "Model inputs",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Per-asset features for models.",
+        "why": "Training and serving use identical inputs."
+      },
+      "layer": "io-stream",
+      "at": {
+        "col": 5,
+        "row": 34
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-train",
+      "label": "Model training",
+      "sub": "Predictive maintenance",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Trains failure-prediction and energy models.",
+        "why": "Fixing a part before it fails is cheaper than a breakdown."
+      },
+      "layer": "io-stream",
+      "at": {
+        "col": 4,
+        "row": 34
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-serve",
+      "label": "Model serving",
+      "sub": "Online",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Scores assets as new data arrives.",
+        "why": "Risk scores update continuously."
+      },
+      "layer": "io-stream",
+      "at": {
+        "col": 1,
+        "row": 34
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-ops-ui",
+      "label": "Operations console",
+      "sub": "Fleet view",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Live fleet map, alerts and diagnostics.",
+        "why": "Operators see problems and act."
+      },
+      "layer": "io-app",
+      "at": {
+        "col": 1,
+        "row": 36
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-alerts",
+      "label": "Alerting",
+      "sub": "Rules and notifications",
+      "icons": [
+        "alerts"
+      ],
+      "detail": {
+        "role": "Turns detected events into notifications and tickets.",
+        "why": "The right team hears about it."
+      },
+      "layer": "io-app",
+      "at": {
+        "col": 7,
+        "row": 36
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-api",
+      "label": "Customer and partner API",
+      "sub": "Public",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "role": "Exposes fleet data to customers and partners.",
+        "why": "Data becomes a product."
+      },
+      "layer": "io-app",
+      "at": {
+        "col": 6,
+        "row": 36
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Tenant scoped",
+          "text": "A customer can only see its own assets.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "io-bi",
+      "label": "Analytics",
+      "sub": "Dashboards",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Reports on utilisation, cost and reliability.",
+        "why": "Management decisions."
+      },
+      "layer": "io-app",
+      "at": {
+        "col": 4,
+        "row": 36
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-billing",
+      "label": "Usage billing",
+      "sub": "Metering",
+      "icons": [
+        "budgets"
+      ],
+      "detail": {
+        "role": "Turns usage into invoices.",
+        "why": "Customers pay for what they use."
+      },
+      "layer": "io-app",
+      "at": {
+        "col": 2,
+        "row": 36
+      },
+      "plane": "data"
+    },
+    {
+      "id": "io-erp",
+      "label": "Enterprise systems",
+      "sub": "ERP and CRM",
+      "icons": [
+        "saas"
+      ],
+      "detail": {
+        "role": "Work orders, parts and contracts.",
+        "why": "A predicted failure becomes a work order automatically."
+      },
+      "layer": "io-app",
+      "at": {
+        "col": 8,
+        "row": 36
+      }
+    },
+    {
+      "id": "io-ota",
+      "label": "Update service",
+      "sub": "Over the air",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Plans and delivers firmware and software updates.",
+        "why": "Fixing thousands of devices without visiting them."
+      },
+      "layer": "io-ctrl",
+      "at": {
+        "col": 2,
+        "row": 37
+      },
+      "plane": "control",
+      "lenses": {
+        "risks": {
+          "badge": "Bricking risk",
+          "text": "A bad update could disable devices. Rollouts are staged, and a device reverts if it fails its health check.",
+          "level": "risk"
+        }
+      }
+    },
+    {
+      "id": "io-sign",
+      "label": "Code signing",
+      "sub": "HSM",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Signs every update.",
+        "why": "Devices install only what the company signed."
+      },
+      "layer": "io-ctrl",
+      "at": {
+        "col": 3,
+        "row": 38
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Signed updates",
+          "text": "Devices verify the signature and refuse anything else.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "io-config",
+      "label": "Fleet configuration",
+      "sub": "Desired state",
+      "icons": [
+        "config"
+      ],
+      "detail": {
+        "role": "Holds the desired settings per group of devices.",
+        "why": "Change a group, not a device."
+      },
+      "layer": "io-ctrl",
+      "at": {
+        "col": 0,
+        "row": 37
+      },
+      "plane": "control"
+    },
+    {
+      "id": "io-iam",
+      "label": "Staff access",
+      "sub": "Roles",
+      "icons": [
+        "iam"
+      ],
+      "detail": {
+        "role": "Controls who can see and command which assets.",
+        "why": "Least privilege for operators."
+      },
+      "layer": "io-ctrl",
+      "at": {
+        "col": 2,
+        "row": 38
+      },
+      "plane": "control"
+    },
+    {
+      "id": "io-audit",
+      "label": "Audit log",
+      "sub": "Immutable",
+      "icons": [
+        "audit"
+      ],
+      "detail": {
+        "role": "Records every command, update and access.",
+        "why": "Disputes and incidents can be reconstructed."
+      },
+      "layer": "io-ctrl",
+      "at": {
+        "col": 1,
+        "row": 38
+      },
+      "plane": "control"
+    },
+    {
+      "id": "io-obs",
+      "label": "Observability",
+      "sub": "Metrics and traces",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Service levels for the platform itself.",
+        "why": "The platform's own health."
+      },
+      "layer": "io-ctrl",
+      "at": {
+        "col": 4,
+        "row": 37
+      },
+      "plane": "control"
+    },
+    {
+      "id": "io-ci",
+      "label": "Delivery pipeline",
+      "sub": "CI/CD",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Builds, tests and ships platform and firmware.",
+        "why": "Repeatable releases."
+      },
+      "layer": "io-ctrl",
+      "at": {
+        "col": 4,
+        "row": 38
+      },
+      "plane": "control"
+    },
+    {
+      "id": "io-siem",
+      "label": "Threat detection",
+      "sub": "Anomaly detection",
+      "icons": [
+        "guardrails"
+      ],
+      "detail": {
+        "role": "Looks for compromised devices and abuse.",
+        "why": "A hijacked device is found from its behaviour."
+      },
+      "layer": "io-ctrl",
+      "at": {
+        "col": 10,
+        "row": 37
+      },
+      "plane": "control"
+    }
+  ],
+  "links": [
+    {
+      "id": "rt-shoppers-web_to_dns",
+      "from": "rt-shoppers-web",
+      "to": "rt-dns",
+      "label": "Resolve",
+      "pattern": "request-response",
+      "detail": "The browser looks up the site name.",
+      "traffic": "ingress",
+      "protocol": "DNS"
+    },
+    {
+      "id": "rt-shoppers-web_to_cdn",
+      "from": "rt-shoppers-web",
+      "to": "rt-cdn",
+      "label": "Pages and images",
+      "pattern": "request-response",
+      "detail": "Static content is served from the nearest cache.",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-shoppers-app_to_waf",
+      "from": "rt-shoppers-app",
+      "to": "rt-waf",
+      "label": "API calls",
+      "pattern": "request-response",
+      "detail": "The app calls the platform's APIs.",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-stores_to_waf",
+      "from": "rt-stores",
+      "to": "rt-waf",
+      "label": "Till and kiosk calls",
+      "pattern": "request-response",
+      "detail": "Store systems call the platform through the same firewall.",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-cdn_to_waf",
+      "from": "rt-cdn",
+      "to": "rt-waf",
+      "label": "Cache misses",
+      "pattern": "request-response",
+      "detail": "Requests the cache cannot answer go on to the origin.",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-waf_to_gw",
+      "from": "rt-waf",
+      "to": "rt-gw",
+      "label": "Clean traffic",
+      "pattern": "request-response",
+      "detail": "Only requests that pass the firewall reach the gateway.",
+      "plane": "data",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-gw_to_bff-web",
+      "from": "rt-gw",
+      "to": "rt-bff-web",
+      "label": "Web calls",
+      "pattern": "request-response",
+      "detail": "Web calls.",
+      "plane": "data"
+    },
+    {
+      "id": "rt-gw_to_bff-app",
+      "from": "rt-gw",
+      "to": "rt-bff-app",
+      "label": "App calls",
+      "pattern": "request-response",
+      "detail": "App calls.",
+      "plane": "data"
+    },
+    {
+      "id": "rt-gw_to_bff-store",
+      "from": "rt-gw",
+      "to": "rt-bff-store",
+      "label": "Store calls",
+      "pattern": "request-response",
+      "detail": "Store calls.",
+      "plane": "data"
+    },
+    {
+      "id": "rt-gw_to_idp",
+      "from": "rt-gw",
+      "to": "rt-idp",
+      "label": "Check token",
+      "pattern": "request-response",
+      "detail": "The gateway validates the shopper's token.",
+      "plane": "control",
+      "protocol": "OIDC"
+    },
+    {
+      "id": "rt-gw_to_flags",
+      "from": "rt-gw",
+      "to": "rt-flags",
+      "label": "Rollout rules",
+      "pattern": "request-response",
+      "detail": "Flags decide which variant a shopper sees.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "rt-bff-web_to_catalog",
+      "from": "rt-bff-web",
+      "to": "rt-catalog",
+      "label": "Browse",
+      "pattern": "request-response",
+      "detail": "Browse.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-bff-web_to_basket",
+      "from": "rt-bff-web",
+      "to": "rt-basket",
+      "label": "Cart",
+      "pattern": "request-response",
+      "detail": "Cart.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-bff-app_to_search",
+      "from": "rt-bff-app",
+      "to": "rt-search",
+      "label": "Search",
+      "pattern": "request-response",
+      "detail": "Search.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-bff-app_to_recs",
+      "from": "rt-bff-app",
+      "to": "rt-recs",
+      "label": "Picks for you",
+      "pattern": "request-response",
+      "detail": "Picks for you.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-bff-store_to_inventory",
+      "from": "rt-bff-store",
+      "to": "rt-inventory",
+      "label": "Stock check",
+      "pattern": "request-response",
+      "detail": "Stock check.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-bff-store_to_orders",
+      "from": "rt-bff-store",
+      "to": "rt-orders",
+      "label": "Store orders",
+      "pattern": "request-response",
+      "detail": "Store orders.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-basket_to_inventory",
+      "from": "rt-basket",
+      "to": "rt-inventory",
+      "label": "Reserve stock",
+      "pattern": "request-response",
+      "detail": "Reserve stock.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-basket_to_fraud",
+      "from": "rt-basket",
+      "to": "rt-fraud",
+      "label": "Score order",
+      "pattern": "request-response",
+      "detail": "Score order.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-basket_to_payments",
+      "from": "rt-basket",
+      "to": "rt-payments",
+      "label": "Take payment",
+      "pattern": "request-response",
+      "detail": "Take payment.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-payments_to_psp",
+      "from": "rt-payments",
+      "to": "rt-psp",
+      "label": "Authorise",
+      "pattern": "request-response",
+      "detail": "The provider authorises and captures the payment.",
+      "plane": "data",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-basket_to_tax",
+      "from": "rt-basket",
+      "to": "rt-tax",
+      "label": "Tax",
+      "pattern": "request-response",
+      "detail": "Tax.",
+      "plane": "data",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-basket_to_orders",
+      "from": "rt-basket",
+      "to": "rt-orders",
+      "label": "Place order",
+      "pattern": "request-response",
+      "detail": "Place order.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "rt-orders_to_order-db",
+      "from": "rt-orders",
+      "to": "rt-order-db",
+      "label": "Write",
+      "pattern": "request-response",
+      "detail": "Write.",
+      "plane": "data",
+      "protocol": "SQL"
+    },
+    {
+      "id": "rt-catalog_to_catalog-db",
+      "from": "rt-catalog",
+      "to": "rt-catalog-db",
+      "label": "Read, write",
+      "pattern": "request-response",
+      "detail": "Read, write.",
+      "plane": "data",
+      "protocol": "DynamoDB API"
+    },
+    {
+      "id": "rt-inventory_to_inv-db",
+      "from": "rt-inventory",
+      "to": "rt-inv-db",
+      "label": "Reserve, release",
+      "pattern": "request-response",
+      "detail": "Reserve, release.",
+      "plane": "data",
+      "protocol": "SQL"
+    },
+    {
+      "id": "rt-basket_to_cache",
+      "from": "rt-basket",
+      "to": "rt-cache",
+      "label": "Cart state",
+      "pattern": "request-response",
+      "detail": "Cart state.",
+      "plane": "data",
+      "protocol": "Redis"
+    },
+    {
+      "id": "rt-search_to_search-idx",
+      "from": "rt-search",
+      "to": "rt-search-idx",
+      "label": "Query",
+      "pattern": "request-response",
+      "detail": "Query.",
+      "plane": "data",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-orders_to_bus",
+      "from": "rt-orders",
+      "to": "rt-bus",
+      "label": "Order events",
+      "pattern": "event",
+      "detail": "Order placed, paid, shipped and cancelled.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-inventory_to_bus",
+      "from": "rt-inventory",
+      "to": "rt-bus",
+      "label": "Stock events",
+      "pattern": "event",
+      "detail": "Stock changed and reserved.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-payments_to_bus",
+      "from": "rt-payments",
+      "to": "rt-bus",
+      "label": "Payment events",
+      "pattern": "event",
+      "detail": "Payment captured, failed, refunded.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-catalog_to_bus",
+      "from": "rt-catalog",
+      "to": "rt-bus",
+      "label": "Catalogue events",
+      "pattern": "event",
+      "detail": "Product and price changes.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-bus_to_search-idx",
+      "from": "rt-bus",
+      "to": "rt-search-idx",
+      "label": "Index updates",
+      "pattern": "stream",
+      "detail": "Catalogue changes keep the index current.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-bus_to_fulfil",
+      "from": "rt-bus",
+      "to": "rt-fulfil",
+      "label": "Orders to pick",
+      "pattern": "stream",
+      "detail": "Paid orders start fulfilment.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-bus_to_notify",
+      "from": "rt-bus",
+      "to": "rt-notify",
+      "label": "Messages to send",
+      "pattern": "stream",
+      "detail": "Order events trigger messages.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-bus_to_loyalty",
+      "from": "rt-bus",
+      "to": "rt-loyalty",
+      "label": "Points events",
+      "pattern": "stream",
+      "detail": "Completed orders earn points.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-bus_to_lake",
+      "from": "rt-bus",
+      "to": "rt-lake",
+      "label": "Everything",
+      "pattern": "stream",
+      "detail": "Every event lands in the lake.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-fulfil_to_carriers",
+      "from": "rt-fulfil",
+      "to": "rt-carriers",
+      "label": "Book shipment",
+      "pattern": "request-response",
+      "detail": "Book shipment.",
+      "plane": "data",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-carriers_to_fulfil",
+      "from": "rt-carriers",
+      "to": "rt-fulfil",
+      "label": "Tracking events",
+      "pattern": "event",
+      "detail": "Carriers report progress.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "Webhook"
+    },
+    {
+      "id": "rt-marketplace_to_catalog",
+      "from": "rt-marketplace",
+      "to": "rt-catalog",
+      "label": "Partner listings",
+      "pattern": "batch",
+      "detail": "Sellers upload catalogues in bulk.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-lake_to_dwh",
+      "from": "rt-lake",
+      "to": "rt-dwh",
+      "label": "Curated tables",
+      "pattern": "batch",
+      "detail": "Scheduled jobs model the data.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-lake_to_feature-store",
+      "from": "rt-lake",
+      "to": "rt-feature-store",
+      "label": "Features",
+      "pattern": "batch",
+      "detail": "Features are built from history.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-feature-store_to_recs",
+      "from": "rt-feature-store",
+      "to": "rt-recs",
+      "label": "Inputs",
+      "pattern": "request-response",
+      "detail": "Inputs.",
+      "plane": "data"
+    },
+    {
+      "id": "rt-feature-store_to_fraud",
+      "from": "rt-feature-store",
+      "to": "rt-fraud",
+      "label": "Inputs",
+      "pattern": "request-response",
+      "detail": "Inputs.",
+      "plane": "data"
+    },
+    {
+      "id": "rt-feature-store_to_pricing-ml",
+      "from": "rt-feature-store",
+      "to": "rt-pricing-ml",
+      "label": "Inputs",
+      "pattern": "request-response",
+      "detail": "Inputs.",
+      "plane": "data"
+    },
+    {
+      "id": "rt-pricing-ml_to_catalog",
+      "from": "rt-pricing-ml",
+      "to": "rt-catalog",
+      "label": "Price changes",
+      "pattern": "request-response",
+      "detail": "Suggested prices, within limits, go to the catalogue.",
+      "plane": "data",
+      "offPath": true
+    },
+    {
+      "id": "rt-ctrl-plane_to_gw",
+      "from": "rt-ctrl-plane",
+      "to": "rt-gw",
+      "label": "Quotas and routes",
+      "pattern": "dependency",
+      "detail": "Per-team limits are pushed to the gateway.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "rt-repo_to_ci",
+      "from": "rt-repo",
+      "to": "rt-ci",
+      "label": "Triggers",
+      "pattern": "event",
+      "detail": "Triggers.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-ci_to_registry",
+      "from": "rt-ci",
+      "to": "rt-registry",
+      "label": "Push images",
+      "pattern": "request-response",
+      "detail": "Push images.",
+      "plane": "control"
+    },
+    {
+      "id": "rt-registry_to_gitops",
+      "from": "rt-registry",
+      "to": "rt-gitops",
+      "label": "New versions",
+      "pattern": "event",
+      "detail": "New versions.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-gitops_to_catalog",
+      "from": "rt-gitops",
+      "to": "rt-catalog",
+      "label": "Deploys",
+      "pattern": "dependency",
+      "detail": "The controller applies desired state to the cluster.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "rt-iac_to_gitops",
+      "from": "rt-iac",
+      "to": "rt-gitops",
+      "label": "Cluster setup",
+      "pattern": "dependency",
+      "detail": "Cluster setup.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "rt-secrets_to_payments",
+      "from": "rt-secrets",
+      "to": "rt-payments",
+      "label": "Credentials",
+      "pattern": "dependency",
+      "detail": "Secrets are issued to the workload at start.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "rt-mesh_to_orders",
+      "from": "rt-mesh",
+      "to": "rt-orders",
+      "label": "mTLS",
+      "pattern": "dependency",
+      "detail": "The mesh authenticates calls to and from this service.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "rt-orders_to_obs",
+      "from": "rt-orders",
+      "to": "rt-obs",
+      "label": "Telemetry",
+      "pattern": "stream",
+      "detail": "Telemetry.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "rt-gw_to_siem",
+      "from": "rt-gw",
+      "to": "rt-siem",
+      "label": "Access logs",
+      "pattern": "stream",
+      "detail": "Access logs.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "rt-obs_to_oncall",
+      "from": "rt-obs",
+      "to": "rt-oncall",
+      "label": "Alerts",
+      "pattern": "event",
+      "detail": "Alerts.",
+      "interaction": "async"
+    },
+    {
+      "id": "rt-siem_to_oncall",
+      "from": "rt-siem",
+      "to": "rt-oncall",
+      "label": "Security alerts",
+      "pattern": "event",
+      "detail": "Security alerts.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "rt-loyalty_to_idp",
+      "from": "rt-loyalty",
+      "to": "rt-idp",
+      "label": "Profile lookups",
+      "pattern": "request-response",
+      "detail": "Profile lookups.",
+      "plane": "data",
+      "offPath": true
+    },
+    {
+      "id": "bk-retail-app_to_apigw",
+      "from": "bk-retail-app",
+      "to": "bk-apigw",
+      "label": "Account and payment calls",
+      "pattern": "request-response",
+      "detail": "Account and payment calls.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "bk-corp-portal_to_apigw",
+      "from": "bk-corp-portal",
+      "to": "bk-apigw",
+      "label": "Bulk payments",
+      "pattern": "request-response",
+      "detail": "Bulk payments.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "bk-branch_to_apigw",
+      "from": "bk-branch",
+      "to": "bk-apigw",
+      "label": "Staff calls",
+      "pattern": "request-response",
+      "detail": "Staff calls.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "bk-tpp_to_apigw",
+      "from": "bk-tpp",
+      "to": "bk-apigw",
+      "label": "Open-banking calls",
+      "pattern": "request-response",
+      "detail": "Open-banking calls.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "bk-atm_to_card-sw",
+      "from": "bk-atm",
+      "to": "bk-card-sw",
+      "label": "Authorisations",
+      "pattern": "request-response",
+      "detail": "Authorisations.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "ISO 8583"
+    },
+    {
+      "id": "bk-swift-in_to_swift-gw",
+      "from": "bk-swift-in",
+      "to": "bk-swift-gw",
+      "label": "Messages",
+      "pattern": "message",
+      "detail": "Messages.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "bk-apigw_to_iam",
+      "from": "bk-apigw",
+      "to": "bk-iam",
+      "label": "Authenticate",
+      "pattern": "request-response",
+      "detail": "Authenticate.",
+      "plane": "control",
+      "protocol": "OIDC"
+    },
+    {
+      "id": "bk-apigw_to_consent",
+      "from": "bk-apigw",
+      "to": "bk-consent",
+      "label": "Check consent",
+      "pattern": "request-response",
+      "detail": "Check consent.",
+      "plane": "control"
+    },
+    {
+      "id": "bk-apigw_to_esb",
+      "from": "bk-apigw",
+      "to": "bk-esb",
+      "label": "Requests",
+      "pattern": "request-response",
+      "detail": "Requests.",
+      "plane": "data"
+    },
+    {
+      "id": "bk-apigw_to_orch",
+      "from": "bk-apigw",
+      "to": "bk-orch",
+      "label": "Start process",
+      "pattern": "request-response",
+      "detail": "Start process.",
+      "plane": "data"
+    },
+    {
+      "id": "bk-orch_to_doc",
+      "from": "bk-orch",
+      "to": "bk-doc",
+      "label": "Store documents",
+      "pattern": "request-response",
+      "detail": "Store documents.",
+      "plane": "data",
+      "offPath": true
+    },
+    {
+      "id": "bk-esb_to_hub",
+      "from": "bk-esb",
+      "to": "bk-hub",
+      "label": "Payment requests",
+      "pattern": "message",
+      "detail": "Payment requests.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "bk-esb_to_ledger",
+      "from": "bk-esb",
+      "to": "bk-ledger",
+      "label": "Balance and posting calls",
+      "pattern": "request-response",
+      "detail": "Balance and posting calls.",
+      "plane": "data",
+      "protocol": "SOAP and REST",
+      "traffic": "ingress"
+    },
+    {
+      "id": "bk-esb_to_custdata",
+      "from": "bk-esb",
+      "to": "bk-custdata",
+      "label": "Customer lookups",
+      "pattern": "request-response",
+      "detail": "Customer lookups.",
+      "plane": "data",
+      "traffic": "ingress"
+    },
+    {
+      "id": "bk-hub_to_iso",
+      "from": "bk-hub",
+      "to": "bk-iso",
+      "label": "Translate",
+      "pattern": "request-response",
+      "detail": "Translate.",
+      "plane": "data"
+    },
+    {
+      "id": "bk-hub_to_fraud",
+      "from": "bk-hub",
+      "to": "bk-fraud",
+      "label": "Score",
+      "pattern": "request-response",
+      "detail": "Score.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "bk-hub_to_sanctions",
+      "from": "bk-hub",
+      "to": "bk-sanctions",
+      "label": "Screen",
+      "pattern": "request-response",
+      "detail": "Screen.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "bk-hub_to_limits",
+      "from": "bk-hub",
+      "to": "bk-limits",
+      "label": "Check limits",
+      "pattern": "request-response",
+      "detail": "Check limits.",
+      "plane": "control",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "bk-hub_to_rtp",
+      "from": "bk-hub",
+      "to": "bk-rtp",
+      "label": "Instant payments",
+      "pattern": "message",
+      "detail": "Instant payments.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-hub_to_batch-clr",
+      "from": "bk-hub",
+      "to": "bk-batch-clr",
+      "label": "Bulk files",
+      "pattern": "batch",
+      "detail": "Bulk files.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-hub_to_swift-gw",
+      "from": "bk-hub",
+      "to": "bk-swift-gw",
+      "label": "Cross-border",
+      "pattern": "message",
+      "detail": "Cross-border.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-hub_to_ledger",
+      "from": "bk-hub",
+      "to": "bk-ledger",
+      "label": "Post",
+      "pattern": "request-response",
+      "detail": "Debit and credit entries are posted to the ledger.",
+      "plane": "data",
+      "traffic": "ingress"
+    },
+    {
+      "id": "bk-card-sw_to_ledger",
+      "from": "bk-card-sw",
+      "to": "bk-ledger",
+      "label": "Balance and hold",
+      "pattern": "request-response",
+      "detail": "Balance and hold.",
+      "plane": "data",
+      "traffic": "ingress"
+    },
+    {
+      "id": "bk-card-sw_to_fraud",
+      "from": "bk-card-sw",
+      "to": "bk-fraud",
+      "label": "Score",
+      "pattern": "request-response",
+      "detail": "Score.",
+      "plane": "data",
+      "offPath": true,
+      "traffic": "ingress"
+    },
+    {
+      "id": "bk-rtp_to_swift-in",
+      "from": "bk-rtp",
+      "to": "bk-swift-in",
+      "label": "Scheme messages",
+      "pattern": "message",
+      "detail": "Scheme messages.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-batch-clr_to_swift-in",
+      "from": "bk-batch-clr",
+      "to": "bk-swift-in",
+      "label": "Files",
+      "pattern": "batch",
+      "detail": "Files.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-swift-gw_to_swift-in",
+      "from": "bk-swift-gw",
+      "to": "bk-swift-in",
+      "label": "Interbank",
+      "pattern": "message",
+      "detail": "Interbank.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-hsm_to_hub",
+      "from": "bk-hsm",
+      "to": "bk-hub",
+      "label": "Signing keys",
+      "pattern": "dependency",
+      "detail": "Signing keys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "bk-hsm_to_card-sw",
+      "from": "bk-hsm",
+      "to": "bk-card-sw",
+      "label": "PIN keys",
+      "pattern": "dependency",
+      "detail": "PIN keys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "bk-ledger_to_ledger-dr",
+      "from": "bk-ledger",
+      "to": "bk-ledger-dr",
+      "label": "Synchronous copy",
+      "pattern": "request-response",
+      "detail": "Synchronous copy.",
+      "plane": "data",
+      "interaction": "sync",
+      "protocol": "Storage replication",
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-product_to_ledger",
+      "from": "bk-product",
+      "to": "bk-ledger",
+      "label": "Rates and fees",
+      "pattern": "dependency",
+      "detail": "Rates and fees.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "bk-ledger_to_stream",
+      "from": "bk-ledger",
+      "to": "bk-stream",
+      "label": "Change events",
+      "pattern": "stream",
+      "detail": "Change events.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-stream_to_lake",
+      "from": "bk-stream",
+      "to": "bk-lake",
+      "label": "Land",
+      "pattern": "stream",
+      "detail": "Land.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bk-lake_to_feat",
+      "from": "bk-lake",
+      "to": "bk-feat",
+      "label": "Features",
+      "pattern": "batch",
+      "detail": "Features.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bk-feat_to_fraud",
+      "from": "bk-feat",
+      "to": "bk-fraud",
+      "label": "Model inputs",
+      "pattern": "request-response",
+      "detail": "Model inputs.",
+      "plane": "data",
+      "traffic": "ingress"
+    },
+    {
+      "id": "bk-lake_to_risk-eng",
+      "from": "bk-lake",
+      "to": "bk-risk-eng",
+      "label": "Positions",
+      "pattern": "batch",
+      "detail": "Positions.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bk-lake_to_reg",
+      "from": "bk-lake",
+      "to": "bk-reg",
+      "label": "Reporting data",
+      "pattern": "batch",
+      "detail": "Reporting data.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bk-risk-eng_to_reg",
+      "from": "bk-risk-eng",
+      "to": "bk-reg",
+      "label": "Risk returns",
+      "pattern": "batch",
+      "detail": "Risk returns.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bk-catalog_to_lake",
+      "from": "bk-catalog",
+      "to": "bk-lake",
+      "label": "Governs",
+      "pattern": "dependency",
+      "detail": "Governs.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "bk-iam_to_pam",
+      "from": "bk-iam",
+      "to": "bk-pam",
+      "label": "Privileged roles",
+      "pattern": "dependency",
+      "detail": "Privileged roles.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "bk-fw_to_hub",
+      "from": "bk-fw",
+      "to": "bk-hub",
+      "label": "Segment policy",
+      "pattern": "dependency",
+      "detail": "Segment policy.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "bk-ledger_to_siem",
+      "from": "bk-ledger",
+      "to": "bk-siem",
+      "label": "Audit events",
+      "pattern": "stream",
+      "detail": "Audit events.",
+      "interaction": "async",
+      "offPath": true,
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-apigw_to_siem",
+      "from": "bk-apigw",
+      "to": "bk-siem",
+      "label": "Access logs",
+      "pattern": "stream",
+      "detail": "Access logs.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "bk-hub_to_obs",
+      "from": "bk-hub",
+      "to": "bk-obs",
+      "label": "Telemetry",
+      "pattern": "stream",
+      "detail": "Telemetry.",
+      "interaction": "async",
+      "offPath": true,
+      "traffic": "egress"
+    },
+    {
+      "id": "bk-dr_to_ledger-dr",
+      "from": "bk-dr",
+      "to": "bk-ledger-dr",
+      "label": "Failover",
+      "pattern": "dependency",
+      "detail": "Failover.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "bk-ci_to_hub",
+      "from": "bk-ci",
+      "to": "bk-hub",
+      "label": "Releases",
+      "pattern": "dependency",
+      "detail": "Releases.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "bk-pam_to_ledger",
+      "from": "bk-pam",
+      "to": "bk-ledger",
+      "label": "Admin sessions",
+      "pattern": "dependency",
+      "detail": "Admin sessions.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-app-dbs_to_cdc",
+      "from": "ml-app-dbs",
+      "to": "ml-cdc",
+      "label": "Database logs",
+      "pattern": "stream",
+      "detail": "Database logs.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "Log reader"
+    },
+    {
+      "id": "ml-erp_to_batch",
+      "from": "ml-erp",
+      "to": "ml-batch",
+      "label": "Extracts",
+      "pattern": "batch",
+      "detail": "Extracts.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "ml-crm_to_batch",
+      "from": "ml-crm",
+      "to": "ml-batch",
+      "label": "API pulls",
+      "pattern": "batch",
+      "detail": "API pulls.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "ml-saas-apps_to_batch",
+      "from": "ml-saas-apps",
+      "to": "ml-batch",
+      "label": "Exports",
+      "pattern": "batch",
+      "detail": "Exports.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "ml-partners_to_batch",
+      "from": "ml-partners",
+      "to": "ml-batch",
+      "label": "Files",
+      "pattern": "batch",
+      "detail": "Files.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "SFTP"
+    },
+    {
+      "id": "ml-iot_to_broker",
+      "from": "ml-iot",
+      "to": "ml-broker",
+      "label": "Readings",
+      "pattern": "stream",
+      "detail": "Readings.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "MQTT"
+    },
+    {
+      "id": "ml-logs_to_broker",
+      "from": "ml-logs",
+      "to": "ml-broker",
+      "label": "Events",
+      "pattern": "stream",
+      "detail": "Events.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "ml-cdc_to_broker",
+      "from": "ml-cdc",
+      "to": "ml-broker",
+      "label": "Change events",
+      "pattern": "stream",
+      "detail": "Change events.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-broker_to_sparkstream",
+      "from": "ml-broker",
+      "to": "ml-sparkstream",
+      "label": "Streams",
+      "pattern": "stream",
+      "detail": "Streams.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-schema-reg_to_broker",
+      "from": "ml-schema-reg",
+      "to": "ml-broker",
+      "label": "Schemas",
+      "pattern": "dependency",
+      "detail": "Schemas.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-orchestrator_to_batch",
+      "from": "ml-orchestrator",
+      "to": "ml-batch",
+      "label": "Schedules",
+      "pattern": "dependency",
+      "detail": "Schedules.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-batch_to_raw",
+      "from": "ml-batch",
+      "to": "ml-raw",
+      "label": "Land files",
+      "pattern": "batch",
+      "detail": "Land files.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-sparkstream_to_raw",
+      "from": "ml-sparkstream",
+      "to": "ml-raw",
+      "label": "Raw stream",
+      "pattern": "stream",
+      "detail": "Raw stream.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-sparkstream_to_clean",
+      "from": "ml-sparkstream",
+      "to": "ml-clean",
+      "label": "Cleaned stream",
+      "pattern": "stream",
+      "detail": "Cleaned stream.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-raw_to_compute",
+      "from": "ml-raw",
+      "to": "ml-compute",
+      "label": "Read",
+      "pattern": "batch",
+      "detail": "Read.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-compute_to_clean",
+      "from": "ml-compute",
+      "to": "ml-clean",
+      "label": "Write",
+      "pattern": "batch",
+      "detail": "Write.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-clean_to_gold",
+      "from": "ml-clean",
+      "to": "ml-gold",
+      "label": "Model",
+      "pattern": "batch",
+      "detail": "Model.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-quality_to_clean",
+      "from": "ml-quality",
+      "to": "ml-clean",
+      "label": "Test",
+      "pattern": "dependency",
+      "detail": "Test.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-quality_to_gold",
+      "from": "ml-quality",
+      "to": "ml-gold",
+      "label": "Test",
+      "pattern": "dependency",
+      "detail": "Test.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-gold_to_sql",
+      "from": "ml-gold",
+      "to": "ml-sql",
+      "label": "Query",
+      "pattern": "request-response",
+      "detail": "Query.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-gold_to_features",
+      "from": "ml-gold",
+      "to": "ml-features",
+      "label": "Features",
+      "pattern": "batch",
+      "detail": "Features.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-clean_to_vector",
+      "from": "ml-clean",
+      "to": "ml-vector",
+      "label": "Embeddings",
+      "pattern": "batch",
+      "detail": "Embeddings.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-notebooks_to_gold",
+      "from": "ml-notebooks",
+      "to": "ml-gold",
+      "label": "Explore",
+      "pattern": "request-response",
+      "detail": "Explore.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-features_to_train",
+      "from": "ml-features",
+      "to": "ml-train",
+      "label": "Training data",
+      "pattern": "batch",
+      "detail": "Training data.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-train_to_registry",
+      "from": "ml-train",
+      "to": "ml-registry",
+      "label": "Register",
+      "pattern": "request-response",
+      "detail": "Register.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-registry_to_serve",
+      "from": "ml-registry",
+      "to": "ml-serve",
+      "label": "Deploy approved",
+      "pattern": "request-response",
+      "detail": "Deploy approved.",
+      "plane": "control"
+    },
+    {
+      "id": "ml-features_to_serve",
+      "from": "ml-features",
+      "to": "ml-serve",
+      "label": "Online features",
+      "pattern": "request-response",
+      "detail": "Online features.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-vector_to_llm",
+      "from": "ml-vector",
+      "to": "ml-llm",
+      "label": "Retrieval",
+      "pattern": "request-response",
+      "detail": "Retrieval.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-serve_to_monitor",
+      "from": "ml-serve",
+      "to": "ml-monitor",
+      "label": "Predictions",
+      "pattern": "stream",
+      "detail": "Predictions.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-monitor_to_train",
+      "from": "ml-monitor",
+      "to": "ml-train",
+      "label": "Retrain triggers",
+      "pattern": "event",
+      "detail": "Retrain triggers.",
+      "plane": "control",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "ml-sql_to_bi",
+      "from": "ml-sql",
+      "to": "ml-bi",
+      "label": "Dashboards",
+      "pattern": "request-response",
+      "detail": "Dashboards.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-sql_to_analysts",
+      "from": "ml-sql",
+      "to": "ml-analysts",
+      "label": "Queries",
+      "pattern": "request-response",
+      "detail": "Queries.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-serve_to_apps",
+      "from": "ml-serve",
+      "to": "ml-apps",
+      "label": "Predictions",
+      "pattern": "request-response",
+      "detail": "Predictions.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-llm_to_apps",
+      "from": "ml-llm",
+      "to": "ml-apps",
+      "label": "Generated answers",
+      "pattern": "request-response",
+      "detail": "Generated answers.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-gold_to_ext-share",
+      "from": "ml-gold",
+      "to": "ml-ext-share",
+      "label": "Shared views",
+      "pattern": "request-response",
+      "detail": "Shared views.",
+      "plane": "data",
+      "traffic": "egress"
+    },
+    {
+      "id": "ml-gold_to_reverse",
+      "from": "ml-gold",
+      "to": "ml-reverse",
+      "label": "Scores and segments",
+      "pattern": "batch",
+      "detail": "Scores and segments.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-reverse_to_crm",
+      "from": "ml-reverse",
+      "to": "ml-crm",
+      "label": "Updates",
+      "pattern": "request-response",
+      "detail": "Updates.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "ml-policy_to_sql",
+      "from": "ml-policy",
+      "to": "ml-sql",
+      "label": "Enforces",
+      "pattern": "dependency",
+      "detail": "Enforces.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-policy_to_raw",
+      "from": "ml-policy",
+      "to": "ml-raw",
+      "label": "Enforces",
+      "pattern": "dependency",
+      "detail": "Enforces.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-pii_to_catalog",
+      "from": "ml-pii",
+      "to": "ml-catalog",
+      "label": "Tags",
+      "pattern": "dependency",
+      "detail": "Tags.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-catalog_to_gold",
+      "from": "ml-catalog",
+      "to": "ml-gold",
+      "label": "Describes",
+      "pattern": "dependency",
+      "detail": "Describes.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-lineage_to_catalog",
+      "from": "ml-lineage",
+      "to": "ml-catalog",
+      "label": "Flows",
+      "pattern": "dependency",
+      "detail": "Flows.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-kms_to_raw",
+      "from": "ml-kms",
+      "to": "ml-raw",
+      "label": "Keys",
+      "pattern": "dependency",
+      "detail": "Keys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-finops_to_compute",
+      "from": "ml-finops",
+      "to": "ml-compute",
+      "label": "Budgets",
+      "pattern": "dependency",
+      "detail": "Budgets.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "ml-obs_to_orchestrator",
+      "from": "ml-obs",
+      "to": "ml-orchestrator",
+      "label": "Alerts",
+      "pattern": "event",
+      "detail": "Alerts.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "ml-cicd_to_serve",
+      "from": "ml-cicd",
+      "to": "ml-serve",
+      "label": "Deploys",
+      "pattern": "dependency",
+      "detail": "Deploys.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "io-vehicles_to_lb",
+      "from": "io-vehicles",
+      "to": "io-lb",
+      "label": "Telemetry",
+      "pattern": "stream",
+      "detail": "Telemetry.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "MQTT over TLS"
+    },
+    {
+      "id": "io-machines_to_gw-edge",
+      "from": "io-machines",
+      "to": "io-gw-edge",
+      "label": "Readings",
+      "pattern": "stream",
+      "detail": "Readings.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "OPC UA"
+    },
+    {
+      "id": "io-chargers_to_gw-edge",
+      "from": "io-chargers",
+      "to": "io-gw-edge",
+      "label": "Readings",
+      "pattern": "stream",
+      "detail": "Readings.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "OCPP"
+    },
+    {
+      "id": "io-gw-edge_to_edge-ml",
+      "from": "io-gw-edge",
+      "to": "io-edge-ml",
+      "label": "Local scoring",
+      "pattern": "request-response",
+      "detail": "Local scoring.",
+      "plane": "data"
+    },
+    {
+      "id": "io-gw-edge_to_edge-store",
+      "from": "io-gw-edge",
+      "to": "io-edge-store",
+      "label": "Buffer",
+      "pattern": "request-response",
+      "detail": "Buffer.",
+      "plane": "data"
+    },
+    {
+      "id": "io-gw-edge_to_lb",
+      "from": "io-gw-edge",
+      "to": "io-lb",
+      "label": "Filtered readings",
+      "pattern": "stream",
+      "detail": "Filtered readings.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "MQTT over TLS"
+    },
+    {
+      "id": "io-lb_to_mqtt",
+      "from": "io-lb",
+      "to": "io-mqtt",
+      "label": "Connections",
+      "pattern": "stream",
+      "detail": "Connections.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress"
+    },
+    {
+      "id": "io-auth_to_mqtt",
+      "from": "io-auth",
+      "to": "io-mqtt",
+      "label": "Verifies certificates",
+      "pattern": "dependency",
+      "detail": "Verifies certificates.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "io-mqtt_to_rules",
+      "from": "io-mqtt",
+      "to": "io-rules",
+      "label": "Match topics",
+      "pattern": "request-response",
+      "detail": "Match topics.",
+      "plane": "control"
+    },
+    {
+      "id": "io-rules_to_validate",
+      "from": "io-rules",
+      "to": "io-validate",
+      "label": "Route",
+      "pattern": "stream",
+      "detail": "Route.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-validate_to_kafka",
+      "from": "io-validate",
+      "to": "io-kafka",
+      "label": "Valid messages",
+      "pattern": "stream",
+      "detail": "Valid messages.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-validate_to_dlq",
+      "from": "io-validate",
+      "to": "io-dlq",
+      "label": "Rejected",
+      "pattern": "message",
+      "detail": "Rejected.",
+      "plane": "data",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "io-kafka_to_flink",
+      "from": "io-kafka",
+      "to": "io-flink",
+      "label": "Streams",
+      "pattern": "stream",
+      "detail": "Streams.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-kafka_to_tsdb",
+      "from": "io-kafka",
+      "to": "io-tsdb",
+      "label": "Hot store",
+      "pattern": "stream",
+      "detail": "Hot store.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-kafka_to_lake",
+      "from": "io-kafka",
+      "to": "io-lake",
+      "label": "History",
+      "pattern": "stream",
+      "detail": "History.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-flink_to_twin",
+      "from": "io-flink",
+      "to": "io-twin",
+      "label": "State updates",
+      "pattern": "stream",
+      "detail": "State updates.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-flink_to_geo",
+      "from": "io-flink",
+      "to": "io-geo",
+      "label": "Positions",
+      "pattern": "stream",
+      "detail": "Positions.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-flink_to_alerts",
+      "from": "io-flink",
+      "to": "io-alerts",
+      "label": "Detected events",
+      "pattern": "event",
+      "detail": "Detected events.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-lake_to_feat",
+      "from": "io-lake",
+      "to": "io-feat",
+      "label": "Features",
+      "pattern": "batch",
+      "detail": "Features.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-feat_to_train",
+      "from": "io-feat",
+      "to": "io-train",
+      "label": "Training data",
+      "pattern": "batch",
+      "detail": "Training data.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-train_to_serve",
+      "from": "io-train",
+      "to": "io-serve",
+      "label": "Deploy model",
+      "pattern": "request-response",
+      "detail": "Deploy model.",
+      "plane": "data"
+    },
+    {
+      "id": "io-flink_to_serve",
+      "from": "io-flink",
+      "to": "io-serve",
+      "label": "Score",
+      "pattern": "request-response",
+      "detail": "Score.",
+      "plane": "data"
+    },
+    {
+      "id": "io-serve_to_twin",
+      "from": "io-serve",
+      "to": "io-twin",
+      "label": "Risk scores",
+      "pattern": "request-response",
+      "detail": "Risk scores.",
+      "plane": "data"
+    },
+    {
+      "id": "io-twin_to_ops-ui",
+      "from": "io-twin",
+      "to": "io-ops-ui",
+      "label": "Current state",
+      "pattern": "request-response",
+      "detail": "Current state.",
+      "plane": "data"
+    },
+    {
+      "id": "io-tsdb_to_ops-ui",
+      "from": "io-tsdb",
+      "to": "io-ops-ui",
+      "label": "Charts",
+      "pattern": "request-response",
+      "detail": "Charts.",
+      "plane": "data"
+    },
+    {
+      "id": "io-geo_to_ops-ui",
+      "from": "io-geo",
+      "to": "io-ops-ui",
+      "label": "Map",
+      "pattern": "request-response",
+      "detail": "Map.",
+      "plane": "data"
+    },
+    {
+      "id": "io-twin_to_api",
+      "from": "io-twin",
+      "to": "io-api",
+      "label": "Asset data",
+      "pattern": "request-response",
+      "detail": "Asset data.",
+      "plane": "data"
+    },
+    {
+      "id": "io-lake_to_bi",
+      "from": "io-lake",
+      "to": "io-bi",
+      "label": "Reports",
+      "pattern": "batch",
+      "detail": "Reports.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-kafka_to_billing",
+      "from": "io-kafka",
+      "to": "io-billing",
+      "label": "Usage",
+      "pattern": "stream",
+      "detail": "Usage.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "io-alerts_to_erp",
+      "from": "io-alerts",
+      "to": "io-erp",
+      "label": "Work orders",
+      "pattern": "request-response",
+      "detail": "Work orders.",
+      "plane": "data",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "io-alerts_to_mobile",
+      "from": "io-alerts",
+      "to": "io-mobile",
+      "label": "Notifications",
+      "pattern": "event",
+      "detail": "Notifications.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress"
+    },
+    {
+      "id": "io-ops-ui_to_cmd",
+      "from": "io-ops-ui",
+      "to": "io-cmd",
+      "label": "Send command",
+      "pattern": "request-response",
+      "detail": "Send command.",
+      "plane": "control"
+    },
+    {
+      "id": "io-cmd_to_mqtt",
+      "from": "io-cmd",
+      "to": "io-mqtt",
+      "label": "Command to device",
+      "pattern": "message",
+      "detail": "Command to device.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "io-ota_to_cmd",
+      "from": "io-ota",
+      "to": "io-cmd",
+      "label": "Update jobs",
+      "pattern": "request-response",
+      "detail": "Update jobs.",
+      "plane": "control"
+    },
+    {
+      "id": "io-sign_to_ota",
+      "from": "io-sign",
+      "to": "io-ota",
+      "label": "Signatures",
+      "pattern": "dependency",
+      "detail": "Signatures.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "io-config_to_cmd",
+      "from": "io-config",
+      "to": "io-cmd",
+      "label": "Desired state",
+      "pattern": "request-response",
+      "detail": "Desired state.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "io-iam_to_ops-ui",
+      "from": "io-iam",
+      "to": "io-ops-ui",
+      "label": "Permissions",
+      "pattern": "dependency",
+      "detail": "Permissions.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "io-cmd_to_audit",
+      "from": "io-cmd",
+      "to": "io-audit",
+      "label": "Record",
+      "pattern": "stream",
+      "detail": "Record.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "io-ota_to_audit",
+      "from": "io-ota",
+      "to": "io-audit",
+      "label": "Record",
+      "pattern": "stream",
+      "detail": "Record.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "io-mqtt_to_siem",
+      "from": "io-mqtt",
+      "to": "io-siem",
+      "label": "Connection events",
+      "pattern": "stream",
+      "detail": "Connection events.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "io-flink_to_obs",
+      "from": "io-flink",
+      "to": "io-obs",
+      "label": "Telemetry",
+      "pattern": "stream",
+      "detail": "Telemetry.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "io-ci_to_ota",
+      "from": "io-ci",
+      "to": "io-ota",
+      "label": "Builds",
+      "pattern": "dependency",
+      "detail": "Builds.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "io-mobile_to_api",
+      "from": "io-mobile",
+      "to": "io-api",
+      "label": "Field app calls",
+      "pattern": "request-response",
+      "detail": "Field app calls.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "rt-payments_to_bk-hub_x",
+      "from": "rt-payments",
+      "to": "bk-hub",
+      "label": "Card and wallet payments",
+      "pattern": "request-response",
+      "detail": "Card and wallet payments between platforms.",
+      "interaction": "sync",
+      "traffic": "ingress"
+    },
+    {
+      "id": "rt-bus_to_ml-broker_x",
+      "from": "rt-bus",
+      "to": "ml-broker",
+      "label": "Retail events to analytics",
+      "pattern": "stream",
+      "detail": "Retail events to analytics between platforms.",
+      "interaction": "async"
+    },
+    {
+      "id": "bk-stream_to_ml-broker_x",
+      "from": "bk-stream",
+      "to": "ml-broker",
+      "label": "Ledger changes to analytics",
+      "pattern": "stream",
+      "detail": "Ledger changes to analytics between platforms.",
+      "interaction": "async"
+    },
+    {
+      "id": "io-alerts_to_rt-fulfil_x",
+      "from": "io-alerts",
+      "to": "rt-fulfil",
+      "label": "Part orders",
+      "pattern": "event",
+      "detail": "Part orders between platforms.",
+      "interaction": "async"
+    },
+    {
+      "id": "ml-serve_to_rt-recs_x",
+      "from": "ml-serve",
+      "to": "rt-recs",
+      "label": "Model endpoint",
+      "pattern": "request-response",
+      "detail": "Model endpoint between platforms.",
+      "interaction": "sync"
+    },
+    {
+      "id": "ml-serve_to_bk-fraud_x",
+      "from": "ml-serve",
+      "to": "bk-fraud",
+      "label": "Fraud model",
+      "pattern": "request-response",
+      "detail": "Fraud model between platforms.",
+      "interaction": "sync",
+      "traffic": "ingress"
+    },
+    {
+      "id": "io-lake_to_ml-raw_x",
+      "from": "io-lake",
+      "to": "ml-raw",
+      "label": "Telemetry history",
+      "pattern": "batch",
+      "detail": "Telemetry history between platforms.",
+      "interaction": "async"
+    },
+    {
+      "id": "bk-iam_to_rt-idp_x",
+      "from": "bk-iam",
+      "to": "rt-idp",
+      "label": "Federated identity",
+      "pattern": "dependency",
+      "detail": "Federated identity between platforms."
+    },
+    {
+      "id": "rt-siem_to_bk-siem_x",
+      "from": "rt-siem",
+      "to": "bk-siem",
+      "label": "Shared threat intelligence",
+      "pattern": "event",
+      "detail": "Shared threat intelligence between platforms.",
+      "interaction": "async"
+    }
+  ],
+  "layers": [
+    {
+      "id": "rt-edge",
+      "label": "Retail: Edge and channels",
+      "summary": "Where shoppers and stores arrive: devices, the CDN, DNS and the web firewall."
+    },
+    {
+      "id": "rt-exp",
+      "label": "Retail: Experience",
+      "summary": "One backend for each channel: it shapes the platform's data for web, mobile and stores, and handles sign-in."
+    },
+    {
+      "id": "rt-svc",
+      "label": "Retail: Domain services",
+      "summary": "The business capabilities, each owned by one team and deployed on Kubernetes."
+    },
+    {
+      "id": "rt-data",
+      "label": "Retail: Data and events",
+      "summary": "Where state lives and how facts move: databases, caches, search, the event backbone and the data lake."
+    },
+    {
+      "id": "rt-ext",
+      "label": "Retail: Partners",
+      "summary": "Outside parties the platform calls or is called by."
+    },
+    {
+      "id": "rt-ops",
+      "label": "Retail: Delivery, security and operations",
+      "summary": "How changes ship and how the platform is secured and watched."
+    },
+    {
+      "id": "bk-chan",
+      "label": "Bank: Channels",
+      "summary": "Who the bank serves and how they arrive."
+    },
+    {
+      "id": "bk-api",
+      "label": "Bank: API and integration",
+      "summary": "The controlled front door and the integration layer between channels and core systems."
+    },
+    {
+      "id": "bk-pay",
+      "label": "Bank: Payments and risk",
+      "summary": "Moving money safely: routing, scheme connections and the checks that stand in front of them."
+    },
+    {
+      "id": "bk-core",
+      "label": "Bank: Core and data",
+      "summary": "Systems of record and the data platform."
+    },
+    {
+      "id": "bk-sec",
+      "label": "Bank: Security, resilience and reporting",
+      "summary": "Protection, recovery and regulatory output."
+    },
+    {
+      "id": "ml-src",
+      "label": "Data and ML: Sources",
+      "summary": "Where data starts."
+    },
+    {
+      "id": "ml-ingest",
+      "label": "Data and ML: Ingest",
+      "summary": "How data enters the platform, in batches or as streams."
+    },
+    {
+      "id": "ml-lake",
+      "label": "Data and ML: Lakehouse",
+      "summary": "Storage and processing in bronze, silver and gold stages."
+    },
+    {
+      "id": "ml-ml",
+      "label": "Data and ML: Machine learning",
+      "summary": "Building, registering and serving models."
+    },
+    {
+      "id": "ml-use",
+      "label": "Data and ML: Consumption",
+      "summary": "Who uses the data and the models."
+    },
+    {
+      "id": "ml-gov",
+      "label": "Data and ML: Governance and operations",
+      "summary": "Catalogue, access, quality, cost and delivery, applied across all layers."
+    },
+    {
+      "id": "io-field",
+      "label": "Fleet: Field and edge",
+      "summary": "Devices and the gateways they talk to."
+    },
+    {
+      "id": "io-ingest",
+      "label": "Fleet: Ingestion",
+      "summary": "The cloud entry: authentication, brokers and validation."
+    },
+    {
+      "id": "io-stream",
+      "label": "Fleet: Processing and storage",
+      "summary": "Real-time processing and the stores behind it."
+    },
+    {
+      "id": "io-app",
+      "label": "Fleet: Applications",
+      "summary": "What operations, customers and partners use."
+    },
+    {
+      "id": "io-ctrl",
+      "label": "Fleet: Fleet management and security",
+      "summary": "Identity, updates, configuration and operations."
+    }
+  ],
+  "zones": [
+    {
+      "id": "rt-region-a",
+      "label": "Region A (primary)",
+      "kind": "region",
+      "members": []
+    },
+    {
+      "id": "rt-k8s-a",
+      "label": "Kubernetes cluster A",
+      "kind": "cluster",
+      "parent": "rt-region-a",
+      "members": [
+        "rt-catalog",
+        "rt-inventory",
+        "rt-basket",
+        "rt-orders",
+        "rt-payments",
+        "rt-fulfil",
+        "rt-loyalty",
+        "rt-search"
+      ]
+    },
+    {
+      "id": "bk-dc1",
+      "label": "Data centre 1 (primary)",
+      "kind": "boundary",
+      "members": [
+        "bk-ledger",
+        "bk-product",
+        "bk-custdata"
+      ]
+    },
+    {
+      "id": "bk-dc2",
+      "label": "Data centre 2 (standby)",
+      "kind": "boundary",
+      "members": [
+        "bk-ledger-dr"
+      ]
+    },
+    {
+      "id": "bk-cloud",
+      "label": "Cloud landing zone",
+      "kind": "cloud",
+      "members": [
+        "bk-lake",
+        "bk-stream",
+        "bk-feat",
+        "bk-risk-eng",
+        "bk-catalog"
+      ]
+    },
+    {
+      "id": "bk-vpc-pay",
+      "label": "Payments VPC",
+      "kind": "vpc",
+      "members": [
+        "bk-hub",
+        "bk-iso",
+        "bk-fraud",
+        "bk-sanctions",
+        "bk-limits"
+      ]
+    },
+    {
+      "id": "ml-zone-lake",
+      "label": "Lakehouse account",
+      "kind": "account",
+      "members": [
+        "ml-raw",
+        "ml-clean",
+        "ml-gold",
+        "ml-compute",
+        "ml-sql",
+        "ml-quality",
+        "ml-vector"
+      ]
+    },
+    {
+      "id": "ml-zone-ml",
+      "label": "ML account",
+      "kind": "account",
+      "members": [
+        "ml-notebooks",
+        "ml-features",
+        "ml-train",
+        "ml-registry",
+        "ml-serve",
+        "ml-monitor"
+      ]
+    },
+    {
+      "id": "io-edge-site",
+      "label": "Edge site",
+      "kind": "boundary",
+      "members": [
+        "io-gw-edge",
+        "io-edge-ml",
+        "io-edge-store"
+      ]
+    },
+    {
+      "id": "io-cloud-in",
+      "label": "Cloud region: ingestion",
+      "kind": "region",
+      "members": [
+        "io-mqtt",
+        "io-auth",
+        "io-rules",
+        "io-validate",
+        "io-dlq",
+        "io-cmd"
+      ]
+    },
+    {
+      "id": "io-cloud-stream",
+      "label": "Cloud region: processing and storage",
+      "kind": "region",
+      "members": [
+        "io-kafka",
+        "io-flink",
+        "io-tsdb",
+        "io-lake",
+        "io-twin",
+        "io-geo",
+        "io-feat",
+        "io-train",
+        "io-serve"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "rt-shoppers-web",
+      "label": "A shopper opens the site"
+    },
+    {
+      "node": "rt-cdn",
+      "label": "Pages and images come from the nearest cache"
+    },
+    {
+      "node": "rt-waf",
+      "label": "API calls pass the web firewall"
+    },
+    {
+      "node": "rt-gw",
+      "label": "The gateway checks the token and routes the call"
+    },
+    {
+      "node": "rt-bff-web",
+      "label": "The web backend assembles the page"
+    },
+    {
+      "node": "rt-basket",
+      "label": "Checkout prices the basket"
+    },
+    {
+      "node": "rt-payments",
+      "label": "The payment is taken"
+    },
+    {
+      "node": "rt-orders",
+      "label": "The order is recorded"
+    },
+    {
+      "node": "rt-bus",
+      "label": "An order event is published"
+    },
+    {
+      "node": "rt-fulfil",
+      "label": "Fulfilment picks the order"
+    },
+    {
+      "node": "bk-retail-app",
+      "label": "A customer sends a payment"
+    },
+    {
+      "node": "bk-apigw",
+      "label": "The gateway authenticates and checks consent"
+    },
+    {
+      "node": "bk-esb",
+      "label": "The request is passed to the payments hub"
+    },
+    {
+      "node": "bk-hub",
+      "label": "The hub validates the payment"
+    },
+    {
+      "node": "bk-fraud",
+      "label": "Fraud scoring clears it"
+    },
+    {
+      "node": "bk-sanctions",
+      "label": "Screening finds no hit"
+    },
+    {
+      "node": "bk-limits",
+      "label": "Limits and liquidity allow it"
+    },
+    {
+      "node": "bk-ledger",
+      "label": "The ledger posts the entries"
+    },
+    {
+      "node": "bk-rtp",
+      "label": "The instant scheme carries it to the other bank"
+    },
+    {
+      "node": "ml-app-dbs",
+      "label": "A row changes in an application database"
+    },
+    {
+      "node": "ml-cdc",
+      "label": "Change capture reads it from the log"
+    },
+    {
+      "node": "ml-broker",
+      "label": "The change is published as an event"
+    },
+    {
+      "node": "ml-sparkstream",
+      "label": "Stream processing cleans it"
+    },
+    {
+      "node": "ml-clean",
+      "label": "It lands in the cleaned table"
+    },
+    {
+      "node": "ml-gold",
+      "label": "It is modelled into business tables"
+    },
+    {
+      "node": "ml-features",
+      "label": "Model inputs are refreshed"
+    },
+    {
+      "node": "ml-serve",
+      "label": "The deployed model scores it"
+    },
+    {
+      "node": "ml-apps",
+      "label": "The application uses the prediction"
+    },
+    {
+      "node": "io-vehicles",
+      "label": "A vehicle sends a reading"
+    },
+    {
+      "node": "io-lb",
+      "label": "It is routed to the nearest region"
+    },
+    {
+      "node": "io-mqtt",
+      "label": "The broker accepts it over mutual TLS"
+    },
+    {
+      "node": "io-rules",
+      "label": "A rule routes it by topic"
+    },
+    {
+      "node": "io-validate",
+      "label": "It is decoded and validated"
+    },
+    {
+      "node": "io-kafka",
+      "label": "It joins the event stream"
+    },
+    {
+      "node": "io-flink",
+      "label": "A window detects an overheating trend"
+    },
+    {
+      "node": "io-alerts",
+      "label": "An alert is raised"
+    },
+    {
+      "node": "io-erp",
+      "label": "A work order is created"
+    }
+  ],
+  "lintIgnore": [
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-shoppers-app",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-stores",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-dns",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-bff-app",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-bff-store",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-idp",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-flags",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-catalog",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-inventory",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-loyalty",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-search",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-recs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-pricing-ml",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-fraud",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-notify",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-ctrl-plane",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-catalog-db",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-inv-db",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-order-db",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-cache",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-search-idx",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-lake",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-dwh",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-feature-store",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-psp",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-carriers",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-marketplace",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-tax",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-repo",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-ci",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-registry",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-gitops",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-iac",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-secrets",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-mesh",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-obs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-siem",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rt-oncall",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-corp-portal",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-branch",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-tpp",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-atm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-swift-in",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-iam",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-consent",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-orch",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-doc",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-iso",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-batch-clr",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-swift-gw",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-card-sw",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-hsm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-ledger-dr",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-product",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-custdata",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-lake",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-stream",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-feat",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-risk-eng",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-catalog",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-reg",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-siem",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-pam",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-dr",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-obs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-ci",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bk-fw",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-erp",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-crm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-saas-apps",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-iot",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-partners",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-logs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-batch",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-orchestrator",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-schema-reg",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-raw",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-compute",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-sql",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-quality",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-vector",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-notebooks",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-train",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-registry",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-llm",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-monitor",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-bi",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-analysts",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-ext-share",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-reverse",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-catalog",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-policy",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-kms",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-lineage",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-finops",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-obs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-cicd",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-pii",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-machines",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-chargers",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-mobile",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-gw-edge",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-edge-ml",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-edge-store",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-auth",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-dlq",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-cmd",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-tsdb",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-lake",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-twin",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-geo",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-feat",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-train",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-serve",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-ops-ui",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-api",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-bi",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-billing",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-ota",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-sign",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-config",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-iam",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-audit",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-obs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-ci",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.io-siem",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    }
+  ]
+}

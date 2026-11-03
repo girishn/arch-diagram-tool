@@ -1,0 +1,935 @@
+{
+  "version": 1,
+  "title": "Multi-tenant AI platform",
+  "description": "Teams call one gateway that checks their quota, applies a guardrail, retrieves from the company's documents and calls a model. Documents flow in through a queue. Each team keeps its own data.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "risks"
+    },
+    {
+      "id": "planes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "eks-platform",
+      "label": "Team workloads cluster",
+      "sub": "EKS cluster",
+      "icons": [
+        "k8s"
+      ],
+      "detail": {
+        "tag": "aws_eks_cluster",
+        "role": "Runs each team's services in its own namespace, sharing one set of machines.",
+        "why": "Teams deploy without owning servers, and the platform sets the guard rails once."
+      },
+      "x-tf": "module.compute.aws_eks_cluster.platform",
+      "layer": "tenants",
+      "at": {
+        "col": 2,
+        "row": 5
+      }
+    },
+    {
+      "id": "nodes-workers",
+      "label": "Worker nodes",
+      "sub": "EKS node group",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "tag": "aws_eks_node_group",
+        "role": "The machines the team services run on.",
+        "why": "Capacity grows and shrinks with load; teams do not manage servers."
+      },
+      "x-tf": "module.compute.aws_eks_node_group.workers",
+      "peripheral": true,
+      "layer": "tenants",
+      "at": {
+        "col": 3,
+        "row": 5
+      }
+    },
+    {
+      "id": "kb-docs",
+      "label": "Knowledge base",
+      "sub": "Bedrock knowledge base",
+      "icons": [
+        "bedrock"
+      ],
+      "detail": {
+        "tag": "aws_bedrockagent_knowledge_base",
+        "role": "Finds the passages most related to a question.",
+        "why": "Answers come from company documents, not the model's memory."
+      },
+      "x-tf": "module.data.aws_bedrockagent_knowledge_base.docs",
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 3,
+        "row": 3
+      }
+    },
+    {
+      "id": "table-sessions",
+      "label": "Conversation store",
+      "sub": "DynamoDB table",
+      "icons": [
+        "dynamodb"
+      ],
+      "detail": {
+        "tag": "aws_dynamodb_table",
+        "role": "Holds each conversation so a follow-up question has its history.",
+        "why": "The router stays stateless and can scale freely."
+      },
+      "x-tf": "module.data.aws_dynamodb_table.sessions",
+      "lenses": {
+        "security": {
+          "badge": "Encrypted, expiring",
+          "text": "Conversations are encrypted with the platform key and expire by TTL.",
+          "level": "good"
+        }
+      },
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 3,
+        "row": 2
+      }
+    },
+    {
+      "id": "table-tenants",
+      "label": "Team registry",
+      "sub": "DynamoDB table",
+      "icons": [
+        "dynamodb"
+      ],
+      "detail": {
+        "tag": "aws_dynamodb_table",
+        "role": "Which teams exist, their budgets and allowed models.",
+        "why": "Onboarding a team is a row, not a deployment."
+      },
+      "x-tf": "module.data.aws_dynamodb_table.tenants",
+      "layer": "control",
+      "plane": "control",
+      "at": {
+        "col": 0,
+        "row": 1
+      }
+    },
+    {
+      "id": "key-platform",
+      "label": "Platform key",
+      "sub": "KMS key",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "tag": "aws_kms_key",
+        "role": "The key that encrypts documents, queues and conversations at rest.",
+        "why": "One key under platform control: access can be withdrawn in one place."
+      },
+      "x-tf": "module.data.aws_kms_key.platform",
+      "layer": "control",
+      "plane": "control",
+      "at": {
+        "col": 5,
+        "row": 1
+      }
+    },
+    {
+      "id": "search-vectors",
+      "label": "Vector index",
+      "sub": "OpenSearch Serverless",
+      "icons": [
+        "search"
+      ],
+      "detail": {
+        "tag": "aws_opensearchserverless_collection",
+        "role": "Stores the numeric form of each document passage and finds the closest to a question.",
+        "why": "Matches on meaning, not just on shared words."
+      },
+      "x-tf": "module.data.aws_opensearchserverless_collection.vectors",
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 2,
+        "row": 3
+      }
+    },
+    {
+      "id": "bucket-docs",
+      "label": "Shared documents",
+      "sub": "S3 bucket",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "tag": "aws_s3_bucket",
+        "role": "The company documents the knowledge base indexes.",
+        "why": "One shared corpus, encrypted, with versions of its own."
+      },
+      "x-tf": "module.data.aws_s3_bucket.docs",
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 4,
+        "row": 2
+      }
+    },
+    {
+      "id": "queue-ingest",
+      "label": "Ingest queue",
+      "sub": "SQS queue",
+      "icons": [
+        "sqs"
+      ],
+      "detail": {
+        "tag": "aws_sqs_queue",
+        "role": "Holds documents waiting to be indexed.",
+        "why": "A burst of uploads does not overload the indexer; failures retry."
+      },
+      "x-tf": "module.data.aws_sqs_queue.ingest",
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 3,
+        "row": 4
+      }
+    },
+    {
+      "id": "queue-ingest-dlq",
+      "label": "Dead-letter queue",
+      "sub": "SQS queue",
+      "icons": [
+        "sqs"
+      ],
+      "detail": {
+        "tag": "aws_sqs_queue",
+        "role": "Receives documents that failed indexing five times.",
+        "why": "A bad document is set aside for a person, not retried for ever."
+      },
+      "x-tf": "module.data.aws_sqs_queue.ingest_dlq",
+      "peripheral": true,
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 2,
+        "row": 4
+      }
+    },
+    {
+      "id": "api-gateway",
+      "label": "Platform API",
+      "sub": "API Gateway",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "tag": "aws_apigatewayv2_api",
+        "role": "The single public entry point for every team.",
+        "why": "One front door keeps authentication, quota and logging in one place."
+      },
+      "x-tf": "module.gateway.aws_apigatewayv2_api.gateway",
+      "layer": "golden",
+      "plane": "data",
+      "at": {
+        "col": 5,
+        "row": 0
+      }
+    },
+    {
+      "id": "guardrail-gateway",
+      "label": "Guardrail",
+      "sub": "aws_bedrock_guardrail",
+      "icons": [
+        "guardrails"
+      ],
+      "detail": {
+        "tag": "aws_bedrock_guardrail",
+        "role": "Blocks unsafe input and output.",
+        "why": "Safety rules are the platform's, not each team's."
+      },
+      "x-tf": "module.gateway.aws_bedrock_guardrail.main",
+      "layer": "control",
+      "plane": "control",
+      "at": {
+        "col": 1,
+        "row": 1
+      }
+    },
+    {
+      "id": "logs-router",
+      "label": "Router logs",
+      "sub": "CloudWatch logs",
+      "icons": [
+        "logging"
+      ],
+      "peripheral": true,
+      "detail": {
+        "tag": "aws_cloudwatch_log_group",
+        "role": "The router's logs.",
+        "why": "Needed to explain a wrong answer after the fact."
+      },
+      "x-tf": "module.gateway.aws_cloudwatch_log_group.router",
+      "layer": "control",
+      "plane": "control",
+      "at": {
+        "col": 2,
+        "row": 1
+      }
+    },
+    {
+      "id": "fn-gateway",
+      "label": "Auth and quota",
+      "sub": "Lambda",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "tag": "aws_lambda_function",
+        "role": "Identifies the calling team, checks its token budget and model allow-list, then hands the request to the router.",
+        "why": "Teams never hold a provider key and cannot exceed their budget."
+      },
+      "x-tf": "module.gateway.aws_lambda_function.gateway",
+      "lenses": {
+        "security": {
+          "badge": "Per-team identity",
+          "text": "Each request is tied to one team before anything else happens.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Budget enforced here",
+          "text": "Token budgets are checked before a model is called, not found on the invoice.",
+          "level": "good"
+        }
+      },
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 1,
+        "row": 2
+      }
+    },
+    {
+      "id": "fn-ingest-worker",
+      "label": "Ingest worker",
+      "sub": "Lambda",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "tag": "aws_lambda_function",
+        "role": "Takes documents from the queue, reads them from the bucket and has the knowledge base index them.",
+        "why": "Indexing runs in the background, apart from the request path."
+      },
+      "x-tf": "module.gateway.aws_lambda_function.ingest_worker",
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 4,
+        "row": 3
+      }
+    },
+    {
+      "id": "fn-router",
+      "label": "Router",
+      "sub": "Lambda",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "tag": "aws_lambda_function",
+        "role": "Applies the guardrail, retrieves passages for the question, chooses a model and returns the answer.",
+        "why": "Cheap models handle easy work; the expensive one is kept for what needs it."
+      },
+      "x-tf": "module.gateway.aws_lambda_function.router",
+      "lenses": {
+        "risks": {
+          "badge": "Sensitivity point: routing rules",
+          "text": "A rule that sends hard questions to a weak model lowers quality without an error.",
+          "level": "warn"
+        }
+      },
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 2,
+        "row": 2
+      }
+    },
+    {
+      "id": "topic-alerts",
+      "label": "Alerts",
+      "sub": "SNS topic",
+      "icons": [
+        "sns"
+      ],
+      "detail": {
+        "tag": "aws_sns_topic",
+        "role": "Notifies the on-call engineer when the router's error alarm fires.",
+        "why": "Failures are found by the platform before a team reports them."
+      },
+      "x-tf": "module.gateway.aws_sns_topic.alerts",
+      "peripheral": true,
+      "layer": "control",
+      "plane": "control",
+      "at": {
+        "col": 4,
+        "row": 1
+      }
+    },
+    {
+      "id": "bucket-tenant-docs",
+      "label": "Team documents",
+      "sub": "S3 bucket",
+      "scale": {
+        "min": 3,
+        "max": 3,
+        "unit": "instances"
+      },
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "tag": "aws_s3_bucket",
+        "role": "Stores objects. One per team-risk, team-search, team-support.",
+        "why": "A team's private documents are never mixed with another team's."
+      },
+      "x-tf": "module.tenant.aws_s3_bucket.docs",
+      "layer": "tenants",
+      "plane": "data",
+      "at": {
+        "col": 6,
+        "row": 5
+      }
+    },
+    {
+      "id": "queue-tenant-ingest",
+      "label": "Team ingest queues",
+      "sub": "SQS queue",
+      "scale": {
+        "min": 3,
+        "max": 3,
+        "unit": "instances"
+      },
+      "icons": [
+        "sqs"
+      ],
+      "detail": {
+        "tag": "aws_sqs_queue",
+        "role": "Where a team submits documents it wants searchable.",
+        "why": "Each team has its own queue, so one team's backlog cannot delay another's."
+      },
+      "x-tf": "module.tenant.aws_sqs_queue.ingest",
+      "layer": "tenants",
+      "plane": "data",
+      "at": {
+        "col": 4,
+        "row": 5
+      }
+    },
+    {
+      "id": "workloads",
+      "label": "Team applications",
+      "sub": "Run on the cluster",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "Each team's services, running in the shared cluster with their own identity.",
+        "why": "Not created by this Terraform, so drawn from the overlay."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 5,
+        "row": 5
+      }
+    },
+    {
+      "id": "model",
+      "label": "Foundation models",
+      "sub": "Bedrock",
+      "icons": [
+        "llm"
+      ],
+      "detail": {
+        "role": "Writes the answer from the question and the retrieved passages.",
+        "why": "Called by model id, not created by this Terraform."
+      },
+      "layer": "runtime",
+      "plane": "data",
+      "at": {
+        "col": 1,
+        "row": 3
+      }
+    },
+    {
+      "id": "onboarding",
+      "label": "Team onboarding",
+      "sub": "Templates and golden path",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "How a team joins: a template creates its registry entry, its buckets and queues, and its identity.",
+        "why": "Joining the platform is a pull request, not a project. Not created by this Terraform, so drawn from the overlay."
+      },
+      "layer": "golden",
+      "plane": "control",
+      "at": {
+        "col": 1,
+        "row": 0
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "nodes-workers_to_eks-platform",
+      "from": "nodes-workers",
+      "to": "eks-platform",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.compute.aws_eks_node_group.workers.",
+      "x-tf": [
+        "module.compute.aws_eks_node_group.workers"
+      ]
+    },
+    {
+      "id": "kb-docs_to_search-vectors",
+      "from": "kb-docs",
+      "to": "search-vectors",
+      "label": "Uses (IAM)",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.data.aws_bedrockagent_knowledge_base.docs, module.data.aws_iam_role_policy.kb.",
+      "x-tf": [
+        "module.data.aws_bedrockagent_knowledge_base.docs",
+        "module.data.aws_iam_role_policy.kb"
+      ],
+      "plane": "data"
+    },
+    {
+      "id": "kb-docs_to_bucket-docs",
+      "from": "kb-docs",
+      "to": "bucket-docs",
+      "label": "Uses (IAM)",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.data.aws_iam_role_policy.kb.",
+      "x-tf": [
+        "module.data.aws_iam_role_policy.kb"
+      ],
+      "plane": "data"
+    },
+    {
+      "id": "table-sessions_to_key-platform",
+      "from": "table-sessions",
+      "to": "key-platform",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.data.aws_dynamodb_table.sessions.",
+      "x-tf": [
+        "module.data.aws_dynamodb_table.sessions"
+      ],
+      "plane": "control"
+    },
+    {
+      "id": "bucket-docs_to_key-platform",
+      "from": "bucket-docs",
+      "to": "key-platform",
+      "label": "Encrypted with",
+      "pattern": "dependency",
+      "detail": "Derived from Terraform: module.data.aws_s3_bucket_server_side_encryption_configuration.docs.",
+      "x-tf": [
+        "module.data.aws_s3_bucket_server_side_encryption_configuration.docs"
+      ],
+      "plane": "control"
+    },
+    {
+      "id": "queue-ingest_to_queue-ingest-dlq",
+      "from": "queue-ingest",
+      "to": "queue-ingest-dlq",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.data.aws_sqs_queue.ingest.",
+      "x-tf": [
+        "module.data.aws_sqs_queue.ingest"
+      ],
+      "plane": "data"
+    },
+    {
+      "id": "queue-ingest_to_fn-ingest-worker",
+      "from": "queue-ingest",
+      "to": "fn-ingest-worker",
+      "label": "Triggers",
+      "pattern": "message",
+      "detail": "Derived from Terraform: module.gateway.aws_lambda_event_source_mapping.ingest.",
+      "x-tf": [
+        "module.gateway.aws_lambda_event_source_mapping.ingest"
+      ],
+      "plane": "data"
+    },
+    {
+      "id": "api-gateway_to_fn-gateway",
+      "from": "api-gateway",
+      "to": "fn-gateway",
+      "label": "Invokes",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_apigatewayv2_integration.gateway, module.gateway.aws_lambda_permission.gateway.",
+      "x-tf": [
+        "module.gateway.aws_apigatewayv2_integration.gateway",
+        "module.gateway.aws_lambda_permission.gateway"
+      ],
+      "plane": "data"
+    },
+    {
+      "id": "fn-gateway_to_table-tenants",
+      "from": "fn-gateway",
+      "to": "table-tenants",
+      "label": "Budget and models",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_iam_role_policy.gateway, module.gateway.aws_lambda_function.gateway.",
+      "x-tf": [
+        "module.gateway.aws_iam_role_policy.gateway",
+        "module.gateway.aws_lambda_function.gateway"
+      ],
+      "twoWay": true,
+      "plane": "control"
+    },
+    {
+      "id": "fn-gateway_to_fn-router",
+      "from": "fn-gateway",
+      "to": "fn-router",
+      "label": "Route",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_iam_role_policy.gateway, module.gateway.aws_lambda_function.gateway.",
+      "x-tf": [
+        "module.gateway.aws_iam_role_policy.gateway",
+        "module.gateway.aws_lambda_function.gateway"
+      ],
+      "twoWay": true,
+      "plane": "data"
+    },
+    {
+      "id": "fn-ingest-worker_to_kb-docs",
+      "from": "fn-ingest-worker",
+      "to": "kb-docs",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_lambda_function.ingest_worker.",
+      "x-tf": [
+        "module.gateway.aws_lambda_function.ingest_worker"
+      ],
+      "plane": "data"
+    },
+    {
+      "id": "fn-ingest-worker_to_key-platform",
+      "from": "fn-ingest-worker",
+      "to": "key-platform",
+      "label": "Uses (IAM)",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_iam_role_policy.ingest_worker.",
+      "x-tf": [
+        "module.gateway.aws_iam_role_policy.ingest_worker"
+      ],
+      "plane": "control"
+    },
+    {
+      "id": "fn-ingest-worker_to_bucket-docs",
+      "from": "fn-ingest-worker",
+      "to": "bucket-docs",
+      "label": "Uses (IAM)",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_iam_role_policy.ingest_worker, module.gateway.aws_lambda_function.ingest_worker.",
+      "x-tf": [
+        "module.gateway.aws_iam_role_policy.ingest_worker",
+        "module.gateway.aws_lambda_function.ingest_worker"
+      ],
+      "plane": "data"
+    },
+    {
+      "id": "fn-router_to_kb-docs",
+      "from": "fn-router",
+      "to": "kb-docs",
+      "label": "Retrieve",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_iam_role_policy.router, module.gateway.aws_lambda_function.router.",
+      "x-tf": [
+        "module.gateway.aws_iam_role_policy.router",
+        "module.gateway.aws_lambda_function.router"
+      ],
+      "twoWay": true,
+      "plane": "data"
+    },
+    {
+      "id": "fn-router_to_table-sessions",
+      "from": "fn-router",
+      "to": "table-sessions",
+      "label": "Conversation",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_iam_role_policy.router, module.gateway.aws_lambda_function.router.",
+      "x-tf": [
+        "module.gateway.aws_iam_role_policy.router",
+        "module.gateway.aws_lambda_function.router"
+      ],
+      "twoWay": true,
+      "plane": "data"
+    },
+    {
+      "id": "fn-router_to_guardrail-gateway",
+      "from": "fn-router",
+      "to": "guardrail-gateway",
+      "label": "Check",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_iam_role_policy.router, module.gateway.aws_lambda_function.router.",
+      "x-tf": [
+        "module.gateway.aws_iam_role_policy.router",
+        "module.gateway.aws_lambda_function.router"
+      ],
+      "twoWay": true,
+      "plane": "control"
+    },
+    {
+      "id": "fn-router_to_logs-router",
+      "from": "fn-router",
+      "to": "logs-router",
+      "label": "Logs to",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.gateway.aws_cloudwatch_log_group.router.",
+      "x-tf": [
+        "module.gateway.aws_cloudwatch_log_group.router"
+      ],
+      "plane": "control"
+    },
+    {
+      "id": "fn-router_to_topic-alerts",
+      "from": "fn-router",
+      "to": "topic-alerts",
+      "label": "Alerts via",
+      "pattern": "event",
+      "detail": "Derived from Terraform: module.gateway.aws_cloudwatch_metric_alarm.router_errors.",
+      "x-tf": [
+        "module.gateway.aws_cloudwatch_metric_alarm.router_errors"
+      ],
+      "plane": "control"
+    },
+    {
+      "id": "queue-tenant-ingest_to_key-platform",
+      "from": "queue-tenant-ingest",
+      "to": "key-platform",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: module.tenant.aws_sqs_queue.ingest.",
+      "x-tf": [
+        "module.tenant.aws_sqs_queue.ingest"
+      ],
+      "plane": "control"
+    },
+    {
+      "id": "workloads_to_api",
+      "from": "workloads",
+      "to": "api-gateway",
+      "label": "Chat request",
+      "protocol": "HTTPS",
+      "traffic": "ingress",
+      "detail": "A team's service calls the platform API with its own identity.",
+      "via": [
+        [
+          5.5,
+          1
+        ]
+      ],
+      "plane": "data"
+    },
+    {
+      "id": "router_to_model",
+      "from": "fn-router",
+      "to": "model",
+      "label": "Generate",
+      "protocol": "HTTPS",
+      "traffic": "egress",
+      "twoWay": true,
+      "detail": "The question and retrieved passages go to the chosen model; the answer streams back.",
+      "plane": "data"
+    },
+    {
+      "id": "workloads_to_team_docs",
+      "from": "workloads",
+      "to": "bucket-tenant-docs",
+      "label": "Own documents",
+      "protocol": "HTTPS",
+      "offPath": true,
+      "detail": "Each team stores its private documents in its own bucket.",
+      "plane": "data"
+    },
+    {
+      "id": "workloads_to_team_queue",
+      "from": "workloads",
+      "to": "queue-tenant-ingest",
+      "label": "Submit for indexing",
+      "pattern": "message",
+      "offPath": true,
+      "detail": "A team queues documents it wants searchable by the whole company.",
+      "plane": "data"
+    },
+    {
+      "id": "onboarding_to_registry",
+      "from": "onboarding",
+      "to": "table-tenants",
+      "label": "Create team",
+      "protocol": "HTTPS",
+      "detail": "Onboarding writes the new team's budget and allowed models into the registry.",
+      "plane": "control"
+    }
+  ],
+  "layers": [
+    {
+      "id": "golden",
+      "label": "Golden path",
+      "summary": "The one supported way in: what a team uses to start and to call the platform."
+    },
+    {
+      "id": "control",
+      "label": "Control plane",
+      "summary": "Decides and governs: team registry and budgets, safety policy, keys, logging and alerts."
+    },
+    {
+      "id": "runtime",
+      "label": "Runtime",
+      "summary": "Does the work for each request and each document: gateway, router, retrieval, models, ingestion."
+    },
+    {
+      "id": "tenants",
+      "label": "Tenants",
+      "summary": "What each team owns: its applications, its private documents and queues, and the cluster they run on."
+    }
+  ],
+  "zones": [
+    {
+      "id": "subnet-private",
+      "label": "Private",
+      "kind": "subnet",
+      "members": [
+        "eks-platform",
+        "nodes-workers"
+      ],
+      "parent": "vpc-network",
+      "x-tf": "module.network.aws_subnet.private"
+    },
+    {
+      "id": "vpc-network",
+      "label": "VPC",
+      "kind": "vpc",
+      "x-tf": "module.network.aws_vpc.this"
+    }
+  ],
+  "trace": [
+    {
+      "node": "workloads",
+      "label": "A team's service sends a question"
+    },
+    {
+      "node": "api-gateway",
+      "label": "The platform API receives it"
+    },
+    {
+      "node": "fn-gateway",
+      "label": "The gateway identifies the team"
+    },
+    {
+      "node": "table-tenants",
+      "label": "Its budget and allowed models are read from the registry"
+    },
+    {
+      "node": "fn-gateway",
+      "label": "The request is within budget"
+    },
+    {
+      "node": "fn-router",
+      "label": "The router takes the request"
+    },
+    {
+      "node": "guardrail-gateway",
+      "label": "The question passes the guardrail"
+    },
+    {
+      "node": "fn-router",
+      "label": "The router asks for related passages"
+    },
+    {
+      "node": "kb-docs",
+      "label": "The knowledge base finds them"
+    },
+    {
+      "node": "search-vectors",
+      "label": "The vector index returns the best matches"
+    },
+    {
+      "node": "kb-docs",
+      "label": "Passages go back to the router"
+    },
+    {
+      "node": "fn-router",
+      "label": "The router picks a model for this task"
+    },
+    {
+      "node": "model",
+      "label": "The model writes the answer"
+    },
+    {
+      "node": "fn-router",
+      "label": "The answer comes back"
+    },
+    {
+      "node": "table-sessions",
+      "label": "The conversation is saved for follow-up questions"
+    }
+  ],
+  "lintIgnore": [
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bucket-docs",
+      "reason": "The trace follows one question; ingestion, onboarding and per-team data are separate flows."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bucket-tenant-docs",
+      "reason": "The trace follows one question; ingestion, onboarding and per-team data are separate flows."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.eks-platform",
+      "reason": "The trace follows one question; ingestion, onboarding and per-team data are separate flows."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.fn-ingest-worker",
+      "reason": "The trace follows one question; ingestion, onboarding and per-team data are separate flows."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.key-platform",
+      "reason": "The trace follows one question; ingestion, onboarding and per-team data are separate flows."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.onboarding",
+      "reason": "The trace follows one question; ingestion, onboarding and per-team data are separate flows."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.queue-ingest",
+      "reason": "The trace follows one question; ingestion, onboarding and per-team data are separate flows."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.queue-tenant-ingest",
+      "reason": "The trace follows one question; ingestion, onboarding and per-team data are separate flows."
+    }
+  ]
+}

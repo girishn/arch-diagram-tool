@@ -1,0 +1,1098 @@
+{
+  "version": 1,
+  "title": "Multi-tenant event streaming platform",
+  "description": "Teams publish and consume events on a shared Confluent Cloud backbone. Kafka Connect, run by Confluent for Kubernetes on EKS, brings in database changes and HTTP requests and writes to S3, all over a private link. Flink turns them into each tenant's output topics. Everything is requested through a portal and delivered by Terraform and GitHub Actions.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "risks"
+    },
+    {
+      "id": "planes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "idp",
+      "label": "Developer portal",
+      "sub": "Self-service (IDP)",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Where a team asks for a topic, a connector, a schema or a service account. The request becomes a pull request, never a ticket.",
+        "why": "Teams get what they need in minutes and the platform team stops being a queue. Every request is reviewed code.",
+        "tradeoff": "The portal has to be kept as current as the platform; a request it cannot express goes back to a ticket."
+      },
+      "layer": "control",
+      "at": {
+        "col": 0,
+        "row": 0
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Requests are code",
+          "text": "The portal holds no cluster credentials. It only opens pull requests, so every change is reviewed and recorded.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "repo",
+      "label": "Platform repository",
+      "sub": "Git: topics, ACLs, connectors",
+      "icons": [
+        "git"
+      ],
+      "detail": {
+        "role": "The single source of truth for every topic, schema, service account, role binding and connector.",
+        "why": "What is in the repository is what exists. Drift is a diff, and a rollback is a revert."
+      },
+      "layer": "control",
+      "at": {
+        "col": 1,
+        "row": 0
+      },
+      "plane": "control"
+    },
+    {
+      "id": "gha",
+      "label": "GitHub Actions",
+      "sub": "CI/CD",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Validates each pull request (naming, quotas, schema compatibility, policy), then runs Terraform on merge.",
+        "why": "Rules are checked before anything is created, not after."
+      },
+      "layer": "control",
+      "at": {
+        "col": 2,
+        "row": 0
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "OIDC, no stored keys",
+          "text": "Pipelines get short-lived cloud credentials through OIDC. No long-lived keys sit in the repository or the runner.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "tf",
+      "label": "Terraform",
+      "sub": "Provisioning",
+      "icons": [
+        "terraform"
+      ],
+      "detail": {
+        "role": "Creates and changes the Confluent Cloud resources (clusters, topics, service accounts, role bindings, connectors) and the AWS and Kubernetes side.",
+        "why": "One tool and one state for both clouds, with a plan that is reviewed before it is applied.",
+        "tradeoff": "State is a secret-bearing asset and must itself be locked down and backed up."
+      },
+      "layer": "control",
+      "at": {
+        "col": 3,
+        "row": 0
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Least privilege per stage",
+          "text": "Plan runs read-only. Apply runs with a narrower, separate role, and only on the protected branch.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "rbac",
+      "label": "RBAC and identity pools",
+      "sub": "Confluent Cloud authz",
+      "icons": [
+        "iam"
+      ],
+      "detail": {
+        "role": "Maps the claims in a client's token or certificate to an identity pool, and the pool to roles on specific topics, groups and connectors.",
+        "why": "Access follows the workload's identity, not a shared secret, and each tenant sees only its own resources."
+      },
+      "layer": "control",
+      "at": {
+        "col": 4,
+        "row": 0
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Deny by default",
+          "text": "No identity pool has any role until it is bound, and each binding is scoped to one tenant's topic prefix.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "idp-id",
+      "label": "Identity provider",
+      "sub": "OIDC for workloads",
+      "icons": [
+        "identity"
+      ],
+      "detail": {
+        "role": "Issues the signed tokens that workloads and engineers present. Their claims (tenant, team, environment) feed the identity pools.",
+        "why": "One place to say who a workload is, and one place to revoke it."
+      },
+      "layer": "control",
+      "at": {
+        "col": 5,
+        "row": 0
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Short-lived tokens",
+          "text": "Tokens expire in minutes and are checked on every connection. Nothing is trusted because of where it runs.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "pki",
+      "label": "Certificate authority",
+      "sub": "mTLS certificates",
+      "icons": [
+        "key"
+      ],
+      "detail": {
+        "role": "Issues and rotates the client and server certificates used for mutual TLS between tenants, Connect and the clusters.",
+        "why": "Both ends prove who they are on every connection, so a stolen network position is not enough."
+      },
+      "layer": "control",
+      "at": {
+        "col": 6,
+        "row": 0
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Rotated automatically",
+          "text": "Certificates are short-lived and renewed by automation; a leaked one stops working within hours.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "tenant-db",
+      "label": "Tenant databases",
+      "sub": "Postgres, MySQL",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "The systems of record that teams want to turn into event streams. Debezium reads their change logs.",
+        "why": "No change to the application: the stream is built from the database's own log."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 0,
+        "row": 1
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Replication slot",
+          "text": "An idle consumer lets the database keep its change log and fill its disk. Slot lag needs an alert.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "http-svc",
+      "label": "Tenant HTTP services",
+      "sub": "REST request / response",
+      "icons": [
+        "api"
+      ],
+      "detail": {
+        "role": "Teams' services that call in with requests, or that the platform calls out to with results.",
+        "why": "Services that do not speak Kafka can still join a stream."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 1,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "s3",
+      "label": "Amazon S3",
+      "sub": "Data lake",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "Where tenants land stream data for analytics and long-term retention.",
+        "why": "Cheap storage that outlives topic retention."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 2,
+        "row": 1
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Per-tenant prefix",
+          "text": "Each tenant writes to its own prefix through a role that can reach nothing else.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Storage only",
+          "text": "Pay for stored data; the Connect workers are already running.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "consumers",
+      "label": "Tenant consumers",
+      "sub": "Apps and analytics",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Applications that read their pipeline's output topics.",
+        "why": "Each team consumes only the streams it has been granted."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 5,
+        "row": 1
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Own topics only",
+          "text": "A consumer identity can read its granted topics and its own consumer group, nothing else.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "producers",
+      "label": "Tenant producers",
+      "sub": "Apps and services",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Applications that publish events into their tenant's topics.",
+        "why": "Teams publish facts as they happen and never wait on a consumer."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 6,
+        "row": 1
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "mTLS and quotas",
+          "text": "Each producer connects with its own certificate and is held to its tenant's throughput quota.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "debezium",
+      "label": "Debezium connectors",
+      "sub": "CDC source connectors",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Read each database's change log and turn every insert, update and delete into an event.",
+        "why": "Captures changes with no extra load on the application and no missed rows.",
+        "tradeoff": "Schema changes in the source database must be handled deliberately, or the connector stops."
+      },
+      "layer": "data",
+      "at": {
+        "col": 0,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "httpconn",
+      "label": "HTTP connectors",
+      "sub": "HTTP source and sink",
+      "icons": [
+        "api"
+      ],
+      "detail": {
+        "role": "The source connector turns incoming HTTP requests into events. The sink connector calls an HTTP endpoint for each event and can return the response to a topic.",
+        "why": "Request/response systems join the event platform without custom glue code.",
+        "tradeoff": "A slow downstream endpoint slows the sink; retries and a dead-letter topic are needed."
+      },
+      "layer": "data",
+      "at": {
+        "col": 1,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Slow endpoints",
+          "text": "One tenant's slow endpoint can fill a Connect task. Per-connector timeouts, retries and a dead-letter topic contain it.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "s3conn",
+      "label": "S3 sink connector",
+      "sub": "Cloud resource connector",
+      "icons": [
+        "bucket"
+      ],
+      "detail": {
+        "role": "Writes topic data to S3 in batches, one connector per tenant.",
+        "why": "Archival and analytics get the data without a second pipeline."
+      },
+      "layer": "data",
+      "at": {
+        "col": 2,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "cfk",
+      "label": "Confluent for Kubernetes",
+      "sub": "Operator",
+      "icons": [
+        "k8s"
+      ],
+      "detail": {
+        "role": "Runs Connect (and any other Confluent component) as Kubernetes resources: declare a connector, and the operator makes it so.",
+        "why": "Rolling upgrades, certificate wiring and scaling are handled by the operator, not by hand."
+      },
+      "layer": "data",
+      "at": {
+        "col": 3,
+        "row": 2
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Secrets by reference",
+          "text": "Connector credentials are Kubernetes secrets mounted into the worker. They are never written into the connector definition.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "connect",
+      "label": "Kafka Connect workers",
+      "sub": "Runs inside EKS",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "The worker pool that runs every connector. It reads from and writes to Kafka over the private link.",
+        "why": "One shared, scalable runtime instead of a process per integration.",
+        "tradeoff": "Tenants share workers, so tasks are limited per connector and noisy connectors are moved to their own worker pool."
+      },
+      "layer": "data",
+      "at": {
+        "col": 1,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Isolated tasks",
+          "text": "Each tenant's connectors use their own service account and their own topic prefix.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Shared workers",
+          "text": "Connectors share one pool of nodes, so the idle cost of a connector is close to zero.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "link",
+      "label": "AWS PrivateLink",
+      "sub": "Private endpoint",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "The private connection from the platform VPC to Confluent Cloud. Traffic never crosses the public internet.",
+        "why": "No public endpoint to attack, and a network path that can be allowed in exactly one direction."
+      },
+      "layer": "data",
+      "at": {
+        "col": 4,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "No public path",
+          "text": "The cluster's public endpoint is disabled. Only this endpoint, from this VPC, can reach it.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "sr",
+      "label": "Schema Registry",
+      "sub": "Schemas and contracts",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Stores every topic's schema and enforces compatibility rules before a producer can change it.",
+        "why": "Consumers are not broken by a producer's change, and the contract is written down."
+      },
+      "layer": "data",
+      "at": {
+        "col": 6,
+        "row": 2
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Contract checked",
+          "text": "A producer that breaks compatibility is refused at publish time.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "primary",
+      "label": "Kafka cluster",
+      "sub": "Primary, multi-AZ",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "The shared event backbone. Each tenant has its own topic prefix, its own service accounts and a quota.",
+        "why": "Replicated across three zones, so losing a zone loses no data and no availability.",
+        "tradeoff": "A shared cluster means shared limits. Large tenants get their own cluster when a quota is not enough."
+      },
+      "layer": "data",
+      "at": {
+        "col": 5,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Encrypted and authorised",
+          "text": "TLS in transit, encryption at rest, and a role binding required for every read or write.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Throughput units",
+          "text": "Cost follows provisioned throughput and storage, so a quota doubles as a budget.",
+          "level": "info"
+        },
+        "risks": {
+          "badge": "Shared limits",
+          "text": "Partition counts and throughput are shared, so quotas must be enforced per tenant.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "dr",
+      "label": "Kafka cluster",
+      "sub": "Secondary, other region",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "A second cluster kept in step by cluster linking. Clients can switch to it when the primary is unavailable.",
+        "why": "A regional outage becomes a switch-over instead of an incident.",
+        "tradeoff": "A little data can be lost on failover (the link is asynchronous), and the second cluster is paid for while idle."
+      },
+      "layer": "data",
+      "at": {
+        "col": 7,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Paid while idle",
+          "text": "The secondary costs money even when nothing reads from it.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "flink",
+      "label": "Confluent Flink",
+      "sub": "Transforms and joins",
+      "icons": [
+        "stream"
+      ],
+      "detail": {
+        "role": "Reads input topics, filters, enriches and joins them across sources, and publishes the result to destination topics. There is one such pipeline per use case, and many tenants.",
+        "why": "Processing is a managed service, so a pipeline is a SQL statement, not a cluster.",
+        "tradeoff": "Each pipeline holds state, so schema changes and restarts must be planned."
+      },
+      "layer": "data",
+      "at": {
+        "col": 7,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Own identity",
+          "text": "Each pipeline runs as its own service account and can read and write only its own topics.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Per compute unit",
+          "text": "Billed for compute used by each statement, so idle pipelines cost little.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "k8s-metrics",
+      "label": "Cluster metrics",
+      "sub": "Prometheus on EKS",
+      "icons": [
+        "prometheus"
+      ],
+      "detail": {
+        "role": "Collects metrics from the operator and the Connect workers: task state, lag, restarts, resource use.",
+        "why": "Shows whether the integrations are keeping up before a tenant notices."
+      },
+      "layer": "obs",
+      "at": {
+        "col": 1,
+        "row": 4
+      }
+    },
+    {
+      "id": "nr",
+      "label": "New Relic",
+      "sub": "Dashboards and alerts",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "One place for the health of the whole platform: both sides' metrics, per-tenant dashboards and the alerts that page the platform team.",
+        "why": "One view across Confluent Cloud and Kubernetes, not two tools to flip between."
+      },
+      "layer": "obs",
+      "at": {
+        "col": 3,
+        "row": 4
+      },
+      "lenses": {
+        "security": {
+          "badge": "Metrics only",
+          "text": "Only metrics and logs are sent. Record contents and secrets never leave the platform.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "cc-metrics",
+      "label": "Confluent metrics",
+      "sub": "Metrics API and audit logs",
+      "icons": [
+        "metrics"
+      ],
+      "detail": {
+        "role": "Cluster, topic and connector metrics from Confluent Cloud, plus audit logs of who did what.",
+        "why": "Throughput, lag, consumer-group delay and every access decision are visible."
+      },
+      "layer": "obs",
+      "at": {
+        "col": 5,
+        "row": 4
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "idp_to_repo",
+      "from": "idp",
+      "to": "repo",
+      "label": "Opens pull request",
+      "pattern": "event",
+      "detail": "A request in the portal becomes a pull request that adds a topic, connector, schema or service account.",
+      "plane": "control",
+      "interaction": "async",
+      "traffic": "internal",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "repo_to_gha",
+      "from": "repo",
+      "to": "gha",
+      "label": "Triggers",
+      "pattern": "event",
+      "detail": "A change to the repository starts validation, and a merge starts the apply.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "gha_to_tf",
+      "from": "gha",
+      "to": "tf",
+      "label": "Runs plan and apply",
+      "pattern": "request-response",
+      "detail": "The pipeline runs Terraform, with read-only credentials for plan and a narrower role for apply.",
+      "plane": "control",
+      "interaction": "sync"
+    },
+    {
+      "id": "tf_to_rbac",
+      "from": "tf",
+      "to": "rbac",
+      "label": "Creates role bindings",
+      "pattern": "request-response",
+      "detail": "Terraform creates the service accounts, identity pools and role bindings that give each tenant its access.",
+      "plane": "control",
+      "interaction": "sync",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "tf_to_cfk",
+      "from": "tf",
+      "to": "cfk",
+      "label": "Applies connectors",
+      "pattern": "request-response",
+      "detail": "Terraform and the pipeline apply connector and cluster definitions to Kubernetes, where the operator acts on them.",
+      "plane": "control",
+      "interaction": "sync",
+      "traffic": "ingress"
+    },
+    {
+      "id": "idp-id_to_rbac",
+      "from": "idp-id",
+      "to": "rbac",
+      "label": "Claims to pools",
+      "pattern": "dependency",
+      "detail": "The identity provider's token claims (tenant, team, environment) select which identity pool, and so which roles, a caller gets.",
+      "plane": "control"
+    },
+    {
+      "id": "pki_to_producers",
+      "from": "pki",
+      "to": "producers",
+      "label": "Issues client certificates",
+      "pattern": "dependency",
+      "detail": "Tenant clients get short-lived certificates for mutual TLS. The same authority issues the certificates the Connect workers and the clusters use.",
+      "plane": "control"
+    },
+    {
+      "id": "tenant-db_to_debezium",
+      "from": "tenant-db",
+      "to": "debezium",
+      "label": "Change log",
+      "pattern": "stream",
+      "detail": "Debezium reads the database's transaction log, so the application is not touched.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "TCP"
+    },
+    {
+      "id": "debezium_to_connect",
+      "from": "debezium",
+      "to": "connect",
+      "label": "Change events",
+      "pattern": "stream",
+      "detail": "Source tasks run in the Connect workers and hand each change to the worker to publish.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "http-svc_to_httpconn",
+      "from": "http-svc",
+      "to": "httpconn",
+      "label": "Requests in",
+      "pattern": "request-response",
+      "detail": "The HTTP source connector accepts requests from tenant services and publishes them as events; the HTTP sink calls out the other way and can write the response back.",
+      "plane": "data",
+      "interaction": "sync",
+      "traffic": "ingress",
+      "protocol": "HTTPS",
+      "twoWay": true
+    },
+    {
+      "id": "httpconn_to_connect",
+      "from": "httpconn",
+      "to": "connect",
+      "label": "Runs in",
+      "pattern": "dependency",
+      "detail": "The HTTP connectors run as tasks inside the Connect workers.",
+      "plane": "data"
+    },
+    {
+      "id": "connect_to_s3conn",
+      "from": "connect",
+      "to": "s3conn",
+      "label": "Records out",
+      "pattern": "stream",
+      "detail": "The sink task takes records the worker reads from a topic.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "s3conn_to_s3",
+      "from": "s3conn",
+      "to": "s3",
+      "label": "Writes batches",
+      "pattern": "batch",
+      "detail": "Files per time window, under one prefix per tenant, through a role limited to that prefix.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "cfk_to_connect",
+      "from": "cfk",
+      "to": "connect",
+      "label": "Deploys and manages",
+      "pattern": "dependency",
+      "detail": "The operator creates the worker pool, wires the certificates and rolls upgrades.",
+      "plane": "control"
+    },
+    {
+      "id": "connect_to_link",
+      "from": "connect",
+      "to": "link",
+      "label": "Produce and consume",
+      "pattern": "stream",
+      "detail": "Workers talk to Kafka over mutual TLS, through the private endpoint only.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "Kafka over mTLS",
+      "twoWay": true
+    },
+    {
+      "id": "link_to_primary",
+      "from": "link",
+      "to": "primary",
+      "label": "Private traffic",
+      "pattern": "stream",
+      "detail": "Kafka traffic arrives at the cluster over the private connection, never the internet.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "Kafka over mTLS",
+      "twoWay": true
+    },
+    {
+      "id": "producers_to_primary",
+      "from": "producers",
+      "to": "primary",
+      "label": "Publish events",
+      "pattern": "stream",
+      "detail": "Each producer authenticates with its certificate and identity-pool token and is held to its tenant's quota.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "Kafka over mTLS"
+    },
+    {
+      "id": "primary_to_consumers",
+      "from": "primary",
+      "to": "consumers",
+      "label": "Subscribe",
+      "pattern": "stream",
+      "detail": "Consumers read only the topics they have been granted, in their own consumer group.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "Kafka over mTLS"
+    },
+    {
+      "id": "primary_to_flink",
+      "from": "primary",
+      "to": "flink",
+      "label": "Consume and publish",
+      "pattern": "stream",
+      "detail": "Flink statements read input topics, filter, enrich and join them, and publish results to the destination topics.",
+      "plane": "data",
+      "interaction": "async",
+      "twoWay": true
+    },
+    {
+      "id": "primary_to_dr",
+      "from": "primary",
+      "to": "dr",
+      "label": "Cluster link",
+      "pattern": "stream",
+      "detail": "Topics and consumer offsets are mirrored to the secondary region so clients can fail over.",
+      "plane": "data",
+      "interaction": "async",
+      "protocol": "Cluster Linking"
+    },
+    {
+      "id": "primary_to_sr",
+      "from": "primary",
+      "to": "sr",
+      "label": "Schemas",
+      "pattern": "request-response",
+      "detail": "Producers and consumers check each message against its registered schema.",
+      "plane": "control",
+      "interaction": "sync",
+      "protocol": "HTTPS",
+      "offPath": true
+    },
+    {
+      "id": "rbac_to_primary",
+      "from": "rbac",
+      "to": "primary",
+      "label": "Authorises",
+      "pattern": "dependency",
+      "detail": "Every connection is checked against the role bindings before it can read or write.",
+      "plane": "control"
+    },
+    {
+      "id": "connect_to_k8s-metrics",
+      "from": "connect",
+      "to": "k8s-metrics",
+      "label": "Scraped",
+      "pattern": "dependency",
+      "detail": "Task state, lag and restarts are scraped from the workers.",
+      "offPath": true
+    },
+    {
+      "id": "primary_to_cc-metrics",
+      "from": "primary",
+      "to": "cc-metrics",
+      "label": "Metrics API",
+      "pattern": "dependency",
+      "detail": "Cluster, topic and connector metrics and audit logs.",
+      "offPath": true
+    },
+    {
+      "id": "k8s-metrics_to_nr",
+      "from": "k8s-metrics",
+      "to": "nr",
+      "label": "Pushes metrics",
+      "pattern": "stream",
+      "detail": "Kubernetes-side metrics go to New Relic.",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "cc-metrics_to_nr",
+      "from": "cc-metrics",
+      "to": "nr",
+      "label": "Pushes metrics",
+      "pattern": "stream",
+      "detail": "Confluent Cloud metrics and audit logs go to New Relic.",
+      "interaction": "async",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    }
+  ],
+  "layers": [
+    {
+      "id": "control",
+      "label": "Control plane",
+      "summary": "How things are requested, approved, provisioned and authorised: portal, repository, pipelines, identity and certificates."
+    },
+    {
+      "id": "tenants",
+      "label": "Tenants",
+      "summary": "What teams own: their databases, services, producers, consumers and data lake."
+    },
+    {
+      "id": "data",
+      "label": "Data plane",
+      "summary": "Where events move: Connect on EKS, the private link, the Kafka clusters, Schema Registry and Flink."
+    },
+    {
+      "id": "obs",
+      "label": "Observability",
+      "summary": "Metrics and audit logs from both sides, collected in New Relic."
+    }
+  ],
+  "zones": [
+    {
+      "id": "vpc-platform",
+      "label": "Platform VPC (AWS)",
+      "kind": "vpc",
+      "members": [
+        "link"
+      ]
+    },
+    {
+      "id": "eks",
+      "label": "EKS cluster",
+      "kind": "cluster",
+      "parent": "vpc-platform",
+      "members": [
+        "debezium",
+        "httpconn",
+        "s3conn",
+        "cfk",
+        "connect"
+      ]
+    },
+    {
+      "id": "confluent",
+      "label": "Confluent Cloud (separate network)",
+      "kind": "cloud",
+      "members": [
+        "sr",
+        "primary",
+        "dr",
+        "flink"
+      ]
+    }
+  ],
+  "lintIgnore": [
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.idp",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.repo",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.gha",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.tf",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.rbac",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.idp-id",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.pki",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.http-svc",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.s3",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.producers",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.httpconn",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.s3conn",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.cfk",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.sr",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dr",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.k8s-metrics",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.nr",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.cc-metrics",
+      "reason": "Supports the request path the trace follows (identity, delivery, observability, or another tenant integration)."
+    }
+  ],
+  "trace": [
+    {
+      "node": "tenant-db",
+      "label": "A row changes in a tenant's database"
+    },
+    {
+      "node": "debezium",
+      "label": "Debezium reads it from the transaction log"
+    },
+    {
+      "node": "connect",
+      "label": "A Connect worker takes the change event"
+    },
+    {
+      "node": "link",
+      "label": "It crosses to Confluent Cloud over the private link, with mutual TLS"
+    },
+    {
+      "node": "primary",
+      "label": "It lands in the tenant's topic after an authorisation check"
+    },
+    {
+      "node": "flink",
+      "label": "A Flink pipeline joins and transforms it"
+    },
+    {
+      "node": "primary",
+      "label": "The result is published to the destination topic"
+    },
+    {
+      "node": "consumers",
+      "label": "The tenant's consumers read it"
+    }
+  ]
+}

@@ -1,0 +1,378 @@
+{
+  "version": 1,
+  "title": "App with CI/CD and observability",
+  "description": "The request path is four nodes. Everything dashed is tooling around it: a deploy pipeline, and metrics, dashboards and alerts.",
+  "lenses": [
+    {
+      "id": "operational-excellence"
+    },
+    {
+      "id": "security"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "users",
+      "label": "Users",
+      "sub": "Public internet",
+      "at": {
+        "col": 0,
+        "row": 0
+      },
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "Browsers and API clients.",
+        "why": "The source of all request traffic."
+      }
+    },
+    {
+      "id": "lb",
+      "label": "Load balancer",
+      "sub": "Layer 7",
+      "at": {
+        "col": 1,
+        "row": 0
+      },
+      "icons": [
+        "loadbalancer"
+      ],
+      "detail": {
+        "role": "Terminates TLS and spreads requests over the fleet.",
+        "why": "One stable address in front of a changing fleet."
+      }
+    },
+    {
+      "id": "app",
+      "label": "App servers",
+      "sub": "Instrumented",
+      "at": {
+        "col": 2,
+        "row": 0
+      },
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Runs the application and exposes /metrics.",
+        "why": "A stateless fleet that scales out under load."
+      },
+      "scale": {
+        "min": 2,
+        "max": 10,
+        "unit": "instances",
+        "trigger": "CPU > 60%"
+      },
+      "lenses": {
+        "operational-excellence": {
+          "badge": "Exposes /metrics",
+          "text": "Every instance publishes request rate, errors and latency.",
+          "level": "good"
+        },
+        "security": {
+          "badge": "Private subnet",
+          "text": "Reachable only from the balancer.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "db",
+      "label": "Database",
+      "sub": "Relational",
+      "at": {
+        "col": 3,
+        "row": 0
+      },
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Stores application data.",
+        "why": "Managed failover and backups."
+      },
+      "lenses": {
+        "operational-excellence": {
+          "badge": "No lag alert",
+          "text": "Replication lag is not monitored yet, so a stalled replica would go unnoticed.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "repo",
+      "label": "Git repository",
+      "sub": "Source of truth",
+      "at": {
+        "col": 0,
+        "row": -1
+      },
+      "icons": [
+        "repo"
+      ],
+      "detail": {
+        "role": "Holds the code and the pipeline definition.",
+        "why": "Every change is reviewed and traceable."
+      },
+      "peripheral": true
+    },
+    {
+      "id": "pipeline",
+      "label": "CI/CD pipeline",
+      "sub": "Build, test, deploy",
+      "at": {
+        "col": 1,
+        "row": -1
+      },
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Builds, tests and rolls out each change.",
+        "why": "Deploys are repeatable and need no manual steps."
+      },
+      "peripheral": true,
+      "lenses": {
+        "operational-excellence": {
+          "badge": "Rolling deploys",
+          "text": "Instances are replaced in batches with health checks between them.",
+          "level": "good"
+        },
+        "security": {
+          "badge": "Scoped deploy role",
+          "text": "The pipeline can update this fleet only.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "alert",
+      "label": "Alertmanager",
+      "sub": "Routes alerts",
+      "at": {
+        "col": 1,
+        "row": 1
+      },
+      "icons": [
+        "alert"
+      ],
+      "detail": {
+        "role": "Groups alerts and pages the on-call engineer.",
+        "why": "Humans only hear about problems that need them."
+      },
+      "peripheral": true,
+      "lenses": {
+        "operational-excellence": {
+          "badge": "Pages on-call",
+          "text": "Routes by severity and silences duplicates.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "prom",
+      "label": "Prometheus",
+      "sub": "Metrics store",
+      "at": {
+        "col": 2,
+        "row": 1
+      },
+      "icons": [
+        "prometheus"
+      ],
+      "detail": {
+        "role": "Scrapes metrics from the app every 15 seconds and evaluates alert rules.",
+        "why": "Pull-based metrics keep the app simple."
+      },
+      "peripheral": true,
+      "lenses": {
+        "operational-excellence": {
+          "badge": "15 s scrape",
+          "text": "Fine enough to catch short incidents, cheap enough to keep for weeks.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "grafana",
+      "label": "Grafana",
+      "sub": "Dashboards",
+      "at": {
+        "col": 3,
+        "row": 1
+      },
+      "icons": [
+        "grafana"
+      ],
+      "detail": {
+        "role": "Draws dashboards from the metrics store.",
+        "why": "A shared picture of how the system is behaving."
+      },
+      "peripheral": true,
+      "lenses": {
+        "operational-excellence": {
+          "badge": "Shared dashboards",
+          "text": "One set of dashboards for everyone on call.",
+          "level": "good"
+        }
+      }
+    }
+  ],
+  "links": [
+    {
+      "from": "users",
+      "to": "lb",
+      "label": "HTTPS",
+      "protocol": "HTTPS",
+      "twoWay": true,
+      "traffic": "ingress",
+      "detail": "Requests arrive over HTTPS and the response returns on the same connection."
+    },
+    {
+      "from": "lb",
+      "to": "app",
+      "label": "Round robin",
+      "protocol": "HTTP",
+      "detail": "The balancer picks a healthy instance for each request."
+    },
+    {
+      "from": "app",
+      "to": "db",
+      "label": "Read / write",
+      "protocol": "SQL",
+      "detail": "Application queries over a private connection."
+    },
+    {
+      "from": "repo",
+      "to": "pipeline",
+      "label": "Push triggers",
+      "pattern": "event",
+      "protocol": "Webhook",
+      "offPath": true,
+      "detail": "A push or merge notifies the pipeline, which starts a run."
+    },
+    {
+      "from": "pipeline",
+      "to": "app",
+      "label": "Deploys",
+      "pattern": "dependency",
+      "offPath": true,
+      "via": [
+        [
+          2,
+          -1
+        ]
+      ],
+      "detail": "A successful run rolls the new version out to the fleet. It moves no request data."
+    },
+    {
+      "from": "prom",
+      "to": "app",
+      "label": "Scrapes /metrics",
+      "protocol": "HTTP",
+      "twoWay": true,
+      "interaction": "async",
+      "offPath": true,
+      "detail": "Prometheus initiates every call: it pulls metrics from each instance every 15 seconds. The arrow points from the side that starts the call."
+    },
+    {
+      "from": "grafana",
+      "to": "prom",
+      "label": "Queries",
+      "protocol": "PromQL",
+      "twoWay": true,
+      "offPath": true,
+      "detail": "Dashboards run queries against the metrics store when someone opens them."
+    },
+    {
+      "from": "prom",
+      "to": "alert",
+      "label": "Fires alerts",
+      "pattern": "event",
+      "offPath": true,
+      "detail": "When a rule's condition holds for long enough, Prometheus sends an alert for routing."
+    }
+  ],
+  "zones": [
+    {
+      "id": "cloud",
+      "label": "Cloud",
+      "kind": "cloud"
+    },
+    {
+      "id": "vpc",
+      "label": "VPC",
+      "kind": "vpc",
+      "parent": "cloud",
+      "members": [
+        "lb",
+        "db"
+      ]
+    },
+    {
+      "id": "asg",
+      "label": "Auto scaling group",
+      "kind": "scaling-group",
+      "parent": "vpc",
+      "members": [
+        "app"
+      ]
+    },
+    {
+      "id": "obs",
+      "label": "Observability",
+      "kind": "tooling",
+      "parent": "vpc",
+      "members": [
+        "alert",
+        "prom",
+        "grafana"
+      ]
+    },
+    {
+      "id": "ci",
+      "label": "CI/CD",
+      "kind": "tooling",
+      "members": [
+        "repo",
+        "pipeline"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "users",
+      "label": "A user sends a request"
+    },
+    {
+      "node": "lb",
+      "label": "The balancer picks a healthy instance"
+    },
+    {
+      "node": "app",
+      "label": "An app server handles it"
+    },
+    {
+      "node": "db",
+      "label": "Data is read or written"
+    }
+  ],
+  "prose": [
+    {
+      "id": "overview",
+      "text": "Requests flow from users through a load balancer to a scaled fleet and a database. A pipeline deploys the fleet, and Prometheus, Grafana and Alertmanager watch it.",
+      "mentions": [
+        "users",
+        "lb",
+        "app",
+        "db",
+        "repo",
+        "pipeline",
+        "prom",
+        "grafana",
+        "alert"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1884 @@
+{
+  "version": 1,
+  "title": "Global omnichannel retail platform",
+  "description": "Shoppers on web, mobile and in store reach one set of APIs at the edge. Microservices on Kubernetes in two regions handle catalogue, basket, orders and payments, and publish events that drive search, recommendations, fulfilment and analytics. Everything ships through one delivery pipeline and is watched from one place.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "risks"
+    },
+    {
+      "id": "planes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "shoppers-web",
+      "label": "Web shoppers",
+      "sub": "Browsers",
+      "icons": [
+        "browser"
+      ],
+      "detail": {
+        "role": "People browsing and buying on the website.",
+        "why": "The largest source of traffic and revenue."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 2,
+        "row": 0
+      }
+    },
+    {
+      "id": "shoppers-app",
+      "label": "Mobile shoppers",
+      "sub": "iOS and Android",
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "People using the native apps.",
+        "why": "Highest conversion; the app also carries loyalty and push."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 10,
+        "row": 0
+      }
+    },
+    {
+      "id": "stores",
+      "label": "Store systems",
+      "sub": "POS and kiosks",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Tills, kiosks and handhelds in physical stores.",
+        "why": "Stores sell and fulfil from the same stock as online."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 6,
+        "row": 0
+      },
+      "lenses": {
+        "risks": {
+          "badge": "Flaky links",
+          "text": "Store networks drop. Tills queue sales locally and sync when the link returns.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "dns",
+      "label": "DNS",
+      "sub": "Latency and health routing",
+      "icons": [
+        "route53"
+      ],
+      "detail": {
+        "role": "Sends each shopper to the nearest healthy region.",
+        "why": "A regional failure becomes a routing change, not an outage.",
+        "tag": "Route 53"
+      },
+      "layer": "edge",
+      "at": {
+        "col": 1,
+        "row": 0
+      }
+    },
+    {
+      "id": "cdn",
+      "label": "CDN",
+      "sub": "Images, pages, static assets",
+      "icons": [
+        "cloudfront"
+      ],
+      "detail": {
+        "role": "Serves images, scripts and cached pages from a point near the shopper.",
+        "why": "Most page weight never reaches the platform, which keeps peak sales affordable."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 3,
+        "row": 0
+      },
+      "lenses": {
+        "cost": {
+          "badge": "Offloads traffic",
+          "text": "A cache hit costs a fraction of an origin request. A peak sale is mostly CDN traffic.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "waf",
+      "label": "Web firewall",
+      "sub": "WAF and bot control",
+      "icons": [
+        "firewall"
+      ],
+      "detail": {
+        "role": "Blocks injection attempts, scrapers and credential-stuffing bots before they reach any service.",
+        "why": "Abuse is stopped at the edge, so it never competes with real shoppers for capacity."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 7,
+        "row": 0
+      },
+      "lenses": {
+        "security": {
+          "badge": "Bots filtered",
+          "text": "Rate limits, bot scoring and managed rules apply to every request.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "gw",
+      "label": "API gateway",
+      "sub": "Public APIs",
+      "icons": [
+        "api-gateway"
+      ],
+      "detail": {
+        "role": "The single front door: routes, throttles and authenticates calls.",
+        "why": "Teams change internals freely while the public contract stays stable."
+      },
+      "layer": "exp",
+      "at": {
+        "col": 7,
+        "row": 1
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "One front door",
+          "text": "Every public call is authenticated and throttled here before reaching a service.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "bff-web",
+      "label": "Web backend",
+      "sub": "BFF",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Combines several services into the exact shapes the website needs.",
+        "why": "The site makes one call, not twelve."
+      },
+      "layer": "exp",
+      "at": {
+        "col": 1,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bff-app",
+      "label": "Mobile backend",
+      "sub": "BFF",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Does the same for the apps, with smaller payloads and offline-friendly responses.",
+        "why": "Phones get what they need on poor networks."
+      },
+      "layer": "exp",
+      "at": {
+        "col": 9,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "bff-store",
+      "label": "Store backend",
+      "sub": "BFF",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "Serves tills and kiosks, with local fallbacks.",
+        "why": "A store can keep selling when the head office is slow."
+      },
+      "layer": "exp",
+      "at": {
+        "col": 4,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "idp",
+      "label": "Customer identity",
+      "sub": "Sign-in and profiles",
+      "icons": [
+        "cognito"
+      ],
+      "detail": {
+        "role": "Accounts, social sign-in, multi-factor and consent records.",
+        "why": "One login across web, app and store; consent is stored once."
+      },
+      "layer": "exp",
+      "at": {
+        "col": 2,
+        "row": 1
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Consent recorded",
+          "text": "Marketing and data consent are captured per account and checked before any use.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "flags",
+      "label": "Feature flags",
+      "sub": "Gradual rollout",
+      "icons": [
+        "settings"
+      ],
+      "detail": {
+        "role": "Turns features on for a share of shoppers and off instantly.",
+        "why": "A bad release is switched off in seconds, with no redeploy."
+      },
+      "layer": "exp",
+      "at": {
+        "col": 10,
+        "row": 1
+      },
+      "plane": "control"
+    },
+    {
+      "id": "catalog",
+      "label": "Catalogue",
+      "sub": "Products and prices",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Owns product data, pricing and promotions.",
+        "why": "One truth for what is sold and for how much."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 0,
+        "row": 2
+      },
+      "plane": "data",
+      "scale": {
+        "min": 6,
+        "max": 40,
+        "unit": "pods",
+        "trigger": "CPU > 60%"
+      }
+    },
+    {
+      "id": "inventory",
+      "label": "Inventory",
+      "sub": "Stock by location",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Tracks stock in warehouses and stores and reserves it for orders.",
+        "why": "Shoppers are never sold what is not there.",
+        "tradeoff": "Reservations must expire, or abandoned baskets lock stock."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 3,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "basket",
+      "label": "Basket",
+      "sub": "Carts and checkout",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Holds the cart, applies offers and prices the order.",
+        "why": "Checkout stays fast because it holds only what it needs."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 2,
+        "row": 2
+      },
+      "plane": "data",
+      "scale": {
+        "min": 8,
+        "max": 60,
+        "unit": "pods",
+        "trigger": "requests per second"
+      }
+    },
+    {
+      "id": "orders",
+      "label": "Orders",
+      "sub": "Order lifecycle",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Creates and tracks orders from payment to delivery.",
+        "why": "A single record of what happened to every order."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 4,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "payments",
+      "label": "Payments",
+      "sub": "Authorise and capture",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Talks to the payment provider, handles retries and refunds.",
+        "why": "Card data never touches the rest of the platform."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 1,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Out of PCI scope",
+          "text": "Only tokens are stored. The card number goes straight to the provider.",
+          "level": "good"
+        },
+        "risks": {
+          "badge": "Provider dependency",
+          "text": "If the provider is down, checkout fails. A second provider is configured for failover.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "fulfil",
+      "label": "Fulfilment",
+      "sub": "Pick, pack, ship",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Plans picking and shipping and books carriers.",
+        "why": "Orders leave the cheapest, closest location."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 5,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "loyalty",
+      "label": "Loyalty",
+      "sub": "Points and offers",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Earns and spends points and issues personal offers.",
+        "why": "Repeat purchases are rewarded the same way on every channel."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 2,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "search",
+      "label": "Search service",
+      "sub": "Query and ranking",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Answers search and browse queries.",
+        "why": "Finding the product is the first step of every sale."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 5,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "recs",
+      "label": "Recommendations",
+      "sub": "Personalised picks",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Suggests products per shopper from behaviour and similar baskets.",
+        "why": "Raises basket size with no manual merchandising."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 9,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Inference cost",
+          "text": "Models run on a small GPU pool. Cost follows traffic.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "pricing-ml",
+      "label": "Dynamic pricing",
+      "sub": "Model",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Suggests price changes from demand, stock and competitor prices.",
+        "why": "Margin improves on slow lines and stock sells through."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 7,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Needs a guard",
+          "text": "Price changes are capped and reviewed. Unbounded pricing models damage trust.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "fraud",
+      "label": "Fraud scoring",
+      "sub": "Real time",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Scores every order for fraud risk before payment is captured.",
+        "why": "Loss is stopped before money moves."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 6,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Decision logged",
+          "text": "Every score and decision is stored with its inputs for dispute handling.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "notify",
+      "label": "Notifications",
+      "sub": "Email, SMS, push",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "role": "Sends order, delivery and offer messages.",
+        "why": "Shoppers hear about their order without asking."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 7,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ctrl-plane",
+      "label": "Platform controller",
+      "sub": "Config and quotas",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Applies per-team quotas, limits and routing rules.",
+        "why": "Teams cannot starve each other."
+      },
+      "layer": "svc",
+      "at": {
+        "col": 8,
+        "row": 2
+      },
+      "plane": "control"
+    },
+    {
+      "id": "bus",
+      "label": "Event backbone",
+      "sub": "Kafka, multi-region",
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "Carries every business event: order placed, stock changed, payment captured.",
+        "why": "Services stay independent and new consumers need no change to producers."
+      },
+      "layer": "data",
+      "at": {
+        "col": 4,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Authorised per topic",
+          "text": "Each service can publish and read only its own topics.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Throughput priced",
+          "text": "Cost follows throughput and retention.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "catalog-db",
+      "label": "Catalogue store",
+      "sub": "Document database",
+      "icons": [
+        "dynamodb"
+      ],
+      "detail": {
+        "role": "Product and price documents.",
+        "why": "Reads scale with the CDN-fronted catalogue."
+      },
+      "layer": "data",
+      "at": {
+        "col": 0,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "inv-db",
+      "label": "Inventory store",
+      "sub": "Relational, replicated",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Stock levels with strong consistency.",
+        "why": "Reservations must never oversell."
+      },
+      "layer": "data",
+      "at": {
+        "col": 3,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "order-db",
+      "label": "Order store",
+      "sub": "Relational, replicated",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Orders, lines and state changes.",
+        "why": "Money and legal records need transactions."
+      },
+      "layer": "data",
+      "at": {
+        "col": 3,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Encrypted, backed up",
+          "text": "Encrypted at rest with point-in-time recovery.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "cache",
+      "label": "Session and basket cache",
+      "sub": "In memory",
+      "icons": [
+        "redis"
+      ],
+      "detail": {
+        "role": "Holds sessions and baskets for fast reads.",
+        "why": "Checkout latency stays low at peak."
+      },
+      "layer": "data",
+      "at": {
+        "col": 1,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "search-idx",
+      "label": "Search index",
+      "sub": "Search cluster",
+      "icons": [
+        "search"
+      ],
+      "detail": {
+        "role": "The searchable copy of the catalogue.",
+        "why": "Keyword and facet queries return in milliseconds."
+      },
+      "layer": "data",
+      "at": {
+        "col": 5,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "lake",
+      "label": "Data lake",
+      "sub": "Object storage",
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "Raw and curated data from every system.",
+        "why": "One place for analytics and model training."
+      },
+      "layer": "data",
+      "at": {
+        "col": 8,
+        "row": 5
+      },
+      "plane": "data",
+      "lenses": {
+        "cost": {
+          "badge": "Tiered storage",
+          "text": "Old data moves to cheaper tiers automatically.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "dwh",
+      "label": "Warehouse",
+      "sub": "Analytics SQL",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Modelled data for reporting.",
+        "why": "Finance and merchandising use one set of numbers."
+      },
+      "layer": "data",
+      "at": {
+        "col": 7,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "feature-store",
+      "label": "Feature store",
+      "sub": "Model inputs",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Per-shopper and per-product features, online and offline.",
+        "why": "Training and serving use identical inputs."
+      },
+      "layer": "data",
+      "at": {
+        "col": 8,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "psp",
+      "label": "Payment provider",
+      "sub": "Cards and wallets",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Authorises and captures payments.",
+        "why": "Specialists carry the card-network certification."
+      },
+      "layer": "ext",
+      "at": {
+        "col": 2,
+        "row": 6
+      }
+    },
+    {
+      "id": "carriers",
+      "label": "Carriers",
+      "sub": "Courier APIs",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Book shipments and return tracking events.",
+        "why": "Delivery options come from several carriers."
+      },
+      "layer": "ext",
+      "at": {
+        "col": 7,
+        "row": 6
+      }
+    },
+    {
+      "id": "marketplace",
+      "label": "Marketplace sellers",
+      "sub": "Partner catalogues",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Third-party sellers list and fulfil through the platform.",
+        "why": "A bigger range without holding the stock."
+      },
+      "layer": "ext",
+      "at": {
+        "col": 1,
+        "row": 6
+      }
+    },
+    {
+      "id": "tax",
+      "label": "Tax service",
+      "sub": "Rates and filing",
+      "icons": [
+        "internet"
+      ],
+      "detail": {
+        "role": "Calculates tax per country and state.",
+        "why": "Rules change often and are someone else's job."
+      },
+      "layer": "ext",
+      "at": {
+        "col": 3,
+        "row": 6
+      }
+    },
+    {
+      "id": "repo",
+      "label": "Source repositories",
+      "sub": "Git",
+      "icons": [
+        "git"
+      ],
+      "detail": {
+        "role": "Code and configuration for every service.",
+        "why": "Every change is reviewed and traceable."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 0,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ci",
+      "label": "Build and test",
+      "sub": "CI pipelines",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Builds, tests and scans each change.",
+        "why": "Nothing reaches production unchecked."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 0,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Supply chain scanned",
+          "text": "Dependencies and images are scanned and signed in the pipeline.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "registry",
+      "label": "Image registry",
+      "sub": "Signed images",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Stores signed container images.",
+        "why": "Clusters run only what the pipeline built."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 1,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "gitops",
+      "label": "GitOps controller",
+      "sub": "Deploys to clusters",
+      "icons": [
+        "argocd"
+      ],
+      "detail": {
+        "role": "Applies the desired state from Git to each cluster.",
+        "why": "Production matches the repository, and a rollback is a revert."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 2,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "iac",
+      "label": "Infrastructure as code",
+      "sub": "Terraform",
+      "icons": [
+        "terraform"
+      ],
+      "detail": {
+        "role": "Creates networks, clusters and databases.",
+        "why": "Environments are repeatable."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 1,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "secrets",
+      "label": "Secrets and keys",
+      "sub": "Vault and KMS",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Stores secrets and encryption keys.",
+        "why": "No secret lives in code or images."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 4,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Rotated",
+          "text": "Secrets rotate automatically and are issued per workload.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "mesh",
+      "label": "Service mesh",
+      "sub": "mTLS between services",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Encrypts and authenticates calls between services.",
+        "why": "A compromised service cannot freely call the rest."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 3,
+        "row": 8
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Zero trust inside",
+          "text": "Every call is mutually authenticated and checked against policy.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "obs",
+      "label": "Observability",
+      "sub": "Metrics, logs, traces",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Collects metrics, logs and traces from every service.",
+        "why": "Slow checkouts are found before shoppers complain."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 5,
+        "row": 8
+      },
+      "plane": "control"
+    },
+    {
+      "id": "siem",
+      "label": "Security monitoring",
+      "sub": "SIEM",
+      "icons": [
+        "audit"
+      ],
+      "detail": {
+        "role": "Correlates security events and raises alerts.",
+        "why": "Attacks are noticed in minutes."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 10,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "oncall",
+      "label": "Alerting and on-call",
+      "sub": "Paging",
+      "icons": [
+        "alerts"
+      ],
+      "detail": {
+        "role": "Pages the owning team when a service level slips.",
+        "why": "Someone who can fix it is told at once."
+      },
+      "layer": "ops",
+      "at": {
+        "col": 7,
+        "row": 7
+      },
+      "plane": "control"
+    }
+  ],
+  "links": [
+    {
+      "id": "shoppers-web_to_dns",
+      "from": "shoppers-web",
+      "to": "dns",
+      "label": "Resolve",
+      "pattern": "request-response",
+      "detail": "The browser looks up the site name.",
+      "traffic": "ingress",
+      "protocol": "DNS"
+    },
+    {
+      "id": "shoppers-web_to_cdn",
+      "from": "shoppers-web",
+      "to": "cdn",
+      "label": "Pages and images",
+      "pattern": "request-response",
+      "detail": "Static content is served from the nearest cache.",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "shoppers-app_to_waf",
+      "from": "shoppers-app",
+      "to": "waf",
+      "label": "API calls",
+      "pattern": "request-response",
+      "detail": "The app calls the platform's APIs.",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "stores_to_waf",
+      "from": "stores",
+      "to": "waf",
+      "label": "Till and kiosk calls",
+      "pattern": "request-response",
+      "detail": "Store systems call the platform through the same firewall.",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "cdn_to_waf",
+      "from": "cdn",
+      "to": "waf",
+      "label": "Cache misses",
+      "pattern": "request-response",
+      "detail": "Requests the cache cannot answer go on to the origin.",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "waf_to_gw",
+      "from": "waf",
+      "to": "gw",
+      "label": "Clean traffic",
+      "pattern": "request-response",
+      "detail": "Only requests that pass the firewall reach the gateway.",
+      "plane": "data",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "gw_to_bff-web",
+      "from": "gw",
+      "to": "bff-web",
+      "label": "Web calls",
+      "pattern": "request-response",
+      "detail": "Web calls.",
+      "plane": "data"
+    },
+    {
+      "id": "gw_to_bff-app",
+      "from": "gw",
+      "to": "bff-app",
+      "label": "App calls",
+      "pattern": "request-response",
+      "detail": "App calls.",
+      "plane": "data"
+    },
+    {
+      "id": "gw_to_bff-store",
+      "from": "gw",
+      "to": "bff-store",
+      "label": "Store calls",
+      "pattern": "request-response",
+      "detail": "Store calls.",
+      "plane": "data"
+    },
+    {
+      "id": "gw_to_idp",
+      "from": "gw",
+      "to": "idp",
+      "label": "Check token",
+      "pattern": "request-response",
+      "detail": "The gateway validates the shopper's token.",
+      "plane": "control",
+      "protocol": "OIDC"
+    },
+    {
+      "id": "gw_to_flags",
+      "from": "gw",
+      "to": "flags",
+      "label": "Rollout rules",
+      "pattern": "request-response",
+      "detail": "Flags decide which variant a shopper sees.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "bff-web_to_catalog",
+      "from": "bff-web",
+      "to": "catalog",
+      "label": "Browse",
+      "pattern": "request-response",
+      "detail": "Browse.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "bff-web_to_basket",
+      "from": "bff-web",
+      "to": "basket",
+      "label": "Cart",
+      "pattern": "request-response",
+      "detail": "Cart.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "bff-app_to_search",
+      "from": "bff-app",
+      "to": "search",
+      "label": "Search",
+      "pattern": "request-response",
+      "detail": "Search.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "bff-app_to_recs",
+      "from": "bff-app",
+      "to": "recs",
+      "label": "Picks for you",
+      "pattern": "request-response",
+      "detail": "Picks for you.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "bff-store_to_inventory",
+      "from": "bff-store",
+      "to": "inventory",
+      "label": "Stock check",
+      "pattern": "request-response",
+      "detail": "Stock check.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "bff-store_to_orders",
+      "from": "bff-store",
+      "to": "orders",
+      "label": "Store orders",
+      "pattern": "request-response",
+      "detail": "Store orders.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "basket_to_inventory",
+      "from": "basket",
+      "to": "inventory",
+      "label": "Reserve stock",
+      "pattern": "request-response",
+      "detail": "Reserve stock.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "basket_to_fraud",
+      "from": "basket",
+      "to": "fraud",
+      "label": "Score order",
+      "pattern": "request-response",
+      "detail": "Score order.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "basket_to_payments",
+      "from": "basket",
+      "to": "payments",
+      "label": "Take payment",
+      "pattern": "request-response",
+      "detail": "Take payment.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "payments_to_psp",
+      "from": "payments",
+      "to": "psp",
+      "label": "Authorise",
+      "pattern": "request-response",
+      "detail": "The provider authorises and captures the payment.",
+      "plane": "data",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "basket_to_tax",
+      "from": "basket",
+      "to": "tax",
+      "label": "Tax",
+      "pattern": "request-response",
+      "detail": "Tax.",
+      "plane": "data",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "basket_to_orders",
+      "from": "basket",
+      "to": "orders",
+      "label": "Place order",
+      "pattern": "request-response",
+      "detail": "Place order.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "orders_to_order-db",
+      "from": "orders",
+      "to": "order-db",
+      "label": "Write",
+      "pattern": "request-response",
+      "detail": "Write.",
+      "plane": "data",
+      "protocol": "SQL"
+    },
+    {
+      "id": "catalog_to_catalog-db",
+      "from": "catalog",
+      "to": "catalog-db",
+      "label": "Read, write",
+      "pattern": "request-response",
+      "detail": "Read, write.",
+      "plane": "data",
+      "protocol": "DynamoDB API"
+    },
+    {
+      "id": "inventory_to_inv-db",
+      "from": "inventory",
+      "to": "inv-db",
+      "label": "Reserve, release",
+      "pattern": "request-response",
+      "detail": "Reserve, release.",
+      "plane": "data",
+      "protocol": "SQL"
+    },
+    {
+      "id": "basket_to_cache",
+      "from": "basket",
+      "to": "cache",
+      "label": "Cart state",
+      "pattern": "request-response",
+      "detail": "Cart state.",
+      "plane": "data",
+      "protocol": "Redis"
+    },
+    {
+      "id": "search_to_search-idx",
+      "from": "search",
+      "to": "search-idx",
+      "label": "Query",
+      "pattern": "request-response",
+      "detail": "Query.",
+      "plane": "data",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "orders_to_bus",
+      "from": "orders",
+      "to": "bus",
+      "label": "Order events",
+      "pattern": "event",
+      "detail": "Order placed, paid, shipped and cancelled.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "inventory_to_bus",
+      "from": "inventory",
+      "to": "bus",
+      "label": "Stock events",
+      "pattern": "event",
+      "detail": "Stock changed and reserved.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "payments_to_bus",
+      "from": "payments",
+      "to": "bus",
+      "label": "Payment events",
+      "pattern": "event",
+      "detail": "Payment captured, failed, refunded.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "catalog_to_bus",
+      "from": "catalog",
+      "to": "bus",
+      "label": "Catalogue events",
+      "pattern": "event",
+      "detail": "Product and price changes.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bus_to_search-idx",
+      "from": "bus",
+      "to": "search-idx",
+      "label": "Index updates",
+      "pattern": "stream",
+      "detail": "Catalogue changes keep the index current.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bus_to_fulfil",
+      "from": "bus",
+      "to": "fulfil",
+      "label": "Orders to pick",
+      "pattern": "stream",
+      "detail": "Paid orders start fulfilment.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bus_to_notify",
+      "from": "bus",
+      "to": "notify",
+      "label": "Messages to send",
+      "pattern": "stream",
+      "detail": "Order events trigger messages.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bus_to_loyalty",
+      "from": "bus",
+      "to": "loyalty",
+      "label": "Points events",
+      "pattern": "stream",
+      "detail": "Completed orders earn points.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "bus_to_lake",
+      "from": "bus",
+      "to": "lake",
+      "label": "Everything",
+      "pattern": "stream",
+      "detail": "Every event lands in the lake.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "fulfil_to_carriers",
+      "from": "fulfil",
+      "to": "carriers",
+      "label": "Book shipment",
+      "pattern": "request-response",
+      "detail": "Book shipment.",
+      "plane": "data",
+      "traffic": "egress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "carriers_to_fulfil",
+      "from": "carriers",
+      "to": "fulfil",
+      "label": "Tracking events",
+      "pattern": "event",
+      "detail": "Carriers report progress.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "Webhook"
+    },
+    {
+      "id": "marketplace_to_catalog",
+      "from": "marketplace",
+      "to": "catalog",
+      "label": "Partner listings",
+      "pattern": "batch",
+      "detail": "Sellers upload catalogues in bulk.",
+      "plane": "data",
+      "interaction": "async",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "lake_to_dwh",
+      "from": "lake",
+      "to": "dwh",
+      "label": "Curated tables",
+      "pattern": "batch",
+      "detail": "Scheduled jobs model the data.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "lake_to_feature-store",
+      "from": "lake",
+      "to": "feature-store",
+      "label": "Features",
+      "pattern": "batch",
+      "detail": "Features are built from history.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "feature-store_to_recs",
+      "from": "feature-store",
+      "to": "recs",
+      "label": "Inputs",
+      "pattern": "request-response",
+      "detail": "Inputs.",
+      "plane": "data"
+    },
+    {
+      "id": "feature-store_to_fraud",
+      "from": "feature-store",
+      "to": "fraud",
+      "label": "Inputs",
+      "pattern": "request-response",
+      "detail": "Inputs.",
+      "plane": "data"
+    },
+    {
+      "id": "feature-store_to_pricing-ml",
+      "from": "feature-store",
+      "to": "pricing-ml",
+      "label": "Inputs",
+      "pattern": "request-response",
+      "detail": "Inputs.",
+      "plane": "data"
+    },
+    {
+      "id": "pricing-ml_to_catalog",
+      "from": "pricing-ml",
+      "to": "catalog",
+      "label": "Price changes",
+      "pattern": "request-response",
+      "detail": "Suggested prices, within limits, go to the catalogue.",
+      "plane": "data",
+      "offPath": true
+    },
+    {
+      "id": "ctrl-plane_to_gw",
+      "from": "ctrl-plane",
+      "to": "gw",
+      "label": "Quotas and routes",
+      "pattern": "dependency",
+      "detail": "Per-team limits are pushed to the gateway.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "repo_to_ci",
+      "from": "repo",
+      "to": "ci",
+      "label": "Triggers",
+      "pattern": "event",
+      "detail": "Triggers.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "ci_to_registry",
+      "from": "ci",
+      "to": "registry",
+      "label": "Push images",
+      "pattern": "request-response",
+      "detail": "Push images.",
+      "plane": "control"
+    },
+    {
+      "id": "registry_to_gitops",
+      "from": "registry",
+      "to": "gitops",
+      "label": "New versions",
+      "pattern": "event",
+      "detail": "New versions.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "gitops_to_catalog",
+      "from": "gitops",
+      "to": "catalog",
+      "label": "Deploys",
+      "pattern": "dependency",
+      "detail": "The controller applies desired state to the cluster.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "iac_to_gitops",
+      "from": "iac",
+      "to": "gitops",
+      "label": "Cluster setup",
+      "pattern": "dependency",
+      "detail": "Cluster setup.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "secrets_to_payments",
+      "from": "secrets",
+      "to": "payments",
+      "label": "Credentials",
+      "pattern": "dependency",
+      "detail": "Secrets are issued to the workload at start.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "mesh_to_orders",
+      "from": "mesh",
+      "to": "orders",
+      "label": "mTLS",
+      "pattern": "dependency",
+      "detail": "The mesh authenticates calls to and from this service.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "orders_to_obs",
+      "from": "orders",
+      "to": "obs",
+      "label": "Telemetry",
+      "pattern": "stream",
+      "detail": "Telemetry.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "gw_to_siem",
+      "from": "gw",
+      "to": "siem",
+      "label": "Access logs",
+      "pattern": "stream",
+      "detail": "Access logs.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "obs_to_oncall",
+      "from": "obs",
+      "to": "oncall",
+      "label": "Alerts",
+      "pattern": "event",
+      "detail": "Alerts.",
+      "interaction": "async"
+    },
+    {
+      "id": "siem_to_oncall",
+      "from": "siem",
+      "to": "oncall",
+      "label": "Security alerts",
+      "pattern": "event",
+      "detail": "Security alerts.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "loyalty_to_idp",
+      "from": "loyalty",
+      "to": "idp",
+      "label": "Profile lookups",
+      "pattern": "request-response",
+      "detail": "Profile lookups.",
+      "plane": "data",
+      "offPath": true
+    }
+  ],
+  "layers": [
+    {
+      "id": "edge",
+      "label": "Edge and channels",
+      "summary": "Where shoppers and stores arrive: devices, the CDN, DNS and the web firewall."
+    },
+    {
+      "id": "exp",
+      "label": "Experience",
+      "summary": "One backend for each channel: it shapes the platform's data for web, mobile and stores, and handles sign-in."
+    },
+    {
+      "id": "svc",
+      "label": "Domain services",
+      "summary": "The business capabilities, each owned by one team and deployed on Kubernetes."
+    },
+    {
+      "id": "data",
+      "label": "Data and events",
+      "summary": "Where state lives and how facts move: databases, caches, search, the event backbone and the data lake."
+    },
+    {
+      "id": "ext",
+      "label": "Partners",
+      "summary": "Outside parties the platform calls or is called by."
+    },
+    {
+      "id": "ops",
+      "label": "Delivery, security and operations",
+      "summary": "How changes ship and how the platform is secured and watched."
+    }
+  ],
+  "lintIgnore": [
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.shoppers-app",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.stores",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dns",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bff-app",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.bff-store",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.idp",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.flags",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.catalog",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.inventory",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.loyalty",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.search",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.recs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.pricing-ml",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.fraud",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.notify",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ctrl-plane",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.catalog-db",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.inv-db",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.order-db",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.cache",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.search-idx",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.lake",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dwh",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.feature-store",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.psp",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.carriers",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.marketplace",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.tax",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.repo",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ci",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.registry",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.gitops",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.iac",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.secrets",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.mesh",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.obs",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.siem",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.oncall",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    }
+  ],
+  "zones": [
+    {
+      "id": "region-a",
+      "label": "Region A (primary)",
+      "kind": "region",
+      "members": []
+    },
+    {
+      "id": "k8s-a",
+      "label": "Kubernetes cluster A",
+      "kind": "cluster",
+      "parent": "region-a",
+      "members": [
+        "catalog",
+        "inventory",
+        "basket",
+        "orders",
+        "payments",
+        "fulfil",
+        "loyalty",
+        "search"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "shoppers-web",
+      "label": "A shopper opens the site"
+    },
+    {
+      "node": "cdn",
+      "label": "Pages and images come from the nearest cache"
+    },
+    {
+      "node": "waf",
+      "label": "API calls pass the web firewall"
+    },
+    {
+      "node": "gw",
+      "label": "The gateway checks the token and routes the call"
+    },
+    {
+      "node": "bff-web",
+      "label": "The web backend assembles the page"
+    },
+    {
+      "node": "basket",
+      "label": "Checkout prices the basket"
+    },
+    {
+      "node": "payments",
+      "label": "The payment is taken"
+    },
+    {
+      "node": "orders",
+      "label": "The order is recorded"
+    },
+    {
+      "node": "bus",
+      "label": "An order event is published"
+    },
+    {
+      "node": "fulfil",
+      "label": "Fulfilment picks the order"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "title": "Smallest valid spec",
+  "nodes": [
+    {
+      "id": "a",
+      "label": "A",
+      "at": {
+        "col": 0,
+        "row": 0
+      },
+      "icons": [
+        "client"
+      ]
+    },
+    {
+      "id": "b",
+      "label": "B",
+      "at": {
+        "col": 1,
+        "row": 0
+      },
+      "icons": [
+        "database"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "a",
+      "to": "b",
+      "label": "reads"
+    }
+  ]
+}

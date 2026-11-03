@@ -1,0 +1,35 @@
+{
+  "specs": [
+    "examples"
+  ],
+  "terraform": [
+    {
+      "name": "Docs assistant (AWS)",
+      "plans": [
+        "tests/fixtures/terraform/docs-assistant.plan.json"
+      ],
+      "overlay": "tests/fixtures/terraform/docs-assistant.overlay.json",
+      "spec": "tests/fixtures/terraform/docs-assistant.spec.json"
+    },
+    {
+      "name": "Order pipeline (Kafka on EKS)",
+      "plans": [
+        "tests/fixtures/terraform/kafka/kafka-topics.state.json",
+        "tests/fixtures/terraform/kafka/kafka-rbac.state.json",
+        "tests/fixtures/terraform/kafka/eks.plan.json",
+        "tests/fixtures/terraform/kafka/ecr.plan.json",
+        "tests/fixtures/terraform/kafka/flink.plan.json"
+      ],
+      "overlay": "tests/fixtures/terraform/kafka/kafka.overlay.json",
+      "spec": "tests/fixtures/terraform/kafka/kafka.spec.json"
+    },
+    {
+      "name": "AI platform (simulated, real offline plan)",
+      "plans": [
+        "tests/fixtures/terraform/platform-sim.plan.json"
+      ],
+      "overlay": "tests/fixtures/terraform/platform-sim.overlay.json",
+      "spec": "examples/ai-platform-sim.json"
+    }
+  ]
+}

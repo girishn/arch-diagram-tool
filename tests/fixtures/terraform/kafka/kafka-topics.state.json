@@ -1,0 +1,290 @@
+{
+  "format_version": "1.0",
+  "terraform_version": "1.9.5",
+  "values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "confluent_kafka_cluster.this",
+          "mode": "managed",
+          "type": "confluent_kafka_cluster",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "ecom-dev",
+            "id": "lkc-0001"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "confluent_environment.this",
+          "mode": "managed",
+          "type": "confluent_environment",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "display_name": "ecom"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"orders.order.placed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "orders.order.placed",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "orders.order.placed"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"orders.order.confirmed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "orders.order.confirmed",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "orders.order.confirmed"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"orders.order.cancelled\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "orders.order.cancelled",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "orders.order.cancelled"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"inventory.stock.reserved\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "inventory.stock.reserved",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "inventory.stock.reserved"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"inventory.stock.reservation-failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "inventory.stock.reservation-failed",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "inventory.stock.reservation-failed"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"inventory.stock.release-requested\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "inventory.stock.release-requested",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "inventory.stock.release-requested"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"payments.payment.captured\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "payments.payment.captured",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "payments.payment.captured"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"payments.payment.failed\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "payments.payment.failed",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "payments.payment.failed"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"orders.order.placed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "orders.order.placed.dlt",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "orders.order.placed.dlt"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"orders.order.confirmed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "orders.order.confirmed.dlt",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "orders.order.confirmed.dlt"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"orders.order.cancelled.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "orders.order.cancelled.dlt",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "orders.order.cancelled.dlt"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"inventory.stock.reserved.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "inventory.stock.reserved.dlt",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "inventory.stock.reserved.dlt"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"inventory.stock.reservation-failed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "inventory.stock.reservation-failed.dlt",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "inventory.stock.reservation-failed.dlt"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"inventory.stock.release-requested.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "inventory.stock.release-requested.dlt",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "inventory.stock.release-requested.dlt"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"payments.payment.captured.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "payments.payment.captured.dlt",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "payments.payment.captured.dlt"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"payments.payment.failed.dlt\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "payments.payment.failed.dlt",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "payments.payment.failed.dlt"
+        },
+        {
+          "address": "confluent_kafka_topic.this[\"analytics.revenue.realtime\"]",
+          "mode": "managed",
+          "type": "confluent_kafka_topic",
+          "name": "this",
+          "provider_name": "registry.terraform.io/x/y",
+          "schema_version": 0,
+          "values": {
+            "topic_name": "analytics.revenue.realtime",
+            "partitions_count": 6,
+            "rest_endpoint": "https://x.invalid"
+          },
+          "sensitive_values": {},
+          "index": "analytics.revenue.realtime"
+        }
+      ]
+    }
+  }
+}

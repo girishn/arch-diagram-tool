@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "title": "Agent platform with a tool gateway",
+  "description": "An agent decides what to do, but every action it takes goes through one gateway that checks policy, asks a person for risky ones, and records everything.",
+  "lenses": [{ "id": "security" }, { "id": "cost" }, { "id": "risks" }],
+  "nodes": [
+    {
+      "id": "users",
+      "label": "Users",
+      "sub": "Staff and apps",
+      "at": { "col": 0, "row": 0 },
+      "icons": ["users"],
+      "detail": { "role": "Give the agent a goal in plain language, such as refunding an order.", "why": "The source of every task the agent takes on." }
+    },
+    {
+      "id": "api",
+      "label": "API gateway",
+      "sub": "Identity and quotas",
+      "at": { "col": 1, "row": 0 },
+      "icons": ["apigw"],
+      "detail": { "role": "Authenticates the caller and passes their identity to the agent.", "why": "The agent acts for a named person, never for itself." },
+      "lenses": {
+        "security": { "badge": "Delegated identity", "text": "The agent receives a short-lived token scoped to what this person may do, not a shared service account.", "level": "good" },
+        "cost": { "badge": "Task quota", "text": "Each team has a cap on agent runs per day.", "level": "good" }
+      }
+    },
+    {
+      "id": "agent",
+      "label": "Agent runtime",
+      "sub": "Plan, act, observe",
+      "at": { "col": 2, "row": 0 },
+      "icons": ["compute"],
+      "detail": { "role": "Loops: asks the model what to do next, calls a tool, reads the result, and repeats until the goal is met or a step limit is hit.", "why": "Keeps the loop, its limits and its state outside the model so they can be enforced." },
+      "scale": { "min": 2, "max": 20, "unit": "workers", "trigger": "queued tasks" },
+      "lenses": {
+        "cost": { "badge": "Steps multiply spend", "text": "Each loop is another model call carrying the whole history, so a long task costs far more than its first step.", "level": "warn" },
+        "risks": { "badge": "Sensitivity point: step limit", "text": "A low limit abandons real tasks, a high one lets a confused agent run up the bill. It is set to 12 and reviewed monthly.", "level": "warn" }
+      }
+    },
+    {
+      "id": "llm",
+      "label": "LLM",
+      "sub": "Tool-calling model",
+      "at": { "col": 2, "row": 1 },
+      "icons": ["llm"],
+      "detail": { "role": "Reads the goal and history and chooses the next tool call or the final answer.", "why": "The model proposes; it never executes anything itself." },
+      "lenses": {
+        "security": { "badge": "Proposes only", "text": "The model has no credentials. A wrong or manipulated choice still has to pass the gateway.", "level": "good" },
+        "risks": { "badge": "Risk: prompt injection", "text": "Text read from a ticket or web page can try to steer the model. The gateway, not the prompt, is what limits the damage.", "level": "risk" }
+      }
+    },
+    {
+      "id": "memory",
+      "label": "Run memory",
+      "sub": "State and history",
+      "at": { "col": 1, "row": 1 },
+      "icons": ["database"],
+      "detail": { "role": "Stores the plan, the steps taken and their results so a run can pause and resume.", "why": "A task that waits for a human must survive a restart." },
+      "lenses": {
+        "security": { "badge": "Per-user partition", "text": "One person's run history is never loaded into another's context.", "level": "good" },
+        "cost": { "badge": "Summarised history", "text": "Old steps are condensed so the prompt does not grow without limit.", "level": "good" }
+      }
+    },
+    {
+      "id": "toolgw",
+      "label": "Tool gateway",
+      "sub": "One door for actions",
+      "at": { "col": 3, "row": 0 },
+      "icons": ["gateway"],
+      "detail": { "role": "Receives every tool call, validates its arguments against the tool's schema, applies policy and forwards it with the user's delegated identity.", "why": "Safety rules live in one place that no prompt can talk its way around." },
+      "lenses": {
+        "security": { "badge": "Allow-list of tools", "text": "The agent can only call tools registered for its task type. Anything else is refused.", "level": "good" },
+        "risks": { "badge": "Non-risk: bypass", "text": "Tools accept calls only from the gateway's network identity, so the agent cannot reach them directly.", "level": "good" }
+      }
+    },
+    {
+      "id": "policy",
+      "label": "Policy engine",
+      "sub": "Allow, ask, deny",
+      "at": { "col": 3, "row": 1 },
+      "icons": ["guardrails"],
+      "detail": { "role": "Decides for each call whether to allow it, ask a person first, or deny it, using the tool, the arguments and who is asking.", "why": "Rules are data that can be reviewed and tested, not behaviour hidden in a prompt." },
+      "lenses": {
+        "security": { "badge": "Least privilege", "text": "A refund over a set amount, or any delete, needs a person. Read-only calls pass.", "level": "good" },
+        "risks": { "badge": "Trade-off: friction", "text": "Stricter rules mean more approvals and slower tasks. The threshold is tuned from how often approvers say no.", "level": "warn" }
+      }
+    },
+    {
+      "id": "approval",
+      "label": "Human approval",
+      "sub": "For risky actions",
+      "at": { "col": 4, "row": 1 },
+      "icons": ["users"],
+      "peripheral": true,
+      "detail": { "role": "Shows an approver the exact action and its arguments, and waits for yes or no.", "why": "A person signs off on what is hard to undo." },
+      "lenses": {
+        "risks": { "badge": "Risk: approval fatigue", "text": "If nearly everything asks, approvers click through. Only actions that are costly or irreversible are routed here.", "level": "risk" }
+      }
+    },
+    {
+      "id": "audit",
+      "label": "Audit log",
+      "sub": "Append-only",
+      "at": { "col": 3, "row": 2 },
+      "icons": ["audit"],
+      "peripheral": true,
+      "detail": { "role": "Records who asked, what the model proposed, what policy decided and what the tool returned.", "why": "When an agent does something odd, the record shows exactly why." },
+      "lenses": {
+        "security": { "badge": "Tamper-evident", "text": "Entries cannot be edited, and the log sits in a separate account.", "level": "good" },
+        "cost": { "badge": "Hot 30, cold 365", "text": "Recent entries stay searchable and older ones move to cheap storage.", "level": "info" }
+      }
+    },
+    {
+      "id": "tools",
+      "label": "Business systems",
+      "sub": "CRM, tickets, payments",
+      "at": { "col": 4, "row": 0 },
+      "icons": ["api"],
+      "detail": { "role": "The real systems the agent acts on.", "why": "They keep their own permissions and validation, so a gateway mistake is not the only defence." },
+      "lenses": {
+        "security": { "badge": "Scoped service tokens", "text": "The gateway exchanges the user's identity for a token valid for one tool and a few minutes.", "level": "good" }
+      }
+    }
+  ],
+  "links": [
+    { "from": "users", "to": "api", "label": "Goal", "protocol": "HTTPS", "twoWay": true, "traffic": "ingress", "detail": "A task is submitted and progress and the result come back on the same connection." },
+    { "from": "api", "to": "agent", "label": "Run with identity", "protocol": "HTTP", "twoWay": true, "detail": "The gateway starts a run and hands over the caller's delegated token." },
+    { "from": "agent", "to": "llm", "label": "Next step?", "protocol": "HTTPS", "twoWay": true, "detail": "The agent sends the goal, the history and the tool list, and gets back a tool call or an answer." },
+    { "from": "agent", "to": "memory", "label": "Save state", "protocol": "SQL", "twoWay": true, "detail": "After every step the run is written, so it can resume after a pause or a crash." },
+    { "from": "agent", "to": "toolgw", "label": "Tool call", "protocol": "HTTP", "twoWay": true, "detail": "The agent sends the model's proposed call. It never talks to a tool directly." },
+    { "from": "toolgw", "to": "policy", "label": "Check", "protocol": "HTTP", "twoWay": true, "detail": "The gateway asks for a decision on this tool, these arguments and this caller." },
+    { "from": "toolgw", "to": "tools", "label": "Forwarded call", "protocol": "HTTPS", "twoWay": true, "detail": "An allowed call is forwarded with a narrow, short-lived token, and the result returns." },
+    { "from": "toolgw", "to": "approval", "label": "Ask a person", "pattern": "event", "offPath": true, "detail": "When policy says to ask, the call waits and an approver is notified. The run pauses without holding a worker." },
+    { "from": "policy", "to": "audit", "label": "Decision record", "pattern": "event", "offPath": true, "detail": "Every decision, allowed or refused, is written with the call that caused it." }
+  ],
+  "zones": [
+    { "id": "guarded", "label": "Guarded tool access", "kind": "group", "members": ["toolgw", "policy", "audit"] },
+    { "id": "provider", "label": "Model provider", "kind": "group", "members": ["llm"] },
+    { "id": "business", "label": "Company systems", "kind": "group", "members": ["tools"] }
+  ],
+  "trace": [
+    { "node": "users", "label": "A staff member asks the agent to refund an order" },
+    { "node": "api", "label": "The gateway issues a token scoped to that person" },
+    { "node": "agent", "label": "The agent starts a run" },
+    { "node": "memory", "label": "The goal and plan are saved" },
+    { "node": "agent", "label": "The agent asks the model what to do first" },
+    { "node": "llm", "label": "The model proposes calling the refund tool" },
+    { "node": "agent", "label": "The agent sends that call to the gateway" },
+    { "node": "toolgw", "label": "The gateway checks the call against the tool's schema" },
+    { "node": "policy", "label": "Policy allows it, since the amount is under the limit" },
+    { "node": "tools", "label": "The refund runs in the payments system" }
+  ]
+}

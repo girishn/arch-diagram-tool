@@ -1,0 +1,506 @@
+{
+  "version": 1,
+  "title": "Order platform on Kubernetes",
+  "description": "An order service on Kubernetes with a cache, an event stream and an archive. The dashed nodes are the delivery and observability tooling around it.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "reliability"
+    },
+    {
+      "id": "operational-excellence"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "users",
+      "label": "Users",
+      "sub": "Public internet",
+      "at": {
+        "col": 0,
+        "row": 1
+      },
+      "icons": [
+        "users"
+      ],
+      "detail": {
+        "role": "Browsers and API clients placing orders.",
+        "why": "The source of all request traffic."
+      },
+      "lenses": {
+        "security": {
+          "badge": "Untrusted",
+          "text": "Every request is treated as hostile until authenticated.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "dns",
+      "label": "Route 53",
+      "sub": "DNS",
+      "at": {
+        "col": 0,
+        "row": 0
+      },
+      "icons": [
+        "route53"
+      ],
+      "detail": {
+        "role": "Answers the hostname lookup with the address of the load balancer in front of the cluster.",
+        "why": "Managed, health-checked DNS with no servers to run.",
+        "tradeoff": "DNS answers are cached, so a failover takes up to the record's TTL to reach everyone.",
+        "tag": "Global"
+      },
+      "lenses": {
+        "security": {
+          "badge": "DNSSEC off",
+          "text": "Records are not signed, so spoofed answers are possible in principle.",
+          "level": "warn"
+        },
+        "reliability": {
+          "badge": "Health-checked",
+          "text": "Unhealthy endpoints are removed from answers.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "k8s",
+      "label": "Kubernetes",
+      "sub": "Order service",
+      "at": {
+        "col": 2,
+        "row": 1
+      },
+      "icons": [
+        "kubernetes"
+      ],
+      "detail": {
+        "role": "Runs the order service as pods behind an ingress. The horizontal pod autoscaler adds pods under load.",
+        "why": "Declarative deploys, self-healing and a standard way to scale.",
+        "tradeoff": "A cluster is a lot to operate; the control plane and upgrades need ongoing attention.",
+        "tag": "EKS cluster"
+      },
+      "scale": {
+        "min": 3,
+        "max": 30,
+        "unit": "pods",
+        "trigger": "CPU > 60%"
+      },
+      "lenses": {
+        "security": {
+          "badge": "Network policies",
+          "text": "Pods may talk only to the cache and the brokers.",
+          "level": "good"
+        },
+        "reliability": {
+          "badge": "Self-healing",
+          "text": "Failed pods are replaced and spread across zones.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Pay per node",
+          "text": "Cost follows node count; the autoscaler keeps it close to need.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "redis",
+      "label": "Redis",
+      "sub": "Cache",
+      "at": {
+        "col": 3,
+        "row": 1
+      },
+      "icons": [
+        "redis"
+      ],
+      "detail": {
+        "role": "Caches product and price lookups so most requests never reach the database.",
+        "why": "Sub-millisecond reads take pressure off the system of record.",
+        "tradeoff": "Cached data can be stale; entries expire after five minutes.",
+        "tag": "Read-through"
+      },
+      "lenses": {
+        "security": {
+          "badge": "Private, TLS",
+          "text": "Reachable only from the cluster, with encryption in transit.",
+          "level": "good"
+        },
+        "reliability": {
+          "badge": "Single node",
+          "text": "No replica, so a failure empties the cache and loads the database.",
+          "level": "warn"
+        },
+        "cost": {
+          "badge": "Small node",
+          "text": "One small node covers the working set.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "kafka",
+      "label": "Kafka",
+      "sub": "Order events",
+      "at": {
+        "col": 2,
+        "row": 2
+      },
+      "icons": [
+        "kafka"
+      ],
+      "detail": {
+        "role": "Receives an event for every order so other systems can react without calling the service.",
+        "why": "Decouples the order service from consumers and keeps a replayable log.",
+        "tradeoff": "Operating brokers, partitions and consumer lag is real work.",
+        "tag": "3 brokers"
+      },
+      "lenses": {
+        "reliability": {
+          "badge": "3 brokers, 3 zones",
+          "text": "Replication factor 3 survives the loss of a zone.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Broker hours",
+          "text": "Brokers are the largest fixed cost in the stack.",
+          "level": "warn"
+        },
+        "security": {
+          "badge": "mTLS between clients",
+          "text": "Clients authenticate with certificates.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "s3",
+      "label": "S3",
+      "sub": "Event archive",
+      "at": {
+        "col": 2,
+        "row": 3
+      },
+      "icons": [
+        "s3"
+      ],
+      "detail": {
+        "role": "Stores archived order events and the audit logs, in cheap durable storage.",
+        "why": "Cheap, durable and queryable later."
+      },
+      "lenses": {
+        "security": {
+          "badge": "Private, versioned",
+          "text": "No public access; versioning protects against overwrites.",
+          "level": "good"
+        },
+        "cost": {
+          "badge": "Cents per GB",
+          "text": "Lifecycle rules move old events to colder storage.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "cw",
+      "label": "CloudWatch",
+      "sub": "Logs and metrics",
+      "at": {
+        "col": 2,
+        "row": 0
+      },
+      "icons": [
+        "cloudwatch"
+      ],
+      "detail": {
+        "role": "Collects logs and metrics from the cluster and raises alarms.",
+        "why": "One place to see how the platform behaves and to page on-call."
+      },
+      "peripheral": true,
+      "lenses": {
+        "operational-excellence": {
+          "badge": "Alarms on SLOs",
+          "text": "Alarms fire on error rate and latency, not on CPU.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "trail",
+      "label": "CloudTrail",
+      "sub": "API audit log",
+      "at": {
+        "col": 3,
+        "row": 3
+      },
+      "icons": [
+        "cloudtrail"
+      ],
+      "detail": {
+        "role": "Records every API call made in the account, including changes made by Terraform and Argo CD.",
+        "why": "Answers who changed what, and when."
+      },
+      "peripheral": true,
+      "lenses": {
+        "security": {
+          "badge": "Org-wide, tamper-evident",
+          "text": "Log file validation detects edits to delivered logs.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "argo",
+      "label": "Argo CD",
+      "sub": "GitOps",
+      "at": {
+        "col": 1,
+        "row": 2
+      },
+      "icons": [
+        "argocd"
+      ],
+      "detail": {
+        "role": "Keeps the cluster in line with the manifests in Git and syncs any difference.",
+        "why": "Deploys are pull requests, and drift is corrected automatically."
+      },
+      "peripheral": true,
+      "lenses": {
+        "operational-excellence": {
+          "badge": "Self-heals drift",
+          "text": "Manual changes in the cluster are reverted to match Git.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "git",
+      "label": "Git repository",
+      "sub": "Desired state",
+      "at": {
+        "col": 0,
+        "row": 2
+      },
+      "icons": [
+        "git"
+      ],
+      "detail": {
+        "role": "Holds the Kubernetes manifests and application code.",
+        "why": "One reviewed source of truth for what should be running."
+      },
+      "peripheral": true
+    },
+    {
+      "id": "docker",
+      "label": "Docker registry",
+      "sub": "Container images",
+      "at": {
+        "col": 1,
+        "row": 0
+      },
+      "icons": [
+        "docker"
+      ],
+      "detail": {
+        "role": "Stores the container images built from each commit.",
+        "why": "The cluster pulls immutable, versioned images from here."
+      },
+      "peripheral": true
+    },
+    {
+      "id": "tf",
+      "label": "Terraform",
+      "sub": "Infrastructure as code",
+      "at": {
+        "col": 3,
+        "row": 0
+      },
+      "icons": [
+        "terraform"
+      ],
+      "detail": {
+        "role": "Provisions the cluster, cache, brokers, bucket and DNS records.",
+        "why": "Infrastructure is reviewed, repeatable and recorded in state.",
+        "tradeoff": "State must be stored and locked safely."
+      },
+      "peripheral": true,
+      "lenses": {
+        "operational-excellence": {
+          "badge": "Plan before apply",
+          "text": "Every change is reviewed as a plan first.",
+          "level": "good"
+        }
+      }
+    }
+  ],
+  "links": [
+    {
+      "from": "users",
+      "to": "dns",
+      "label": "DNS lookup",
+      "detail": "The client resolves the hostname before connecting. Route 53 answers with the address of the load balancer.",
+      "protocol": "DNS",
+      "twoWay": true
+    },
+    {
+      "from": "users",
+      "to": "k8s",
+      "label": "HTTPS",
+      "detail": "Orders arrive over HTTPS at the cluster's ingress, and the response returns on the same connection.",
+      "protocol": "HTTPS",
+      "twoWay": true,
+      "traffic": "ingress",
+      "lenses": {
+        "security": {
+          "badge": "TLS 1.2+",
+          "text": "Terminated at the ingress with a managed certificate.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "from": "k8s",
+      "to": "redis",
+      "label": "Cache lookup",
+      "detail": "The service checks the cache first and only goes to the database on a miss.",
+      "protocol": "Redis",
+      "twoWay": true
+    },
+    {
+      "from": "k8s",
+      "to": "kafka",
+      "label": "Order events",
+      "detail": "The service publishes an event for every order. It does not wait for any consumer.",
+      "pattern": "stream",
+      "protocol": "Kafka"
+    },
+    {
+      "from": "kafka",
+      "to": "s3",
+      "label": "Archive",
+      "detail": "A sink connector writes batches of events to S3. Traffic leaves the VPC through a gateway endpoint, not the internet.",
+      "pattern": "batch",
+      "protocol": "S3 sink connector",
+      "traffic": "egress"
+    },
+    {
+      "from": "k8s",
+      "to": "cw",
+      "label": "Logs and metrics",
+      "detail": "The cluster ships container logs and metrics out to CloudWatch.",
+      "pattern": "stream",
+      "protocol": "HTTPS",
+      "offPath": true,
+      "traffic": "egress"
+    },
+    {
+      "from": "trail",
+      "to": "s3",
+      "label": "Audit logs",
+      "detail": "CloudTrail delivers log files to the bucket in batches.",
+      "pattern": "batch",
+      "offPath": true
+    },
+    {
+      "from": "argo",
+      "to": "git",
+      "label": "Watches manifests",
+      "detail": "Argo CD initiates: it polls the repository and compares the manifests with what is running.",
+      "protocol": "Git over HTTPS",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "from": "argo",
+      "to": "k8s",
+      "label": "Syncs",
+      "detail": "When the repository and the cluster differ, Argo CD applies the repository's version. No request data moves.",
+      "pattern": "dependency",
+      "offPath": true
+    },
+    {
+      "from": "k8s",
+      "to": "docker",
+      "label": "Pulls images",
+      "detail": "The cluster initiates: each node pulls the image for a pod from the registry. Images are immutable and versioned.",
+      "protocol": "HTTPS",
+      "interaction": "async",
+      "offPath": true,
+      "traffic": "egress"
+    },
+    {
+      "from": "tf",
+      "to": "k8s",
+      "label": "Provisions",
+      "detail": "Terraform creates the cluster, and also the cache, brokers, bucket and DNS records. It runs from a pipeline, not at request time.",
+      "pattern": "dependency",
+      "offPath": true
+    }
+  ],
+  "zones": [
+    {
+      "id": "vpc",
+      "label": "VPC",
+      "kind": "vpc",
+      "members": [
+        "k8s",
+        "redis",
+        "kafka"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "users",
+      "label": "A client wants to place an order"
+    },
+    {
+      "node": "dns",
+      "label": "Route 53 resolves the hostname"
+    },
+    {
+      "node": "k8s",
+      "label": "The request reaches the order service"
+    },
+    {
+      "node": "redis",
+      "label": "The cache is checked"
+    },
+    {
+      "node": "kafka",
+      "label": "An order event is published"
+    },
+    {
+      "node": "s3",
+      "label": "The event is archived to S3"
+    }
+  ],
+  "prose": [
+    {
+      "id": "overview",
+      "text": "Users resolve the hostname through Route 53 and reach a Kubernetes service that uses Redis and publishes order events to Kafka, which are archived to S3. Terraform builds the infrastructure, Git holds the manifests, Argo CD syncs them, Docker images come from a registry, and CloudWatch and CloudTrail record behaviour and changes.",
+      "mentions": [
+        "users",
+        "dns",
+        "k8s",
+        "redis",
+        "kafka",
+        "s3",
+        "cw",
+        "trail",
+        "argo",
+        "git",
+        "docker",
+        "tf"
+      ]
+    }
+  ]
+}

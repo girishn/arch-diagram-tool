@@ -1,0 +1,1745 @@
+{
+  "version": 1,
+  "title": "Internal developer platform on multi-cluster Kubernetes",
+  "description": "Product teams deploy to namespaces on shared Kubernetes clusters in two regions. A platform layer provides ingress, a service mesh, secrets, policy, a delivery pipeline and observability. Namespaces are the unit of tenancy: each has its own quota, network policy and identity.",
+  "lenses": [
+    {
+      "id": "security"
+    },
+    {
+      "id": "cost"
+    },
+    {
+      "id": "risks"
+    },
+    {
+      "id": "planes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "portal",
+      "label": "Developer portal",
+      "sub": "Catalogue and templates",
+      "icons": [
+        "dashboard"
+      ],
+      "detail": {
+        "role": "Software catalogue, project templates and docs.",
+        "why": "A new service starts from a working template."
+      },
+      "layer": "dev",
+      "at": {
+        "col": 2,
+        "row": 0
+      },
+      "plane": "control"
+    },
+    {
+      "id": "git",
+      "label": "Git hosting",
+      "sub": "Source and config",
+      "icons": [
+        "git"
+      ],
+      "detail": {
+        "role": "Application code and deployment config.",
+        "why": "Everything is reviewed in pull requests."
+      },
+      "layer": "dev",
+      "at": {
+        "col": 3,
+        "row": 0
+      },
+      "plane": "control"
+    },
+    {
+      "id": "ci",
+      "label": "CI pipelines",
+      "sub": "Build and test",
+      "icons": [
+        "github-actions"
+      ],
+      "detail": {
+        "role": "Builds, tests, scans and signs images.",
+        "why": "Only tested, signed images exist."
+      },
+      "layer": "dev",
+      "at": {
+        "col": 5,
+        "row": 0
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Signed and scanned",
+          "text": "Images are scanned for vulnerabilities and signed before they can be deployed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "reg",
+      "label": "Image registry",
+      "sub": "Signed images",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "role": "Stores images.",
+        "why": "Clusters pull only from here."
+      },
+      "layer": "dev",
+      "at": {
+        "col": 6,
+        "row": 0
+      },
+      "plane": "control"
+    },
+    {
+      "id": "argo",
+      "label": "GitOps controller",
+      "sub": "Continuous delivery",
+      "icons": [
+        "argocd"
+      ],
+      "detail": {
+        "role": "Applies desired state from Git to every cluster.",
+        "why": "Production matches Git; rollback is a revert."
+      },
+      "layer": "dev",
+      "at": {
+        "col": 8,
+        "row": 0
+      },
+      "plane": "control"
+    },
+    {
+      "id": "scaffold",
+      "label": "Environment provisioner",
+      "sub": "Self-service",
+      "icons": [
+        "pipeline"
+      ],
+      "detail": {
+        "role": "Creates a namespace with quota, policy and identity from a request.",
+        "why": "A team has an environment in minutes."
+      },
+      "layer": "dev",
+      "at": {
+        "col": 1,
+        "row": 0
+      },
+      "plane": "control"
+    },
+    {
+      "id": "dns",
+      "label": "DNS",
+      "sub": "Global routing",
+      "icons": [
+        "dns"
+      ],
+      "detail": {
+        "role": "Routes users to a healthy cluster.",
+        "why": "Regional failure becomes a routing change."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 0,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "cdn",
+      "label": "CDN and WAF",
+      "sub": "Edge",
+      "icons": [
+        "cloudfront"
+      ],
+      "detail": {
+        "role": "Caches and filters public traffic.",
+        "why": "Absorbs most load and attacks."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 1,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "lb-a",
+      "label": "Load balancer A",
+      "sub": "Region 1",
+      "icons": [
+        "loadbalancer"
+      ],
+      "detail": {
+        "role": "Entry for cluster A.",
+        "why": "Spreads traffic over ingress pods."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 2,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "lb-b",
+      "label": "Load balancer B",
+      "sub": "Region 2",
+      "icons": [
+        "loadbalancer"
+      ],
+      "detail": {
+        "role": "Entry for cluster B.",
+        "why": "A full second path."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 9,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ingress-a",
+      "label": "Ingress controller A",
+      "sub": "Gateway API",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Routes requests to services by host and path.",
+        "why": "Teams own routes, the platform owns the entry."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 7,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ingress-b",
+      "label": "Ingress controller B",
+      "sub": "Gateway API",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "The same for cluster B.",
+        "why": "Identical setup in both regions."
+      },
+      "layer": "edge",
+      "at": {
+        "col": 11,
+        "row": 1
+      },
+      "plane": "data"
+    },
+    {
+      "id": "pay-0",
+      "label": "Checkout API",
+      "sub": "Pay namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Checkout API for the pay team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 0,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Namespace isolated",
+          "text": "Network policy denies traffic from other namespaces unless allowed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "pay-1",
+      "label": "Ledger service",
+      "sub": "Pay namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Ledger service for the pay team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 1,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "pay-2",
+      "label": "Invoice worker",
+      "sub": "Pay namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Invoice worker for the pay team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 0,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "pay-3",
+      "label": "Payments DB",
+      "sub": "Pay namespace",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Payments DB for the pay team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 1,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ship-0",
+      "label": "Rates API",
+      "sub": "Ship namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Rates API for the ship team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 2,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Namespace isolated",
+          "text": "Network policy denies traffic from other namespaces unless allowed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ship-1",
+      "label": "Label service",
+      "sub": "Ship namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Label service for the ship team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 3,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ship-2",
+      "label": "Tracking worker",
+      "sub": "Ship namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Tracking worker for the ship team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 2,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ship-3",
+      "label": "Shipping DB",
+      "sub": "Ship namespace",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Shipping DB for the ship team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 3,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-0",
+      "label": "Feature API",
+      "sub": "Ml namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Feature API for the ml team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 5,
+        "row": 2
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Namespace isolated",
+          "text": "Network policy denies traffic from other namespaces unless allowed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "ml-1",
+      "label": "Inference service",
+      "sub": "Ml namespace",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Inference service for the ml team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 4,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-2",
+      "label": "Training job",
+      "sub": "Ml namespace",
+      "icons": [
+        "model"
+      ],
+      "detail": {
+        "role": "Training job for the ml team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 4,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "ml-3",
+      "label": "Model store",
+      "sub": "Ml namespace",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Model store for the ml team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 4,
+        "row": 3
+      },
+      "plane": "data"
+    },
+    {
+      "id": "web-0",
+      "label": "Storefront",
+      "sub": "Web namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Storefront for the web team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 6,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "security": {
+          "badge": "Namespace isolated",
+          "text": "Network policy denies traffic from other namespaces unless allowed.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "web-1",
+      "label": "Search BFF",
+      "sub": "Web namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Search BFF for the web team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 6,
+        "row": 2
+      },
+      "plane": "data"
+    },
+    {
+      "id": "web-2",
+      "label": "Session cache",
+      "sub": "Web namespace",
+      "icons": [
+        "redis"
+      ],
+      "detail": {
+        "role": "Session cache for the web team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 7,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "web-3",
+      "label": "Asset service",
+      "sub": "Web namespace",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Asset service for the web team.",
+        "why": "Owned and deployed by one team."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 6,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "b-web",
+      "label": "Storefront (region 2)",
+      "sub": "Standby",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "The same storefront running in cluster B.",
+        "why": "Serves traffic if cluster A is lost."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 9,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "b-pay",
+      "label": "Checkout API (region 2)",
+      "sub": "Standby",
+      "icons": [
+        "container"
+      ],
+      "detail": {
+        "role": "Checkout in cluster B.",
+        "why": "Payments keep working in a regional outage."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 8,
+        "row": 4
+      },
+      "plane": "data"
+    },
+    {
+      "id": "b-db",
+      "label": "Payments DB replica",
+      "sub": "Cross-region",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "An asynchronous replica of the payments database.",
+        "why": "A copy to fail over to."
+      },
+      "layer": "tenants",
+      "at": {
+        "col": 9,
+        "row": 3
+      },
+      "plane": "data",
+      "lenses": {
+        "risks": {
+          "badge": "Replication lag",
+          "text": "A failover can lose the last few seconds of writes.",
+          "level": "warn"
+        }
+      }
+    },
+    {
+      "id": "mesh",
+      "label": "Service mesh",
+      "sub": "mTLS and policy",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Encrypts and authorises calls between services.",
+        "why": "Zero trust inside the cluster."
+      },
+      "layer": "platform",
+      "at": {
+        "col": 1,
+        "row": 6
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "mTLS everywhere",
+          "text": "Every call is mutually authenticated; policy is per service.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "secrets",
+      "label": "Secrets operator",
+      "sub": "External secrets",
+      "icons": [
+        "secret"
+      ],
+      "detail": {
+        "role": "Syncs secrets from the vault into namespaces.",
+        "why": "No secret in Git."
+      },
+      "layer": "platform",
+      "at": {
+        "col": 5,
+        "row": 5
+      },
+      "plane": "control"
+    },
+    {
+      "id": "policy",
+      "label": "Policy engine",
+      "sub": "Admission control",
+      "icons": [
+        "guardrails"
+      ],
+      "detail": {
+        "role": "Rejects workloads that break rules (privileged pods, no limits).",
+        "why": "Rules are code and cannot be skipped."
+      },
+      "layer": "platform",
+      "at": {
+        "col": 6,
+        "row": 5
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "Deny by default",
+          "text": "Unsigned images and privileged pods are refused at admission.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "autoscale",
+      "label": "Autoscaler",
+      "sub": "Nodes and pods",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "role": "Adds nodes and pods with load.",
+        "why": "Capacity follows demand."
+      },
+      "layer": "platform",
+      "at": {
+        "col": 0,
+        "row": 6
+      },
+      "plane": "control",
+      "lenses": {
+        "cost": {
+          "badge": "Right-sized",
+          "text": "Bin-packing and spot nodes cut compute cost.",
+          "level": "info"
+        }
+      }
+    },
+    {
+      "id": "metrics",
+      "label": "Metrics and logs",
+      "sub": "Observability",
+      "icons": [
+        "observability"
+      ],
+      "detail": {
+        "role": "Collects metrics, logs and traces per namespace.",
+        "why": "Teams see their own services."
+      },
+      "layer": "platform",
+      "at": {
+        "col": 1,
+        "row": 5
+      },
+      "plane": "control"
+    },
+    {
+      "id": "cost",
+      "label": "Cost allocation",
+      "sub": "Per namespace",
+      "icons": [
+        "budgets"
+      ],
+      "detail": {
+        "role": "Charges cloud cost back to namespaces.",
+        "why": "Teams see what they spend."
+      },
+      "layer": "platform",
+      "at": {
+        "col": 2,
+        "row": 6
+      },
+      "plane": "control"
+    },
+    {
+      "id": "backup",
+      "label": "Backup and restore",
+      "sub": "Volumes and state",
+      "icons": [
+        "backup"
+      ],
+      "detail": {
+        "role": "Backs up cluster state and volumes.",
+        "why": "A deleted namespace can be restored."
+      },
+      "layer": "platform",
+      "at": {
+        "col": 3,
+        "row": 5
+      },
+      "plane": "data"
+    },
+    {
+      "id": "cert",
+      "label": "Certificate manager",
+      "sub": "TLS",
+      "icons": [
+        "key"
+      ],
+      "detail": {
+        "role": "Issues and renews certificates.",
+        "why": "No expiry outages."
+      },
+      "layer": "platform",
+      "at": {
+        "col": 4,
+        "row": 5
+      },
+      "plane": "control"
+    },
+    {
+      "id": "dbop",
+      "label": "Database operator",
+      "sub": "Managed Postgres",
+      "icons": [
+        "database"
+      ],
+      "detail": {
+        "role": "Provisions and backs up databases on request.",
+        "why": "Teams get a database without a DBA ticket."
+      },
+      "layer": "platform",
+      "at": {
+        "col": 2,
+        "row": 5
+      },
+      "plane": "control"
+    },
+    {
+      "id": "acct",
+      "label": "Cloud accounts",
+      "sub": "Per environment",
+      "icons": [
+        "settings"
+      ],
+      "detail": {
+        "role": "Separate accounts for production and non-production.",
+        "why": "Blast radius is contained."
+      },
+      "layer": "infra",
+      "at": {
+        "col": 2,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "vpc",
+      "label": "Networks",
+      "sub": "Per region",
+      "icons": [
+        "gateway"
+      ],
+      "detail": {
+        "role": "Private networks with controlled egress.",
+        "why": "Nodes have no public addresses."
+      },
+      "layer": "infra",
+      "at": {
+        "col": 1,
+        "row": 7
+      },
+      "plane": "data"
+    },
+    {
+      "id": "nodes",
+      "label": "Node pools",
+      "sub": "General, GPU, spot",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "role": "The machines under the clusters.",
+        "why": "Right hardware per workload."
+      },
+      "layer": "infra",
+      "at": {
+        "col": 0,
+        "row": 7
+      },
+      "plane": "data",
+      "scale": {
+        "min": 12,
+        "max": 300,
+        "unit": "nodes",
+        "trigger": "pending pods"
+      }
+    },
+    {
+      "id": "iam",
+      "label": "Workload identity",
+      "sub": "Per service account",
+      "icons": [
+        "iam"
+      ],
+      "detail": {
+        "role": "Maps Kubernetes identities to cloud roles.",
+        "why": "No cloud keys in pods."
+      },
+      "layer": "infra",
+      "at": {
+        "col": 6,
+        "row": 7
+      },
+      "plane": "control",
+      "lenses": {
+        "security": {
+          "badge": "No static keys",
+          "text": "Pods get short-lived cloud credentials by identity.",
+          "level": "good"
+        }
+      }
+    },
+    {
+      "id": "kms",
+      "label": "Encryption keys",
+      "sub": "KMS",
+      "icons": [
+        "kms"
+      ],
+      "detail": {
+        "role": "Encrypts volumes and secrets.",
+        "why": "Keys are separate from data."
+      },
+      "layer": "infra",
+      "at": {
+        "col": 5,
+        "row": 7
+      },
+      "plane": "control"
+    },
+    {
+      "id": "tf",
+      "label": "Infrastructure as code",
+      "sub": "Terraform",
+      "icons": [
+        "terraform"
+      ],
+      "detail": {
+        "role": "Defines accounts, networks and clusters.",
+        "why": "The platform itself is reproducible."
+      },
+      "layer": "infra",
+      "at": {
+        "col": 3,
+        "row": 7
+      },
+      "plane": "control"
+    }
+  ],
+  "links": [
+    {
+      "id": "portal_to_scaffold",
+      "from": "portal",
+      "to": "scaffold",
+      "label": "Request environment",
+      "pattern": "request-response",
+      "detail": "Request environment.",
+      "plane": "control"
+    },
+    {
+      "id": "scaffold_to_pay-0",
+      "from": "scaffold",
+      "to": "pay-0",
+      "label": "Creates namespace",
+      "pattern": "dependency",
+      "detail": "Creates namespace.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "portal_to_git",
+      "from": "portal",
+      "to": "git",
+      "label": "Template repo",
+      "pattern": "request-response",
+      "detail": "Template repo.",
+      "plane": "control"
+    },
+    {
+      "id": "git_to_ci",
+      "from": "git",
+      "to": "ci",
+      "label": "Triggers",
+      "pattern": "event",
+      "detail": "Triggers.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "ci_to_reg",
+      "from": "ci",
+      "to": "reg",
+      "label": "Push image",
+      "pattern": "request-response",
+      "detail": "Push image.",
+      "plane": "control"
+    },
+    {
+      "id": "reg_to_argo",
+      "from": "reg",
+      "to": "argo",
+      "label": "New version",
+      "pattern": "event",
+      "detail": "New version.",
+      "plane": "control",
+      "interaction": "async"
+    },
+    {
+      "id": "argo_to_web-0",
+      "from": "argo",
+      "to": "web-0",
+      "label": "Sync",
+      "pattern": "dependency",
+      "detail": "Sync.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "argo_to_pay-0",
+      "from": "argo",
+      "to": "pay-0",
+      "label": "Sync",
+      "pattern": "dependency",
+      "detail": "Sync.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "dns_to_cdn",
+      "from": "dns",
+      "to": "cdn",
+      "label": "Users",
+      "pattern": "request-response",
+      "detail": "Users.",
+      "plane": "data",
+      "traffic": "ingress",
+      "protocol": "HTTPS"
+    },
+    {
+      "id": "cdn_to_lb-a",
+      "from": "cdn",
+      "to": "lb-a",
+      "label": "Region 1",
+      "pattern": "request-response",
+      "detail": "Region 1.",
+      "plane": "data"
+    },
+    {
+      "id": "cdn_to_lb-b",
+      "from": "cdn",
+      "to": "lb-b",
+      "label": "Region 2",
+      "pattern": "request-response",
+      "detail": "Region 2.",
+      "plane": "data",
+      "offPath": true
+    },
+    {
+      "id": "lb-a_to_ingress-a",
+      "from": "lb-a",
+      "to": "ingress-a",
+      "label": "Forward",
+      "pattern": "request-response",
+      "detail": "Forward.",
+      "plane": "data"
+    },
+    {
+      "id": "lb-b_to_ingress-b",
+      "from": "lb-b",
+      "to": "ingress-b",
+      "label": "Forward",
+      "pattern": "request-response",
+      "detail": "Forward.",
+      "plane": "data"
+    },
+    {
+      "id": "ingress-a_to_web-0",
+      "from": "ingress-a",
+      "to": "web-0",
+      "label": "Host: shop",
+      "pattern": "request-response",
+      "detail": "Host: shop.",
+      "plane": "data"
+    },
+    {
+      "id": "ingress-a_to_pay-0",
+      "from": "ingress-a",
+      "to": "pay-0",
+      "label": "Host: pay",
+      "pattern": "request-response",
+      "detail": "Host: pay.",
+      "plane": "data"
+    },
+    {
+      "id": "ingress-a_to_ml-0",
+      "from": "ingress-a",
+      "to": "ml-0",
+      "label": "Host: ml",
+      "pattern": "request-response",
+      "detail": "Host: ml.",
+      "plane": "data"
+    },
+    {
+      "id": "ingress-b_to_b-web",
+      "from": "ingress-b",
+      "to": "b-web",
+      "label": "Host: shop",
+      "pattern": "request-response",
+      "detail": "Host: shop.",
+      "plane": "data"
+    },
+    {
+      "id": "web-0_to_web-1",
+      "from": "web-0",
+      "to": "web-1",
+      "label": "Search",
+      "pattern": "request-response",
+      "detail": "Search.",
+      "plane": "data"
+    },
+    {
+      "id": "web-0_to_web-2",
+      "from": "web-0",
+      "to": "web-2",
+      "label": "Sessions",
+      "pattern": "request-response",
+      "detail": "Sessions.",
+      "plane": "data"
+    },
+    {
+      "id": "web-0_to_web-3",
+      "from": "web-0",
+      "to": "web-3",
+      "label": "Assets",
+      "pattern": "request-response",
+      "detail": "Assets.",
+      "plane": "data"
+    },
+    {
+      "id": "web-0_to_pay-0",
+      "from": "web-0",
+      "to": "pay-0",
+      "label": "Checkout",
+      "pattern": "request-response",
+      "detail": "Checkout.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "pay-0_to_pay-1",
+      "from": "pay-0",
+      "to": "pay-1",
+      "label": "Post entries",
+      "pattern": "request-response",
+      "detail": "Post entries.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "pay-1_to_pay-3",
+      "from": "pay-1",
+      "to": "pay-3",
+      "label": "Write",
+      "pattern": "request-response",
+      "detail": "Write.",
+      "plane": "data",
+      "protocol": "SQL"
+    },
+    {
+      "id": "pay-0_to_pay-2",
+      "from": "pay-0",
+      "to": "pay-2",
+      "label": "Invoice job",
+      "pattern": "message",
+      "detail": "Invoice job.",
+      "plane": "data",
+      "interaction": "async"
+    },
+    {
+      "id": "pay-0_to_ship-0",
+      "from": "pay-0",
+      "to": "ship-0",
+      "label": "Shipping quote",
+      "pattern": "request-response",
+      "detail": "Shipping quote.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "ship-0_to_ship-1",
+      "from": "ship-0",
+      "to": "ship-1",
+      "label": "Label",
+      "pattern": "request-response",
+      "detail": "Label.",
+      "plane": "data"
+    },
+    {
+      "id": "ship-1_to_ship-3",
+      "from": "ship-1",
+      "to": "ship-3",
+      "label": "Write",
+      "pattern": "request-response",
+      "detail": "Write.",
+      "plane": "data",
+      "protocol": "SQL"
+    },
+    {
+      "id": "ship-2_to_ship-3",
+      "from": "ship-2",
+      "to": "ship-3",
+      "label": "Update",
+      "pattern": "request-response",
+      "detail": "Update.",
+      "plane": "data",
+      "protocol": "SQL"
+    },
+    {
+      "id": "web-1_to_ml-0",
+      "from": "web-1",
+      "to": "ml-0",
+      "label": "Recommendations",
+      "pattern": "request-response",
+      "detail": "Recommendations.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "ml-0_to_ml-1",
+      "from": "ml-0",
+      "to": "ml-1",
+      "label": "Score",
+      "pattern": "request-response",
+      "detail": "Score.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-2_to_ml-3",
+      "from": "ml-2",
+      "to": "ml-3",
+      "label": "Save model",
+      "pattern": "request-response",
+      "detail": "Save model.",
+      "plane": "data"
+    },
+    {
+      "id": "ml-3_to_ml-1",
+      "from": "ml-3",
+      "to": "ml-1",
+      "label": "Load model",
+      "pattern": "request-response",
+      "detail": "Load model.",
+      "plane": "data"
+    },
+    {
+      "id": "pay-3_to_b-db",
+      "from": "pay-3",
+      "to": "b-db",
+      "label": "Replicate",
+      "pattern": "stream",
+      "detail": "Replicate.",
+      "plane": "data",
+      "interaction": "async",
+      "protocol": "Logical replication"
+    },
+    {
+      "id": "b-pay_to_b-db",
+      "from": "b-pay",
+      "to": "b-db",
+      "label": "Read, write",
+      "pattern": "request-response",
+      "detail": "Read, write.",
+      "plane": "data"
+    },
+    {
+      "id": "b-web_to_b-pay",
+      "from": "b-web",
+      "to": "b-pay",
+      "label": "Checkout",
+      "pattern": "request-response",
+      "detail": "Checkout.",
+      "plane": "data",
+      "protocol": "gRPC"
+    },
+    {
+      "id": "mesh_to_pay-0",
+      "from": "mesh",
+      "to": "pay-0",
+      "label": "mTLS",
+      "pattern": "dependency",
+      "detail": "mTLS.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "secrets_to_pay-1",
+      "from": "secrets",
+      "to": "pay-1",
+      "label": "Secrets",
+      "pattern": "dependency",
+      "detail": "Secrets.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "policy_to_argo",
+      "from": "policy",
+      "to": "argo",
+      "label": "Admission",
+      "pattern": "dependency",
+      "detail": "Admission.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "dbop_to_pay-3",
+      "from": "dbop",
+      "to": "pay-3",
+      "label": "Provision",
+      "pattern": "dependency",
+      "detail": "Provision.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "dbop_to_ship-3",
+      "from": "dbop",
+      "to": "ship-3",
+      "label": "Provision",
+      "pattern": "dependency",
+      "detail": "Provision.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "backup_to_pay-3",
+      "from": "backup",
+      "to": "pay-3",
+      "label": "Snapshots",
+      "pattern": "batch",
+      "detail": "Snapshots.",
+      "plane": "data",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "cert_to_ingress-a",
+      "from": "cert",
+      "to": "ingress-a",
+      "label": "Certificates",
+      "pattern": "dependency",
+      "detail": "Certificates.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "autoscale_to_nodes",
+      "from": "autoscale",
+      "to": "nodes",
+      "label": "Scale",
+      "pattern": "dependency",
+      "detail": "Scale.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "metrics_to_pay-0",
+      "from": "metrics",
+      "to": "pay-0",
+      "label": "Scrape",
+      "pattern": "stream",
+      "detail": "Scrape.",
+      "plane": "data",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "metrics_to_cost",
+      "from": "metrics",
+      "to": "cost",
+      "label": "Usage",
+      "pattern": "stream",
+      "detail": "Usage.",
+      "interaction": "async",
+      "offPath": true
+    },
+    {
+      "id": "tf_to_acct",
+      "from": "tf",
+      "to": "acct",
+      "label": "Creates",
+      "pattern": "dependency",
+      "detail": "Creates.",
+      "plane": "control"
+    },
+    {
+      "id": "acct_to_vpc",
+      "from": "acct",
+      "to": "vpc",
+      "label": "Networks",
+      "pattern": "dependency",
+      "detail": "Networks.",
+      "plane": "control"
+    },
+    {
+      "id": "vpc_to_nodes",
+      "from": "vpc",
+      "to": "nodes",
+      "label": "Placement",
+      "pattern": "dependency",
+      "detail": "Placement.",
+      "plane": "data"
+    },
+    {
+      "id": "iam_to_secrets",
+      "from": "iam",
+      "to": "secrets",
+      "label": "Identity",
+      "pattern": "dependency",
+      "detail": "Identity.",
+      "plane": "control",
+      "offPath": true
+    },
+    {
+      "id": "kms_to_backup",
+      "from": "kms",
+      "to": "backup",
+      "label": "Keys",
+      "pattern": "dependency",
+      "detail": "Keys.",
+      "plane": "control",
+      "offPath": true
+    }
+  ],
+  "layers": [
+    {
+      "id": "dev",
+      "label": "Developers and delivery",
+      "summary": "How teams build and ship."
+    },
+    {
+      "id": "edge",
+      "label": "Ingress",
+      "summary": "How traffic reaches the clusters."
+    },
+    {
+      "id": "tenants",
+      "label": "Tenant namespaces",
+      "summary": "Where team workloads run, one namespace per team."
+    },
+    {
+      "id": "platform",
+      "label": "Platform services",
+      "summary": "Capabilities every namespace uses."
+    },
+    {
+      "id": "infra",
+      "label": "Cloud foundation",
+      "summary": "Accounts, networks and the machines under the clusters."
+    }
+  ],
+  "lintIgnore": [
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.portal",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.git",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ci",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.reg",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.argo",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.scaffold",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.lb-b",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ingress-b",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.pay-2",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ship-0",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ship-1",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ship-2",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ship-3",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-0",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-1",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-2",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.ml-3",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.web-1",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.web-2",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.web-3",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.b-web",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.b-pay",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.b-db",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.mesh",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.secrets",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.policy",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.autoscale",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.metrics",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.cost",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.backup",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.cert",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.dbop",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.acct",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.vpc",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.nodes",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.iam",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.kms",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    },
+    {
+      "rule": "trace-unvisited-node",
+      "path": "nodes.tf",
+      "reason": "Supports the traced path (control, delivery, observability or another flow)."
+    }
+  ],
+  "zones": [
+    {
+      "id": "cluster-a",
+      "label": "Cluster A (region 1)",
+      "kind": "cluster",
+      "members": []
+    },
+    {
+      "id": "ns-pay",
+      "label": "Namespace: Payments team",
+      "kind": "group",
+      "parent": "cluster-a",
+      "members": [
+        "pay-0",
+        "pay-1",
+        "pay-2",
+        "pay-3"
+      ]
+    },
+    {
+      "id": "ns-ship",
+      "label": "Namespace: Shipping team",
+      "kind": "group",
+      "parent": "cluster-a",
+      "members": [
+        "ship-0",
+        "ship-1",
+        "ship-2",
+        "ship-3"
+      ]
+    },
+    {
+      "id": "ns-ml",
+      "label": "Namespace: ML team",
+      "kind": "group",
+      "parent": "cluster-a",
+      "members": [
+        "ml-0",
+        "ml-1",
+        "ml-2",
+        "ml-3"
+      ]
+    },
+    {
+      "id": "ns-web",
+      "label": "Namespace: Web team",
+      "kind": "group",
+      "parent": "cluster-a",
+      "members": [
+        "web-0",
+        "web-1",
+        "web-2",
+        "web-3"
+      ]
+    },
+    {
+      "id": "cluster-b",
+      "label": "Cluster B (region 2)",
+      "kind": "cluster",
+      "members": [
+        "b-web",
+        "b-pay",
+        "b-db"
+      ]
+    },
+    {
+      "id": "plat-ns",
+      "label": "Namespace: platform",
+      "kind": "group",
+      "members": [
+        "mesh",
+        "secrets",
+        "policy",
+        "autoscale",
+        "metrics",
+        "cost",
+        "backup",
+        "cert",
+        "dbop"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "node": "dns",
+      "label": "A shopper resolves the site"
+    },
+    {
+      "node": "cdn",
+      "label": "The CDN serves what it can"
+    },
+    {
+      "node": "lb-a",
+      "label": "The regional load balancer receives the rest"
+    },
+    {
+      "node": "ingress-a",
+      "label": "The ingress controller routes by host"
+    },
+    {
+      "node": "web-0",
+      "label": "The storefront handles the request"
+    },
+    {
+      "node": "pay-0",
+      "label": "Checkout is called"
+    },
+    {
+      "node": "pay-1",
+      "label": "The ledger posts the entry"
+    },
+    {
+      "node": "pay-3",
+      "label": "It is written to the database"
+    }
+  ]
+}

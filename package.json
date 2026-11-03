@@ -1,0 +1,80 @@
+{
+  "name": "arch-diagram-tool",
+  "version": "0.1.0",
+  "description": "Generate interactive architecture diagrams (flat top view to CSS-3D isometric) from a small data spec.",
+  "license": "MIT",
+  "author": "Girish Narayanan",
+  "repository": { "type": "git", "url": "git+https://github.com/girishn/arch-diagram-tool.git" },
+  "bugs": { "url": "https://github.com/girishn/arch-diagram-tool/issues" },
+  "homepage": "https://girishn.github.io/arch-diagram-tool/",
+  "keywords": ["architecture", "diagram", "isometric", "react", "svg", "terraform", "accessibility"],
+  "publishConfig": { "access": "public" },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "schema",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/types/core.d.ts",
+      "import": "./dist/core.js"
+    },
+    "./svg": {
+      "types": "./dist/types/svg.d.ts",
+      "import": "./dist/svg.js"
+    },
+    "./schema.json": "./schema/diagram-spec.v1.schema.json",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "dev": "vite",
+    "build:demo": "vite build",
+    "check-themes": "node scripts/check-themes.mjs",
+    "lint:specs": "node scripts/lint.ts examples",
+    "gen:schema": "node scripts/gen-schema.ts",
+    "bench": "node scripts/bench.mjs",
+    "verify": "node scripts/verify.ts",
+    "tf": "node scripts/tf.ts",
+    "ci:check": "node scripts/ci.ts",
+    "mcp": "node scripts/mcp.ts",
+    "export:svg": "node scripts/export-svg.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:all": "npm run typecheck && npm run test && npm run test:e2e",
+    "build": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run check:package",
+    "check:package": "npm run build && node scripts/smoke-dist.mjs && publint && attw --pack . --profile esm-only"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-dom": ">=19"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "ajv": "^8.20.0",
+    "fast-check": "^4.10.2",
+    "publint": "^0.3.25",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^4.1.12"
+  }
+}

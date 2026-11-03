@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "title": "LLM gateway",
+  "description": "Every team calls models through one gateway that applies budgets, reuses answers, picks a provider and fails over when one is down.",
+  "lenses": [{ "id": "security" }, { "id": "cost" }, { "id": "risks" }],
+  "nodes": [
+    {
+      "id": "apps",
+      "label": "Applications",
+      "sub": "Product teams",
+      "at": { "col": 0, "row": 0 },
+      "icons": ["server"],
+      "detail": { "role": "Chatbots, batch jobs and agents that need a model.", "why": "They call one stable API and never hold a provider's key." }
+    },
+    {
+      "id": "gateway",
+      "label": "Gateway",
+      "sub": "Auth, quotas, one API",
+      "at": { "col": 1, "row": 0 },
+      "icons": ["apigw"],
+      "detail": { "role": "Authenticates each application, applies its limits and presents one API whichever model is used.", "why": "A new provider or model becomes a configuration change, not a code change in every app." },
+      "lenses": {
+        "security": { "badge": "Keys held centrally", "text": "Provider keys exist only here, in a secrets manager. An app leak exposes no provider key.", "level": "good" },
+        "cost": { "badge": "Per-app limits", "text": "Requests per minute and tokens per day are capped for each application.", "level": "good" }
+      }
+    },
+    {
+      "id": "cache",
+      "label": "Response cache",
+      "sub": "Exact and semantic",
+      "at": { "col": 1, "row": 1 },
+      "icons": ["cache"],
+      "detail": { "role": "Returns a stored answer for a repeated or near-identical prompt.", "why": "A hit costs almost nothing and answers in milliseconds." },
+      "lenses": {
+        "cost": { "badge": "Skips the provider", "text": "Typical hit rates of 10 to 30 percent on support-style traffic remove that share of the bill.", "level": "good" },
+        "risks": { "badge": "Trade-off: stale answers", "text": "Caching suits repeatable questions. It is switched off for personalised prompts and for any call that sets a temperature.", "level": "warn" }
+      }
+    },
+    {
+      "id": "router",
+      "label": "Router",
+      "sub": "Route and retry",
+      "at": { "col": 2, "row": 0 },
+      "icons": ["compute"],
+      "detail": { "role": "Chooses a model for each request by task, cost and latency target, and retries on another provider when a call fails.", "why": "Cheap models handle easy work and the expensive one is kept for what needs it." },
+      "scale": { "min": 3, "max": 30, "unit": "pods", "trigger": "requests in flight" },
+      "lenses": {
+        "cost": { "badge": "Tiered routing", "text": "Short classification and extraction calls go to a small model at a fraction of the price.", "level": "good" },
+        "risks": { "badge": "Sensitivity point: routing rules", "text": "A rule that sends hard prompts to a weak model lowers quality without raising an error. It is checked against the evaluation set before each change.", "level": "warn" }
+      }
+    },
+    {
+      "id": "budget",
+      "label": "Budget service",
+      "sub": "Spend per team",
+      "at": { "col": 2, "row": 1 },
+      "icons": ["budgets"],
+      "detail": { "role": "Tracks running spend against each team's monthly budget and tells the router to allow, downgrade or stop.", "why": "Overspend is stopped by the system, not found on the invoice." },
+      "lenses": {
+        "cost": { "badge": "Soft then hard limit", "text": "At 80 percent the team is alerted and moved to cheaper models. At 100 percent calls are refused.", "level": "good" },
+        "risks": { "badge": "Risk: a hard stop is an outage", "text": "A team that hits its limit mid-incident loses its feature. Critical apps have an override that a named owner can approve.", "level": "risk" }
+      }
+    },
+    {
+      "id": "primary",
+      "label": "Primary provider",
+      "sub": "Best price and quality",
+      "at": { "col": 3, "row": 0 },
+      "icons": ["llm"],
+      "detail": { "role": "Serves most requests.", "why": "Chosen on quality for the main tasks and on price." },
+      "lenses": {
+        "security": { "badge": "Private endpoint", "text": "Traffic stays off the public internet and is not used for training.", "level": "good" },
+        "risks": { "badge": "Risk: rate limits and outages", "text": "Providers throttle and fail. This is why a second provider is wired in.", "level": "risk" }
+      }
+    },
+    {
+      "id": "fallback",
+      "label": "Fallback provider",
+      "sub": "Different vendor",
+      "at": { "col": 3, "row": 1 },
+      "icons": ["llm"],
+      "detail": { "role": "Takes over when the primary is slow, throttled or down.", "why": "A second vendor means one outage does not stop every answer." },
+      "lenses": {
+        "cost": { "badge": "Pay for what is used", "text": "No reserved capacity, so it costs nothing while idle.", "level": "good" },
+        "risks": { "badge": "Trade-off: different behaviour", "text": "Another model answers differently, so prompts are tested against both. Fallback answers are tagged in the logs.", "level": "warn" }
+      }
+    },
+    {
+      "id": "ledger",
+      "label": "Usage ledger",
+      "sub": "Tokens and cost",
+      "at": { "col": 2, "row": 2 },
+      "icons": ["metrics"],
+      "peripheral": true,
+      "detail": { "role": "Records tokens in and out, model, latency and cost for every call, tagged by team and use case.", "why": "Spend and quality can be explained by who caused them." },
+      "lenses": {
+        "security": { "badge": "Metadata, not prompts", "text": "Only counts and tags are kept by default. Prompt text is logged for sampled calls and redacted.", "level": "good" }
+      }
+    },
+    {
+      "id": "finops",
+      "label": "Cost dashboards",
+      "sub": "Showback",
+      "at": { "col": 1, "row": 2 },
+      "icons": ["dashboard"],
+      "peripheral": true,
+      "detail": { "role": "Shows each team its spend, cache hit rate and cost per feature.", "why": "Teams that can see their spend manage it." },
+      "lenses": {
+        "cost": { "badge": "Showback per team", "text": "A monthly report goes to each team lead, which is usually enough to prompt changes.", "level": "good" }
+      }
+    }
+  ],
+  "links": [
+    { "from": "apps", "to": "gateway", "label": "Model request", "protocol": "HTTPS", "twoWay": true, "detail": "One API shape for every model. The response streams back on the same connection." },
+    { "from": "gateway", "to": "cache", "label": "Cache lookup", "protocol": "RESP", "twoWay": true, "detail": "Before spending anything, the gateway asks whether this prompt was answered recently." },
+    { "from": "gateway", "to": "router", "label": "On a miss", "protocol": "HTTP", "twoWay": true, "detail": "A request with no cached answer goes to the router with its team and task tags." },
+    { "from": "router", "to": "budget", "label": "Within budget?", "protocol": "HTTP", "twoWay": true, "detail": "The router asks whether the team may spend, and whether to downgrade to a cheaper model." },
+    { "from": "router", "to": "primary", "label": "Primary call", "protocol": "HTTPS", "twoWay": true, "traffic": "egress", "detail": "The normal path, with a timeout of a few seconds before giving up." },
+    { "from": "router", "to": "fallback", "label": "Failover", "protocol": "HTTPS", "twoWay": true, "traffic": "egress", "detail": "Used when the primary times out, is throttled or returns a server error. The same request is resent unchanged." },
+    { "from": "router", "to": "ledger", "label": "Usage record", "pattern": "event", "offPath": true, "detail": "Every call, including failed ones, writes one record after it ends." },
+    { "from": "ledger", "to": "finops", "label": "Aggregates", "pattern": "batch", "offPath": true, "detail": "Hourly totals feed the dashboards and the budget alerts." }
+  ],
+  "zones": [
+    { "id": "platform", "label": "LLM gateway", "kind": "group", "members": ["gateway", "cache", "router", "budget", "ledger", "finops"] },
+    { "id": "providers", "label": "Model providers", "kind": "group", "members": ["primary", "fallback"] }
+  ],
+  "trace": [
+    { "node": "apps", "label": "An application sends a prompt" },
+    { "node": "gateway", "label": "The gateway checks the app's key and limits" },
+    { "node": "cache", "label": "No cached answer exists" },
+    { "node": "gateway", "label": "The request moves on to the router" },
+    { "node": "router", "label": "The router picks a model for this task" },
+    { "node": "budget", "label": "The team is at 85 percent of budget, so a cheaper model is chosen" },
+    { "node": "router", "label": "The call is sent" },
+    { "node": "primary", "label": "The primary provider is throttled and returns an error" },
+    { "node": "router", "label": "The router retries on the other vendor" },
+    { "node": "fallback", "label": "The fallback provider answers" }
+  ]
+}

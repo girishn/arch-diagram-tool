@@ -1,0 +1,772 @@
+{
+  "version": 1,
+  "title": "Order pipeline on Kafka",
+  "description": "Which service reads and writes which topic, as granted by Kafka ACLs. Dead-letter topics, the replay tool, the Debezium connectors and the admin account are left out.",
+  "nodes": [
+    {
+      "id": "repo-ecom-platform-order-api",
+      "label": "ecom-platform/order-api",
+      "sub": "ECR repository",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "tag": "aws_ecr_repository",
+        "role": "Stores container images."
+      },
+      "x-tf": "ecr/aws_ecr_repository.services[\"order-api\"]",
+      "at": {
+        "col": 3,
+        "row": 6
+      }
+    },
+    {
+      "id": "repo-ecom-platform-order-saga",
+      "label": "ecom-platform/order-saga",
+      "sub": "ECR repository",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "tag": "aws_ecr_repository",
+        "role": "Stores container images."
+      },
+      "x-tf": "ecr/aws_ecr_repository.services[\"order-saga\"]",
+      "at": {
+        "col": 0,
+        "row": 7
+      }
+    },
+    {
+      "id": "repo-ecom-platform-inventory-service",
+      "label": "ecom-platform/inventory-service",
+      "sub": "ECR repository",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "tag": "aws_ecr_repository",
+        "role": "Stores container images."
+      },
+      "x-tf": "ecr/aws_ecr_repository.services[\"inventory-service\"]",
+      "at": {
+        "col": 1,
+        "row": 6
+      }
+    },
+    {
+      "id": "repo-ecom-platform-payment-service",
+      "label": "ecom-platform/payment-service",
+      "sub": "ECR repository",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "tag": "aws_ecr_repository",
+        "role": "Stores container images."
+      },
+      "x-tf": "ecr/aws_ecr_repository.services[\"payment-service\"]",
+      "at": {
+        "col": 1,
+        "row": 7
+      }
+    },
+    {
+      "id": "repo-ecom-platform-notification-service",
+      "label": "ecom-platform/notification-service",
+      "sub": "ECR repository",
+      "icons": [
+        "registry"
+      ],
+      "detail": {
+        "tag": "aws_ecr_repository",
+        "role": "Stores container images."
+      },
+      "x-tf": "ecr/aws_ecr_repository.services[\"notification-service\"]",
+      "at": {
+        "col": 2,
+        "row": 6
+      }
+    },
+    {
+      "id": "eks",
+      "label": "EKS cluster",
+      "sub": "aws_eks_cluster",
+      "icons": [
+        "k8s"
+      ],
+      "detail": {
+        "tag": "aws_eks_cluster",
+        "role": "Runs the containers."
+      },
+      "x-tf": "eks/aws_eks_cluster.this",
+      "at": {
+        "col": 1,
+        "row": 4
+      }
+    },
+    {
+      "id": "nodes",
+      "label": "EKS node group",
+      "sub": "aws_eks_node_group",
+      "icons": [
+        "server"
+      ],
+      "detail": {
+        "tag": "aws_eks_node_group",
+        "role": "The machines the pods run on."
+      },
+      "x-tf": "eks/aws_eks_node_group.this",
+      "at": {
+        "col": 0,
+        "row": 4
+      }
+    },
+    {
+      "id": "pool",
+      "label": "Flink compute pool",
+      "sub": "confluent_flink_compute_pool",
+      "icons": [
+        "compute"
+      ],
+      "detail": {
+        "tag": "confluent_flink_compute_pool",
+        "role": "Capacity for stream-processing jobs."
+      },
+      "x-tf": "flink/confluent_flink_compute_pool.this",
+      "at": {
+        "col": 7,
+        "row": 1
+      }
+    },
+    {
+      "id": "flink-revenue-aggregation",
+      "label": "revenue-aggregation",
+      "sub": "Flink statement",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "tag": "confluent_flink_statement",
+        "role": "A continuously running stream-processing job."
+      },
+      "x-tf": "flink/confluent_flink_statement.this[\"revenue-aggregation\"]",
+      "at": {
+        "col": 4,
+        "row": 1
+      }
+    },
+    {
+      "id": "flink-reservation-ttl",
+      "label": "reservation-ttl",
+      "sub": "Flink statement",
+      "icons": [
+        "function"
+      ],
+      "detail": {
+        "tag": "confluent_flink_statement",
+        "role": "A continuously running stream-processing job."
+      },
+      "x-tf": "flink/confluent_flink_statement.this[\"reservation-ttl\"]",
+      "at": {
+        "col": 6,
+        "row": 1
+      }
+    },
+    {
+      "id": "svc-order-api",
+      "label": "svc-order-api",
+      "sub": "Service account",
+      "icons": [
+        "auth"
+      ],
+      "detail": {
+        "tag": "confluent_service_account",
+        "role": "The identity a service uses to reach Kafka."
+      },
+      "x-tf": "kafka-rbac/confluent_service_account.this[\"svc-order-api\"]",
+      "at": {
+        "col": 0,
+        "row": 0
+      }
+    },
+    {
+      "id": "svc-order-saga",
+      "label": "svc-order-saga",
+      "sub": "Service account",
+      "icons": [
+        "auth"
+      ],
+      "detail": {
+        "tag": "confluent_service_account",
+        "role": "The identity a service uses to reach Kafka."
+      },
+      "x-tf": "kafka-rbac/confluent_service_account.this[\"svc-order-saga\"]",
+      "at": {
+        "col": 2,
+        "row": 1
+      }
+    },
+    {
+      "id": "svc-inventory-service",
+      "label": "svc-inventory-service",
+      "sub": "Service account",
+      "icons": [
+        "auth"
+      ],
+      "detail": {
+        "tag": "confluent_service_account",
+        "role": "The identity a service uses to reach Kafka."
+      },
+      "x-tf": "kafka-rbac/confluent_service_account.this[\"svc-inventory-service\"]",
+      "at": {
+        "col": 4,
+        "row": 0
+      }
+    },
+    {
+      "id": "svc-payment-service",
+      "label": "svc-payment-service",
+      "sub": "Service account",
+      "icons": [
+        "auth"
+      ],
+      "detail": {
+        "tag": "confluent_service_account",
+        "role": "The identity a service uses to reach Kafka."
+      },
+      "x-tf": "kafka-rbac/confluent_service_account.this[\"svc-payment-service\"]",
+      "at": {
+        "col": 0,
+        "row": 2
+      }
+    },
+    {
+      "id": "svc-notification-service",
+      "label": "svc-notification-service",
+      "sub": "Service account",
+      "icons": [
+        "auth"
+      ],
+      "detail": {
+        "tag": "confluent_service_account",
+        "role": "The identity a service uses to reach Kafka."
+      },
+      "x-tf": "kafka-rbac/confluent_service_account.this[\"svc-notification-service\"]",
+      "at": {
+        "col": 4,
+        "row": 2
+      }
+    },
+    {
+      "id": "kafka",
+      "label": "Kafka cluster",
+      "sub": "confluent_kafka_cluster",
+      "icons": [
+        "stream"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_cluster",
+        "role": "Holds the topics."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_cluster.this",
+      "at": {
+        "col": 0,
+        "row": 6
+      }
+    },
+    {
+      "id": "topic-orders-order-placed",
+      "label": "orders.order.placed",
+      "sub": "Kafka topic",
+      "icons": [
+        "topic"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_topic",
+        "role": "A named stream of events."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_topic.this[\"orders.order.placed\"]",
+      "at": {
+        "col": 1,
+        "row": 0
+      }
+    },
+    {
+      "id": "topic-orders-order-confirmed",
+      "label": "orders.order.confirmed",
+      "sub": "Kafka topic",
+      "icons": [
+        "topic"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_topic",
+        "role": "A named stream of events."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_topic.this[\"orders.order.confirmed\"]",
+      "at": {
+        "col": 3,
+        "row": 1
+      }
+    },
+    {
+      "id": "topic-orders-order-cancelled",
+      "label": "orders.order.cancelled",
+      "sub": "Kafka topic",
+      "icons": [
+        "topic"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_topic",
+        "role": "A named stream of events."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_topic.this[\"orders.order.cancelled\"]",
+      "at": {
+        "col": 3,
+        "row": 2
+      }
+    },
+    {
+      "id": "topic-inventory-stock-reserved",
+      "label": "inventory.stock.reserved",
+      "sub": "Kafka topic",
+      "icons": [
+        "topic"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_topic",
+        "role": "A named stream of events."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_topic.this[\"inventory.stock.reserved\"]",
+      "at": {
+        "col": 5,
+        "row": 1
+      }
+    },
+    {
+      "id": "topic-inventory-stock-reservation-failed",
+      "label": "inventory.stock.reservation-failed",
+      "sub": "Kafka topic",
+      "icons": [
+        "topic"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_topic",
+        "role": "A named stream of events."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_topic.this[\"inventory.stock.reservation-failed\"]",
+      "at": {
+        "col": 0,
+        "row": 1
+      }
+    },
+    {
+      "id": "topic-inventory-stock-release-requested",
+      "label": "inventory.stock.release-requested",
+      "sub": "Kafka topic",
+      "icons": [
+        "topic"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_topic",
+        "role": "A named stream of events."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_topic.this[\"inventory.stock.release-requested\"]",
+      "at": {
+        "col": 3,
+        "row": 0
+      }
+    },
+    {
+      "id": "topic-payments-payment-captured",
+      "label": "payments.payment.captured",
+      "sub": "Kafka topic",
+      "icons": [
+        "topic"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_topic",
+        "role": "A named stream of events."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_topic.this[\"payments.payment.captured\"]",
+      "at": {
+        "col": 1,
+        "row": 1
+      }
+    },
+    {
+      "id": "topic-payments-payment-failed",
+      "label": "payments.payment.failed",
+      "sub": "Kafka topic",
+      "icons": [
+        "topic"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_topic",
+        "role": "A named stream of events."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_topic.this[\"payments.payment.failed\"]",
+      "at": {
+        "col": 1,
+        "row": 2
+      }
+    },
+    {
+      "id": "topic-analytics-revenue-realtime",
+      "label": "analytics.revenue.realtime",
+      "sub": "Kafka topic",
+      "icons": [
+        "topic"
+      ],
+      "detail": {
+        "tag": "confluent_kafka_topic",
+        "role": "A named stream of events."
+      },
+      "x-tf": "kafka-topics/confluent_kafka_topic.this[\"analytics.revenue.realtime\"]",
+      "at": {
+        "col": 5,
+        "row": 0
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "nodes_to_eks",
+      "from": "nodes",
+      "to": "eks",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: eks/aws_eks_node_group.this.",
+      "x-tf": [
+        "eks/aws_eks_node_group.this"
+      ]
+    },
+    {
+      "id": "flink-reservation-ttl_to_pool",
+      "from": "flink-reservation-ttl",
+      "to": "pool",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: flink/confluent_flink_statement.this.",
+      "x-tf": [
+        "flink/confluent_flink_statement.this"
+      ]
+    },
+    {
+      "id": "flink-reservation-ttl_to_topic-inventory-stock-release-requested",
+      "from": "flink-reservation-ttl",
+      "to": "topic-inventory-stock-release-requested",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: flink/confluent_flink_statement.this[\"reservation-ttl\"].",
+      "x-tf": [
+        "flink/confluent_flink_statement.this[\"reservation-ttl\"]"
+      ]
+    },
+    {
+      "id": "flink-revenue-aggregation_to_pool",
+      "from": "flink-revenue-aggregation",
+      "to": "pool",
+      "label": "Uses",
+      "pattern": "request-response",
+      "detail": "Derived from Terraform: flink/confluent_flink_statement.this.",
+      "x-tf": [
+        "flink/confluent_flink_statement.this"
+      ]
+    },
+    {
+      "id": "flink-revenue-aggregation_to_topic-analytics-revenue-realtime",
+      "from": "flink-revenue-aggregation",
+      "to": "topic-analytics-revenue-realtime",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: flink/confluent_flink_statement.this[\"revenue-aggregation\"].",
+      "x-tf": [
+        "flink/confluent_flink_statement.this[\"revenue-aggregation\"]"
+      ]
+    },
+    {
+      "id": "svc-inventory-service_to_topic-inventory-stock-reservation-failed",
+      "from": "svc-inventory-service",
+      "to": "topic-inventory-stock-reservation-failed",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "svc-inventory-service_to_topic-inventory-stock-reserved",
+      "from": "svc-inventory-service",
+      "to": "topic-inventory-stock-reserved",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "svc-order-api_to_topic-orders-order-placed",
+      "from": "svc-order-api",
+      "to": "topic-orders-order-placed",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "svc-order-saga_to_topic-inventory-stock-release-requested",
+      "from": "svc-order-saga",
+      "to": "topic-inventory-stock-release-requested",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "svc-order-saga_to_topic-orders-order-cancelled",
+      "from": "svc-order-saga",
+      "to": "topic-orders-order-cancelled",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "svc-order-saga_to_topic-orders-order-confirmed",
+      "from": "svc-order-saga",
+      "to": "topic-orders-order-confirmed",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "svc-payment-service_to_topic-payments-payment-captured",
+      "from": "svc-payment-service",
+      "to": "topic-payments-payment-captured",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "svc-payment-service_to_topic-payments-payment-failed",
+      "from": "svc-payment-service",
+      "to": "topic-payments-payment-failed",
+      "label": "Writes",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-inventory-stock-release-requested_to_svc-inventory-service",
+      "from": "topic-inventory-stock-release-requested",
+      "to": "svc-inventory-service",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-inventory-stock-release-requested_to_svc-order-saga",
+      "from": "topic-inventory-stock-release-requested",
+      "to": "svc-order-saga",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-inventory-stock-reservation-failed_to_svc-order-saga",
+      "from": "topic-inventory-stock-reservation-failed",
+      "to": "svc-order-saga",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-inventory-stock-reserved_to_flink-reservation-ttl",
+      "from": "topic-inventory-stock-reserved",
+      "to": "flink-reservation-ttl",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: flink/confluent_flink_statement.this[\"reservation-ttl\"].",
+      "x-tf": [
+        "flink/confluent_flink_statement.this[\"reservation-ttl\"]"
+      ]
+    },
+    {
+      "id": "topic-inventory-stock-reserved_to_svc-order-saga",
+      "from": "topic-inventory-stock-reserved",
+      "to": "svc-order-saga",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-inventory-stock-reserved_to_svc-payment-service",
+      "from": "topic-inventory-stock-reserved",
+      "to": "svc-payment-service",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-orders-order-cancelled_to_flink-reservation-ttl",
+      "from": "topic-orders-order-cancelled",
+      "to": "flink-reservation-ttl",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: flink/confluent_flink_statement.this[\"reservation-ttl\"].",
+      "x-tf": [
+        "flink/confluent_flink_statement.this[\"reservation-ttl\"]"
+      ]
+    },
+    {
+      "id": "topic-orders-order-cancelled_to_svc-notification-service",
+      "from": "topic-orders-order-cancelled",
+      "to": "svc-notification-service",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-orders-order-confirmed_to_flink-reservation-ttl",
+      "from": "topic-orders-order-confirmed",
+      "to": "flink-reservation-ttl",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: flink/confluent_flink_statement.this[\"reservation-ttl\"].",
+      "x-tf": [
+        "flink/confluent_flink_statement.this[\"reservation-ttl\"]"
+      ]
+    },
+    {
+      "id": "topic-orders-order-confirmed_to_flink-revenue-aggregation",
+      "from": "topic-orders-order-confirmed",
+      "to": "flink-revenue-aggregation",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: flink/confluent_flink_statement.this[\"revenue-aggregation\"].",
+      "x-tf": [
+        "flink/confluent_flink_statement.this[\"revenue-aggregation\"]"
+      ]
+    },
+    {
+      "id": "topic-orders-order-confirmed_to_svc-inventory-service",
+      "from": "topic-orders-order-confirmed",
+      "to": "svc-inventory-service",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-orders-order-confirmed_to_svc-notification-service",
+      "from": "topic-orders-order-confirmed",
+      "to": "svc-notification-service",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-orders-order-placed_to_svc-inventory-service",
+      "from": "topic-orders-order-placed",
+      "to": "svc-inventory-service",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-orders-order-placed_to_svc-order-saga",
+      "from": "topic-orders-order-placed",
+      "to": "svc-order-saga",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-payments-payment-captured_to_svc-order-saga",
+      "from": "topic-payments-payment-captured",
+      "to": "svc-order-saga",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    },
+    {
+      "id": "topic-payments-payment-failed_to_svc-order-saga",
+      "from": "topic-payments-payment-failed",
+      "to": "svc-order-saga",
+      "label": "Reads",
+      "pattern": "stream",
+      "detail": "Derived from Terraform: kafka-rbac/confluent_kafka_acl.this.",
+      "x-tf": [
+        "kafka-rbac/confluent_kafka_acl.this"
+      ]
+    }
+  ],
+  "zones": [
+    {
+      "id": "subnet-public",
+      "label": "Public",
+      "kind": "subnet",
+      "members": [
+        "eks",
+        "nodes"
+      ],
+      "parent": "vpc",
+      "x-tf": "eks/aws_subnet.public"
+    },
+    {
+      "id": "vpc",
+      "label": "VPC",
+      "kind": "vpc",
+      "x-tf": "eks/aws_vpc.this"
+    }
+  ]
+}

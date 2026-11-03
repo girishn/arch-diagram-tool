@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1524.6400000000003 1009.8000000000001" width="1524.6400000000003" height="1009.8000000000001" role="img" aria-label="RAG platform" font-family="Georgia, &quot;Times New Roman&quot;, serif">
+<title>RAG platform</title>
+<desc>A question is checked, answered from the company's own documents, and checked again on the way out. Dashed components keep the knowledge base fresh and the platform observable.</desc>
+<defs><pattern id="g" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0V44" fill="none" stroke="#2a3142" stroke-width="1"/></pattern><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 z" fill="#d4a24c"/></marker><marker id="h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 z" fill="#0f1115" stroke="#d4a24c" stroke-width="1.6" stroke-linejoin="round"/></marker></defs>
+<rect width="1524.6400000000003" height="1009.8000000000001" fill="#151922"/><rect width="1524.6400000000003" height="1009.8000000000001" fill="url(#g)"/>
+<rect x="347.072" y="121.5" width="830.4960000000002" height="766.8" rx="6" fill="#1e1f24" stroke="#ac9b7a" stroke-width="1.5"/>
+<text x="355.072" y="874.3" font-size="18" font-style="italic" fill="#c0b49b">AI platform</text>
+<rect x="94.11999999999999" y="661.5" width="209.048" height="226.79999999999995" rx="6" fill="#1f232d" stroke="#b2b9c3" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="102.11999999999999" y="874.3" font-size="18" font-style="italic" fill="#c4c8cc">Company systems</text>
+<rect x="1221.4720000000002" y="121.5" width="205.96800000000007" height="226.8" rx="6" fill="#1f232d" stroke="#b2b9c3" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="1229.4720000000002" y="334.3" font-size="18" font-style="italic" fill="#c4c8cc">Model provider</text>
+<path d="M 252.92 234.9 L 399.31999999999994 234.9" fill="none" stroke="#836936" stroke-width="3.5" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M 527.3199999999999 234.9 L 719.7199999999999 234.9" fill="none" stroke="#836936" stroke-width="3.5" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M 847.7199999999999 234.9 L 999.3200000000002 234.9" fill="none" stroke="#836936" stroke-width="3.5" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M 1127.3200000000002 234.9 L 1273.7200000000003 234.9" fill="none" stroke="#836936" stroke-width="3.5" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M 782.7199999999999 299.9 L 782.7199999999999 376.90000000000003" fill="none" stroke="#836936" stroke-width="3.5" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M 733.0152575668528 276.7860189043374 L 560.2001081760434 422.4167627729971" fill="none" stroke="#836936" stroke-width="3.5" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M 822.284154377512 273.1057284761382 L 970.2434225396086 415.98485009189665" fill="none" stroke="#836936" stroke-width="4" stroke-dasharray="1 9" stroke-linecap="round" marker-end="url(#h)" opacity="0.7"/>
+<path d="M 242.92 774.9 L 399.31999999999994 774.9" fill="none" stroke="#836936" stroke-width="4" stroke-dasharray="1 9" stroke-linecap="round" marker-end="url(#h)" opacity="0.7"/>
+<path d="M 554.0826014150407 697.5719650996848 L 734.5446342571036 545.4972183226655" fill="none" stroke="#836936" stroke-width="4" stroke-dasharray="1 9" stroke-linecap="round" marker-end="url(#h)" opacity="0.7"/>
+<g><rect x="143.92" y="190.9" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936"/>
+<g transform="translate(151.92 198.9)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#5b6b7f"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="23" r="8"></circle><path d="M15 50c0-12 34-12 34 0"></path></g></svg></g>
+<rect x="155.42" y="141.9" width="65" height="25" fill="#0f1115" stroke="#836936"/>
+<text x="187.92" y="158.9" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">Users</text>
+<text x="187.92" y="178.9" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">STAFF AND APPS</text>
+</g>
+<g><rect x="418.31999999999994" y="190.9" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936"/>
+<g transform="translate(426.31999999999994 198.9)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#8a5ad6"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M32 14v36M10 32h16M20 26l6 6-6 6M38 32h16M48 26l6 6-6 6"></path></g></svg></g>
+<rect x="404.0199999999999" y="141.9" width="116.6" height="25" fill="#0f1115" stroke="#836936"/>
+<text x="462.31999999999994" y="158.9" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">API gateway</text>
+<text x="462.31999999999994" y="178.9" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">AUTH AND QUOTAS</text>
+</g>
+<g><rect x="738.7199999999999" y="190.9" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936"/>
+<g transform="translate(746.7199999999999 198.9)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#cf7a22"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="16" width="36" height="13" rx="3"></rect><rect x="14" y="35" width="36" height="13" rx="3"></rect><path d="M21 22.5h.01M21 41.5h.01"></path></g></svg></g>
+<rect x="724.42" y="141.9" width="116.6" height="25" fill="#0f1115" stroke="#836936"/>
+<text x="782.7199999999999" y="158.9" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">RAG service</text>
+<text x="782.7199999999999" y="178.9" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">ORCHESTRATOR</text>
+</g>
+<g><rect x="1018.3200000000002" y="190.9" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936"/>
+<g transform="translate(1026.3200000000002 198.9)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#c8483f"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M32 12l16 6v14c0 10-8 16-16 20-8-4-16-10-16-20V18zM25 32l5 5 10-11"></path></g></svg></g>
+<rect x="1008.3200000000002" y="141.9" width="108" height="25" fill="#0f1115" stroke="#836936"/>
+<text x="1062.3200000000002" y="158.9" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">Guardrails</text>
+<text x="1062.3200000000002" y="178.9" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">IN AND OUT</text>
+</g>
+<g><rect x="1292.7200000000003" y="190.9" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936"/>
+<g transform="translate(1300.7200000000003 198.9)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#1f9d9a"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M32 12l5 15 15 5-15 5-5 15-5-15-15-5 15-5z"></path></g></svg></g>
+<rect x="1274.1200000000003" y="141.9" width="125.19999999999999" height="25" fill="#0f1115" stroke="#836936"/>
+<text x="1336.7200000000003" y="158.9" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">LLM provider</text>
+<text x="1336.7200000000003" y="178.9" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">HOSTED MODEL</text>
+</g>
+<g><rect x="418.31999999999994" y="460.90000000000003" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936"/>
+<g transform="translate(426.31999999999994 468.90000000000003)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#3b6fd4"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M36 12L20 36h12l-4 16 16-24H32z"></path></g></svg></g>
+<rect x="391.11999999999995" y="411.90000000000003" width="142.39999999999998" height="25" fill="#0f1115" stroke="#836936"/>
+<text x="462.31999999999994" y="428.90000000000003" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">Semantic cache</text>
+<text x="462.31999999999994" y="448.90000000000003" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">REPEAT QUESTIONS</text>
+</g>
+<g><rect x="738.7199999999999" y="460.90000000000003" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936"/>
+<g transform="translate(746.7199999999999 468.90000000000003)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#3b6fd4"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="28" cy="28" r="12"></circle><path d="M37 37l11 11"></path></g></svg></g>
+<rect x="720.1199999999999" y="411.90000000000003" width="125.19999999999999" height="25" fill="#0f1115" stroke="#836936"/>
+<text x="782.7199999999999" y="428.90000000000003" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">Vector store</text>
+<text x="782.7199999999999" y="448.90000000000003" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">CHUNKS AND EMBEDDINGS</text>
+</g>
+<g><rect x="1018.3200000000002" y="460.90000000000003" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936" stroke-dasharray="5 4"/>
+<g transform="translate(1026.3200000000002 468.90000000000003)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#7d8591"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 50h40M16 40l10-10 8 6 14-16"></path></g></svg></g>
+<rect x="978.2200000000001" y="411.90000000000003" width="168.2" height="25" fill="#0f1115" stroke="#836936" stroke-dasharray="5 4"/>
+<text x="1062.3200000000002" y="428.90000000000003" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">Tracing and evals</text>
+<text x="1062.3200000000002" y="448.90000000000003" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">QUALITY AND COST</text>
+</g>
+<g><rect x="143.92" y="730.9" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936" stroke-dasharray="5 4"/>
+<g transform="translate(151.92 738.9)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#3f8f5a"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="22" rx="16" ry="5"></ellipse><path d="M16 22l4 26h24l4-26"></path></g></svg></g>
+<rect x="108.11999999999999" y="681.9" width="159.6" height="25" fill="#0f1115" stroke="#836936" stroke-dasharray="5 4"/>
+<text x="187.92" y="698.9" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">Document sources</text>
+<text x="187.92" y="718.9" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">WIKI, DRIVE, TICKETS</text>
+</g>
+<g><rect x="418.31999999999994" y="730.9" width="88" height="88" rx="6" fill="#1d2331" stroke="#836936" stroke-dasharray="5 4"/>
+<g transform="translate(426.31999999999994 738.9)" clip-path="inset(0 round 6px)"><svg viewBox="0 0 64 64" width="72" height="72"><rect width="64" height="64" rx="10" fill="#7f8f3f"></rect><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="32" r="5"></circle><circle cx="32" cy="32" r="5"></circle><circle cx="51" cy="32" r="5"></circle><path d="M18 32h9M37 32h9M43 26l5 6-5 6"></path></g></svg></g>
+<rect x="373.91999999999996" y="681.9" width="176.79999999999998" height="25" fill="#0f1115" stroke="#836936" stroke-dasharray="5 4"/>
+<text x="462.31999999999994" y="698.9" text-anchor="middle" font-size="14" font-weight="600" fill="#e9e6df">Ingestion pipeline</text>
+<text x="462.31999999999994" y="718.9" text-anchor="middle" font-size="10" letter-spacing="1.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">PARSE, CHUNK, EMBED</text>
+</g>
+<rect x="275.92" y="222.9" width="98.4" height="24" fill="#0f1115" stroke="#836936"/>
+<text x="336.12" y="238.4" text-anchor="middle" font-size="10" letter-spacing="0.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">QUESTION</text>
+<text x="283.92" y="237.9" font-size="8" font-weight="700" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#d4a24c">IN</text>
+<rect x="550.3199999999999" y="222.9" width="144.39999999999998" height="24" fill="#0f1115" stroke="#836936"/>
+<text x="622.52" y="238.4" text-anchor="middle" font-size="10" letter-spacing="0.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">AUTHENTICATED CALL</text>
+<rect x="870.72" y="222.9" width="103.6" height="24" fill="#0f1115" stroke="#836936"/>
+<text x="922.52" y="238.4" text-anchor="middle" font-size="10" letter-spacing="0.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">PROMPT CHECK</text>
+<rect x="1150.3200000000002" y="222.9" width="98.4" height="24" fill="#0f1115" stroke="#836936"/>
+<text x="1210.5200000000002" y="238.4" text-anchor="middle" font-size="10" letter-spacing="0.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">GENERATE</text>
+<text x="1158.3200000000002" y="237.9" font-size="8" font-weight="700" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#d4a24c">OUT</text>
+<rect x="744.5199999999999" y="349.8" width="76.4" height="24" fill="#0f1115" stroke="#836936"/>
+<text x="782.7199999999999" y="365.3" text-anchor="middle" font-size="10" letter-spacing="0.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">RETRIEVE</text>
+<rect x="587.72" y="357.9" width="69.6" height="24" fill="#0f1115" stroke="#836936"/>
+<text x="622.52" y="373.4" text-anchor="middle" font-size="10" letter-spacing="0.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">LOOK UP</text>
+<rect x="894.52" y="357.9" width="56" height="24" fill="#0f1115" stroke="#836936"/>
+<text x="922.52" y="373.4" text-anchor="middle" font-size="10" letter-spacing="0.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">TRACE</text>
+<rect x="290.32" y="762.9" width="69.6" height="24" fill="#0f1115" stroke="#836936"/>
+<text x="325.12" y="778.4" text-anchor="middle" font-size="10" letter-spacing="0.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">CHANGES</text>
+<rect x="567.3199999999999" y="627.9" width="110.39999999999999" height="24" fill="#0f1115" stroke="#836936"/>
+<text x="622.52" y="643.4" text-anchor="middle" font-size="10" letter-spacing="0.6" font-family="ui-monospace, &quot;Cascadia Code&quot;, &quot;SFMono-Regular&quot;, Consolas, &quot;Liberation Mono&quot;, monospace" fill="#a2a39d">WRITES CHUNKS</text>
+</svg>
